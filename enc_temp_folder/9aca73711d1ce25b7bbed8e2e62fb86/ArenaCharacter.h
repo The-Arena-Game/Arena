@@ -11,9 +11,9 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
-class UCameraShakeBase;
 struct FInputActionValue;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogArena, Log, All);
 
 UCLASS(config = Game)
@@ -26,12 +26,8 @@ public:
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	UFUNCTION(BlueprintCallable)
-	void TestShake();
 
 protected:
 
@@ -43,7 +39,7 @@ protected:
 	void StopSprint();
 
 	/** Called for looking input */
-	// // Disabled for Top-Down --> void Look(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
 
 	/** APawn interface */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -82,13 +78,11 @@ private:
 	UInputAction* LookAction;
 
 	/** Sprint Speed */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Movement", meta = (AllowPrivateAccess = "true"))
-	float WalkSpeed = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed;
 
 	/** Sprint Speed */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Movement", meta = (AllowPrivateAccess = "true"))
-	float SprintSpeed = 500.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed;
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Combat")
-	TSubclassOf<UCameraShakeBase> TestCameraShakeClass;
 };
