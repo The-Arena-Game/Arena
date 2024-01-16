@@ -4,6 +4,8 @@
 #include "ArenaCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
+DEFINE_LOG_CATEGORY(LogArnGameMode);
+
 AArenaGameMode::AArenaGameMode()
 {
 }

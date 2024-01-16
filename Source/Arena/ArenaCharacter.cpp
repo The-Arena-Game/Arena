@@ -12,7 +12,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-DEFINE_LOG_CATEGORY(LogArena);
+DEFINE_LOG_CATEGORY(LogArnCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AArenaCharacter
@@ -46,8 +46,8 @@ AArenaCharacter::AArenaCharacter()
 	CameraBoom->SetUsingAbsoluteRotation(true); // Top-Down - Don't want arm to rotate when character does
 	CameraBoom->TargetArmLength = 800.0f;		// The Camera follows the character from a great distance
 	// Disabled for Top-Down View --> CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-	CameraBoom->SetRelativeRotation(FRotator(-40.f, 0.f, 0.f));		// For Top-Down - Perspective
-	CameraBoom->bDoCollisionTest = false;	// For Top-Down - Don't want to pull camera in when it collides with level
+	CameraBoom->SetRelativeRotation(FRotator(-40.f, 0.f, 0.f));		// Top-Down - Perspective
+	CameraBoom->bDoCollisionTest = false;	// Top-Down - Don't want to pull camera in when it collides with level
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -55,7 +55,7 @@ AArenaCharacter::AArenaCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	// are set in the derived blueprint asset (to avoid direct content references in C++)
 }
 
 void AArenaCharacter::BeginPlay()
@@ -97,7 +97,7 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 	else
 	{
-		UE_LOG(LogArena, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		UE_LOG(LogArnCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
@@ -151,6 +151,6 @@ void AArenaCharacter::Look(const FInputActionValue& Value)
 
 void AArenaCharacter::TestShake()
 {
-	UE_LOG(LogArena, Log, TEXT("TestShake called"));
+	UE_LOG(LogArnCharacter, Log, TEXT("TestShake called"));
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(TestCameraShakeClass);
 }

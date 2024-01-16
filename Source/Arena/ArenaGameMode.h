@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "ArenaGameMode.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
+
 UCLASS(minimalapi)
 class AArenaGameMode : public AGameModeBase
 {

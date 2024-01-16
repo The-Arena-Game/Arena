@@ -14,7 +14,7 @@ class UInputAction;
 class UCameraShakeBase;
 struct FInputActionValue;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogArena, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogArnCharacter, Log, All);
 
 UCLASS(config = Game)
 class AArenaCharacter : public ACharacter
@@ -43,7 +43,7 @@ protected:
 	void StopSprint();
 
 	/** Called for looking input */
-	// // Disabled for Top-Down --> void Look(const FInputActionValue& Value);
+	// Disabled for Top-Down --> void Look(const FInputActionValue& Value);
 
 	/** APawn interface */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -54,41 +54,41 @@ protected:
 private:
 
 	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arena Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
 	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arena Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
 	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
 	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
 
 	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
 	/** Sprint Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* SprintAction;
 
 	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
 	/** Sprint Speed */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Movement", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float WalkSpeed = 200.f;
 
 	/** Sprint Speed */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Movement", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Combat")
+	UPROPERTY(EditAnywhere, Category = "Arena Effect")
 	TSubclassOf<UCameraShakeBase> TestCameraShakeClass;
 };
