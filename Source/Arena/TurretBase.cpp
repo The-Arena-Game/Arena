@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "TurretBase.h"
 #include "ArenaCharacter.h"
 #include "Components/CapsuleComponent.h"
-#include "TurretBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
+#include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 
 DEFINE_LOG_CATEGORY(LogArnTurretBase);
@@ -35,9 +36,6 @@ void ATurretBase::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
-
-	FTimerHandle Handle;
-	GetWorldTimerManager().SetTimer(Handle, this, &ATurretBase::CheckFire, FireRate, true);
 }
 
 // Called every frame
@@ -45,10 +43,23 @@ void ATurretBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(PlayerCharacter) && InFireRange())
+	if (bDrawLines)
+	{
+		DrawLines();
+	}
+
+
+	FireTimer += DeltaTime;
+	if (InFireRange())
 	{
 		RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
+
+		if (FireTimer >= (1 / FireRate) && IsFacingToTarget()) {
+			FireTimer = 0;
+			Fire();
+		}
 	}
+
 }
 
 void ATurretBase::RotateTurret(FVector TargetLocation, float& DeltaTime)
@@ -88,24 +99,98 @@ void ATurretBase::Fire()
 	Projectile->SetOwner(this); // Attaching the projectile to the owner, so we can access it in case of a hit
 }
 
-void ATurretBase::CheckFire()
-{
-	if (InFireRange() && PlayerCharacter) { Fire(); }
-}
-
 bool ATurretBase::InFireRange()
 {
-	if (IsValid(PlayerCharacter))
+	if (!IsValid(PlayerCharacter))
 	{
-		float Distance = FVector::Dist(GetActorLocation(), PlayerCharacter->GetActorLocation());
-
-		// If in the TurretRange, turn true
-		if (Distance < TurretRange)
-		{
-			return true;
-		}
 		return false;
 	}
+
+	float Distance = FVector::Dist(GetActorLocation(), PlayerCharacter->GetActorLocation());
+
+	// If in the TurretRange, turn true
+	if (Distance < Range)
+	{
+		return true;
+	}
+
 	return false;
+}
+
+bool ATurretBase::IsFacingToTarget()
+{
+	if (!IsValid(PlayerCharacter))
+	{
+		UE_LOG(LogArnTurretBase, Error, TEXT("PlayerCharacter is null on TurretBase!"));
+		return false;
+	}
+
+	// Calculate the end location for the line trace	Start + Foward * Range
+	FVector TraceStart = TurretMesh->GetComponentLocation();
+	FVector TraceEnd = TurretMesh->GetComponentLocation() + (TurretMesh->GetForwardVector() * Range);
+
+	// Calculate the radius from the FireAccuracy
+	float Radius = 100.1f - FireAccuracy;
+
+	// Perform the line trace
+	FHitResult HitResult;
+	FCollisionShape CollShpere = FCollisionShape::MakeSphere(Radius);
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult, TraceStart, TraceEnd, FQuat::Identity, ECC_Visibility, CollShpere);
+
+	if (bHit)
+	{
+		UE_LOG(LogArnTurretBase, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+	}
+
+	// Check if the line trace hit something and that thing is the PlayerCharacter
+	if (bHit && HitResult.GetActor() == PlayerCharacter)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void ATurretBase::DrawLines()
+{
+	// Fire Sweep Channel
+	FVector TraceStart = TurretMesh->GetComponentLocation();
+	FVector TraceEnd = TurretMesh->GetComponentLocation() + (TurretMesh->GetForwardVector() * Range);
+
+	// Calculate the radius from the FireAccuracy
+	float Radius = 100.1f - FireAccuracy;
+	DrawSphereSweep(GetWorld(), TraceStart, TraceEnd, Radius, true, true, true, -1);
+
+	// Range
+	DrawDebugSphere(GetWorld(), TraceStart, Range, 32, FColor::Red, false, -1);
+}
+
+void ATurretBase::DrawSphereSweep(const UWorld* InWorld, const FVector& Start, const FVector& End, const float Radius, const bool DrawOnX, const bool DrawOnZ, const bool DrawSpheres, float Lifetime)
+{
+	FColor Color = FColor::White;
+	// Spheres at start and end
+	if (DrawSpheres)
+	{
+		DrawDebugSphere(InWorld, Start, Radius, FMath::Max(Radius / 4.f, 2.f), Color, false, Lifetime);
+		DrawDebugSphere(InWorld, End, Radius, FMath::Max(Radius / 4.f, 2.f), Color, false, Lifetime);
+	}
+
+	Color = FColor::Red;
+	// Up and down lines
+	if (DrawOnZ)
+	{
+		DrawDebugLine(InWorld, Start + FVector(0, 0, Radius), End + FVector(0, 0, Radius), Color, false, Lifetime);
+		DrawDebugLine(InWorld, Start - FVector(0, 0, Radius), End - FVector(0, 0, Radius), Color, false, Lifetime);
+	}
+
+	// Left and Right lines
+	if (DrawOnX)
+	{
+		DrawDebugLine(InWorld, Start + FVector(Radius, 0, 0), End + FVector(Radius, 0, 0), Color, false, Lifetime);
+		DrawDebugLine(InWorld, Start - FVector(Radius, 0, 0), End - FVector(Radius, 0, 0), Color, false, Lifetime);
+	}
 }
 

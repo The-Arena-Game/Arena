@@ -25,23 +25,20 @@ protected:
 
 private:
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Arena Combat")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Class Combat")
 	UStaticMeshComponent* ProjectileMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Class Combat", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	USoundBase* HitSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystem* HitParticle;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Arena Effects")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Class Effects")
 	UParticleSystemComponent* TrailParticle;
-
-	UPROPERTY(VisibleDefaultsOnly, Category = "Arena Effects")
-	TSubclassOf<UCameraShakeBase> HitCameraShakeClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.f;

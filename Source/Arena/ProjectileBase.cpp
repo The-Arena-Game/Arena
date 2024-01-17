@@ -40,7 +40,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	if (MyOwner == nullptr) { Destroy(); return; } // defensive
 
 	AController* MyOwnerInst = MyOwner->GetInstigatorController();
-	auto DamageTypeClass = UDamageType::StaticClass();
+	UClass* DamageTypeClass = UDamageType::StaticClass();	// We don't specify any class yet
 
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
 	{
