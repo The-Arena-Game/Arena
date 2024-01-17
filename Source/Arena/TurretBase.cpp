@@ -138,11 +138,6 @@ bool ATurretBase::IsFacingToTarget()
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		HitResult, TraceStart, TraceEnd, FQuat::Identity, ECC_Visibility, CollShpere);
 
-	if (bHit)
-	{
-		UE_LOG(LogArnTurretBase, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
-	}
-
 	// Check if the line trace hit something and that thing is the PlayerCharacter
 	if (bHit && HitResult.GetActor() == PlayerCharacter)
 	{

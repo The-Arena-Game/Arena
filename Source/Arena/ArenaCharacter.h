@@ -12,6 +12,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UCameraShakeBase;
+class UHealthComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnCharacter, Log, All);
@@ -29,6 +30,13 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/** Returns Health from the Health Component **/
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
+
+	/* Triggers a check to Health Component. If the Health is 0 or lower, triggers destruction */
+	void CheckHealth();
 
 	UFUNCTION(BlueprintCallable)
 	void TestShake();
@@ -91,4 +99,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Class Effect")
 	TSubclassOf<UCameraShakeBase> TestCameraShakeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* HealthComp;
+
+	void HandleDestruction();
 };

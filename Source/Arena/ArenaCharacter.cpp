@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ArenaCharacter.h"
+#include "HealthComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -56,6 +57,8 @@ AArenaCharacter::AArenaCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
 void AArenaCharacter::BeginPlay()
@@ -148,6 +151,26 @@ void AArenaCharacter::Look(const FInputActionValue& Value)
 }
 
 */
+
+float AArenaCharacter::GetHealth() const
+{
+	return HealthComp->GetHealth();
+}
+
+void AArenaCharacter::CheckHealth()
+{
+	if (HealthComp->GetHealth() <= 0)
+	{
+		HandleDestruction();
+	}
+}
+
+void AArenaCharacter::HandleDestruction()
+{
+	// TODO: SFX, VFX, etc.
+
+	Destroy();
+}
 
 void AArenaCharacter::TestShake()
 {
