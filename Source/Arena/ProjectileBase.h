@@ -37,7 +37,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystem* HitParticle;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Class Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystemComponent* TrailParticle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))

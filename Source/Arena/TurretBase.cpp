@@ -28,6 +28,12 @@ ATurretBase::ATurretBase()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
+
+	// Set Turret Mesh's collision to custom and set the "Visibility" to "Overlap" to avoid turret to see itself when targeting!
+	TurretMesh->SetCollisionProfileName("Custom");
+	TurretMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TurretMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	TurretMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 }
 
 // Called when the game starts or when spawned

@@ -19,7 +19,7 @@ public:
 	FORCEINLINE float GetHealth() const { return Health; }
 
 protected:
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 private:
 
