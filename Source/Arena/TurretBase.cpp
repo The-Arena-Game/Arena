@@ -165,8 +165,8 @@ bool ATurretBase::IsFacingToTarget()
 void ATurretBase::DrawLines()
 {
 	// Fire Sweep Channel
-	FVector TraceStart = TurretMesh->GetComponentLocation();
-	FVector TraceEnd = TurretMesh->GetComponentLocation() + (TurretMesh->GetForwardVector() * Range);
+	FVector TraceStart = ProjectileSpawnPoint->GetComponentLocation();
+	FVector TraceEnd = ProjectileSpawnPoint->GetComponentLocation() + (ProjectileSpawnPoint->GetForwardVector() * Range);
 
 	// Calculate the radius from the FireAccuracy
 	float Radius = 100.1f - FireAccuracy;
