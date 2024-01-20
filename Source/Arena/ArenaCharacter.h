@@ -31,15 +31,15 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	/** Returns Player's living status**/
+	FORCEINLINE bool IsAlive() const { return bIsAlive; }
+
 	/** Returns Health from the Health Component **/
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 
-	/* Triggers a check to Health Component. If the Health is 0 or lower, triggers destruction */
-	void CheckHealth();
-
-	UFUNCTION(BlueprintCallable)
-	void TestShake();
+	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
+	void HandleDestruction();
 
 protected:
 
@@ -97,11 +97,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
 
-	UPROPERTY(EditAnywhere, Category = "Class Effect")
-	TSubclassOf<UCameraShakeBase> TestCameraShakeClass;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
 
-	void HandleDestruction();
+	bool bIsAlive = true;
 };

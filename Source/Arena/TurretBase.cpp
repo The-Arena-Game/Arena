@@ -29,7 +29,11 @@ ATurretBase::ATurretBase()
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 
-	// Set Turret Mesh's collision to custom and set the "Visibility" to "Overlap" to avoid turret to see itself when targeting!
+	// Set Turret and Base Meshes' collisions to custom and set the "Visibility" to "Overlap" to avoid tracing to see itself when targeting!
+	BaseMesh->SetCollisionProfileName("Custom");
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BaseMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	BaseMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 	TurretMesh->SetCollisionProfileName("Custom");
 	TurretMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TurretMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -58,7 +62,10 @@ void ATurretBase::Tick(float DeltaTime)
 	FireTimer += DeltaTime;
 	if (InFireRange())
 	{
-		RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
+		if (bCanFollow)
+		{
+			RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
+		}
 
 		if (FireTimer >= (1 / FireRate) && IsFacingToTarget()) {
 			FireTimer = 0;

@@ -15,6 +15,30 @@ class AArenaGameMode : public AGameModeBase
 
 public:
 	AArenaGameMode();
+
+	/** Called from the ArenaCharacter when the character dies. Starts Game Over state. **/
+	void HandlePlayerDeath();
+
+protected:
+
+	void BeginPlay() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartGame();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void FinishGame(bool bWin);
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena Sounds", meta = (AllowPrivateAccess = "true"))
+	USoundBase* BackgroundMusic;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena Sounds", meta = (AllowPrivateAccess = "true"))
+	USoundBase* WinSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena Sounds", meta = (AllowPrivateAccess = "true"))
+	USoundBase* FailSound;
 };
 
 

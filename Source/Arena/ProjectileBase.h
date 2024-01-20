@@ -31,7 +31,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Class Combat", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Sounds")
 	USoundBase* HitSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
@@ -39,6 +39,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystemComponent* TrailParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float Speed = 1500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float GravityScale = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.f;

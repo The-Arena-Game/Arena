@@ -29,4 +29,13 @@ private:
 
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* DamageTakenSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* DeathSound;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat")
+	TSubclassOf<UCameraShakeBase> DamageTakenCameraShakeClass;
 };

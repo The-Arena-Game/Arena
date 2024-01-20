@@ -62,11 +62,14 @@ private:
 		ToolTip = "Fire accurarcy. Set 100 to have the highest."))
 	float FireAccuracy = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowBlueprintAccess = "true", UIMin = "1.0", UIMax = "10.0"))
-	float TurnSpeed = 3.f;
-
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowBlueprintAccess = "true", ToolTip = "Per second", UIMin = "0.1", UIMax = "100.0"))
 	float FireRate = 1.f;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowBlueprintAccess = "true", UIMin = "300.0", UIMax = "2000.0"))
+	bool bCanFollow = false;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowBlueprintAccess = "true", UIMin = "1.0", UIMax = "10.0"))
+	float TurnSpeed = 3.f;
 
 	float FireTimer = 0.f;
 

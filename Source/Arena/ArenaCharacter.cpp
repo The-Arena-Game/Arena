@@ -2,6 +2,7 @@
 
 #include "ArenaCharacter.h"
 #include "HealthComponent.h"
+#include "ArenaGameMode.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -157,23 +158,21 @@ float AArenaCharacter::GetHealth() const
 	return HealthComp->GetHealth();
 }
 
-void AArenaCharacter::CheckHealth()
-{
-	if (HealthComp->GetHealth() <= 0)
-	{
-		HandleDestruction();
-	}
-}
-
 void AArenaCharacter::HandleDestruction()
 {
 	// TODO: SFX, VFX, etc.
+	if (HealthComp->GetHealth() > 0)
+	{
+		return;
+	}
+
+	bIsAlive = false;
+
+	AArenaGameMode* GameMode = GetWorld()->GetAuthGameMode<AArenaGameMode>();
+	if (IsValid(GameMode))
+	{
+		GameMode->HandlePlayerDeath();
+	}
 
 	Destroy();
-}
-
-void AArenaCharacter::TestShake()
-{
-	UE_LOG(LogArnCharacter, Log, TEXT("TestShake called"));
-	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(TestCameraShakeClass);
 }

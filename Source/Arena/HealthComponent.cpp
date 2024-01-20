@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "HealthComponent.h"
 #include "ArenaCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -23,11 +24,27 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 
 	Health -= Damage;
 
+	if (DamageTakenCameraShakeClass != nullptr)
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(DamageTakenCameraShakeClass);
+	}
+
+
+	if (DamageTakenSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DamageTakenSound, GetOwner()->GetActorLocation());
+	}
+
 	if (Health <= 0)
 	{
+		if (DeathSound != nullptr)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetOwner()->GetActorLocation());
+		}
+
 		if (AArenaCharacter* Player = GetOwner<AArenaCharacter>())
 		{
-			Player->CheckHealth();
+			Player->HandleDestruction();
 		}
 	}
 }
