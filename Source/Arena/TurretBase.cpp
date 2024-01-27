@@ -58,21 +58,45 @@ void ATurretBase::Tick(float DeltaTime)
 		DrawLines();
 	}
 
+	if (TurretType == ETurretType::StableRandom)
+	{
+		HandleStableRandomType(DeltaTime);
+	}
+	else if (TurretType == ETurretType::Follower)
+	{
+		HandleFollowerType(DeltaTime);
+	}
+}
 
+void ATurretBase::HandleFollowerType(float DeltaTime)
+{
 	FireTimer += DeltaTime;
 	if (InFireRange())
 	{
-		if (bCanFollow)
-		{
-			RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
-		}
+		RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
 
 		if (FireTimer >= (1 / FireRate) && IsFacingToTarget()) {
 			FireTimer = 0;
 			Fire();
 		}
 	}
+}
 
+void ATurretBase::HandleStableRandomType(float DeltaTime)
+{
+	// If the interval not set yet, set it.
+	if (CurrentFireInterval == 0)
+	{
+		CurrentFireInterval = FMath::RandRange(MinimumFireDelay, MaximumFireDelay);
+	}
+
+	FireTimer += DeltaTime;
+
+	if (FireTimer >= CurrentFireInterval) {
+		FireTimer = 0;
+		CurrentFireInterval = FMath::RandRange(MinimumFireDelay, MaximumFireDelay);
+		Fire();
+	}
 }
 
 void ATurretBase::RotateTurret(FVector TargetLocation, float& DeltaTime)
