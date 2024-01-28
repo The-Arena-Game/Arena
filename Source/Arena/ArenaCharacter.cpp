@@ -3,6 +3,7 @@
 #include "ArenaCharacter.h"
 #include "HealthComponent.h"
 #include "ArenaGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -61,6 +62,11 @@ AArenaCharacter::AArenaCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
 
+	// Create Deflect Static Mesh
+	DeflectMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Deflect Mesh"));
+	DeflectMesh->SetupAttachment(RootComponent);
+	DeflectMesh->SetHiddenInGame(true);
+
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
@@ -80,6 +86,8 @@ void AArenaCharacter::BeginPlay()
 
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
+
+	// Disable Deflect mesh at start
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
@@ -107,6 +115,9 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		// Sprint
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AArenaCharacter::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AArenaCharacter::StopSprint);
+
+		// Deflect
+		EnhancedInputComponent->BindAction(DeflectAction, ETriggerEvent::Started, this, &AArenaCharacter::EnableDeflect);
 
 		// Looking
 		// Disabled for Top-Down EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaCharacter::Look);
@@ -145,6 +156,28 @@ void AArenaCharacter::Sprint()
 void AArenaCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AArenaCharacter::EnableDeflect()
+{
+	// Make the healt component invulnerable
+	HealthComp->SetValnerable(false);
+
+	// Enable the mesh
+	DeflectMesh->SetHiddenInGame(false);
+
+	// Start the timer to disable it
+	FTimerHandle TimerHandle; // Create a local dummy handle. We won’t use it.
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::DisableDeflect, DeflectTime, false);
+}
+
+void AArenaCharacter::DisableDeflect()
+{
+	// Make the healt component open to fire again
+	HealthComp->SetValnerable(true);
+
+	// Disablethe mesh
+	DeflectMesh->SetHiddenInGame(true);
 }
 
 // Disabled for Top-Down 

@@ -19,10 +19,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool IsDead() const { return bIsHeartSystemActive ? (HeartCount <= 0 ? true : false) : (Health <= 0 ? true : false); }
 
+	/* Set the Vulnerability Status */
+	FORCEINLINE void SetValnerable(bool IsVulnerable) { bIsVulnerable = IsVulnerable; }
+
 protected:
 	void BeginPlay() override;
 
 private:
+
+	bool bIsVulnerable = true;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "100.0"))
 	float MaxHealth = 100.f;

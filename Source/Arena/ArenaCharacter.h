@@ -48,6 +48,10 @@ protected:
 	void Sprint();
 	void StopSprint();
 
+	/** Called for deflect input */
+	void EnableDeflect();
+	void DisableDeflect();
+
 	/** Called for looking input */
 	// Disabled for Top-Down --> void Look(const FInputActionValue& Value);
 
@@ -67,6 +71,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Class Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+	/** Deflect Mesh */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Class Camera", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* DeflectMesh;
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -83,17 +91,26 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* SprintAction;
 
-	/** Look Input Action */
+	/** Deflect Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
+	UInputAction* DeflectAction;
 
-	/** Sprint Speed */
+	/** Look Input Action */
+	// Disabled for Top-Down 
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
+	//UInputAction* LookAction;
+
+	/** Walk Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float WalkSpeed = 200.f;
 
 	/** Sprint Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
+
+	/** Sprint Speed */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "10.0"))
+	float DeflectTime = 3.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
