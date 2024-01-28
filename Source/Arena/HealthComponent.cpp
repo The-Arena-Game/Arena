@@ -4,9 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
-UHealthComponent::UHealthComponent()
-{
-}
+UHealthComponent::UHealthComponent() { }
 
 
 // Called when the game starts
@@ -15,14 +13,13 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Health = MaxHealth;
+	HeartCount = MaxHeartCount;
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
 }
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
 {
 	if (Damage <= 0.f) return;
-
-	Health -= Damage;
 
 	if (DamageTakenCameraShakeClass != nullptr)
 	{
@@ -35,7 +32,11 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		UGameplayStatics::PlaySoundAtLocation(this, DamageTakenSound, GetOwner()->GetActorLocation());
 	}
 
-	if (Health <= 0)
+	Health -= Damage;
+	HeartCount--;
+
+	// If the Heart system is false AND health is 0 - OR - heart system is true and heart count is 0
+	if ((!bIsHeartSystemActive && Health <= 0) || (bIsHeartSystemActive && HeartCount <= 0))
 	{
 		if (DeathSound != nullptr)
 		{

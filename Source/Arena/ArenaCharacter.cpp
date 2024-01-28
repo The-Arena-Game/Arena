@@ -21,6 +21,8 @@ DEFINE_LOG_CATEGORY(LogArnCharacter);
 
 AArenaCharacter::AArenaCharacter()
 {
+	PrimaryActorTick.bCanEverTick = false;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -39,8 +41,8 @@ AArenaCharacter::AArenaCharacter()
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 10000000000000.f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 10000000000000.f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -75,6 +77,16 @@ void AArenaCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// Disable acceleration by setting it too high
+	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
+}
+
+void AArenaCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// --> DISABLED FROM CONSTRUCTOR <-- //
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -153,20 +165,13 @@ void AArenaCharacter::Look(const FInputActionValue& Value)
 
 */
 
-float AArenaCharacter::GetHealth() const
-{
-	return HealthComp->GetHealth();
-}
-
 void AArenaCharacter::HandleDestruction()
 {
 	// TODO: SFX, VFX, etc.
-	if (HealthComp->GetHealth() > 0)
+	if (!HealthComp->IsDead())
 	{
 		return;
 	}
-
-	bIsAlive = false;
 
 	AArenaGameMode* GameMode = GetWorld()->GetAuthGameMode<AArenaGameMode>();
 	if (IsValid(GameMode))

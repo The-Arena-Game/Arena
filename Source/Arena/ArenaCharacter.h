@@ -25,18 +25,16 @@ class AArenaCharacter : public ACharacter
 public:
 	AArenaCharacter();
 
+	void Tick(float DeltaTime) override;
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	/** Returns Player's living status**/
-	FORCEINLINE bool IsAlive() const { return bIsAlive; }
-
-	/** Returns Health from the Health Component **/
-	UFUNCTION(BlueprintCallable)
-	float GetHealth() const;
+	/** Returns Health Component **/
+	FORCEINLINE class UHealthComponent* GetHealthComponent() const { return HealthComp; }
 
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
@@ -99,6 +97,4 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
-
-	bool bIsAlive = true;
 };

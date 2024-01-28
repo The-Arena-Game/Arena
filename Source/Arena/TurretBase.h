@@ -27,7 +27,7 @@ class ATurretBase : public AActor
 public:
 	ATurretBase();
 
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
 protected:
 	void BeginPlay() override;

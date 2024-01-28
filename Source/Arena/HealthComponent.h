@@ -16,7 +16,8 @@ class UHealthComponent : public UActorComponent
 public:
 	UHealthComponent();
 
-	FORCEINLINE float GetHealth() const { return Health; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsDead() const { return bIsHeartSystemActive ? (HeartCount <= 0 ? true : false) : (Health <= 0 ? true : false); }
 
 protected:
 	void BeginPlay() override;
@@ -25,7 +26,19 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "100.0"))
 	float MaxHealth = 100.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	float Health;
+
+	// Heart System
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
+	bool bIsHeartSystemActive = true;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "10.0"))
+	int MaxHeartCount = 3;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
+	int HeartCount;
 
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);

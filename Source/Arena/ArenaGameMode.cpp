@@ -2,6 +2,7 @@
 
 #include "ArenaGameMode.h"
 #include "ArenaCharacter.h"
+#include "HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -26,10 +27,8 @@ void AArenaGameMode::HandlePlayerDeath()
 	}
 
 	// If player is still alive, don't execute game over state
-	if (Player->IsAlive())
+	if (Player->GetHealthComponent()->IsDead())
 	{
-		return;
+		FinishGame(false);
 	}
-
-	FinishGame(false);
 }
