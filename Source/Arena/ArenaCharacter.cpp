@@ -65,7 +65,7 @@ AArenaCharacter::AArenaCharacter()
 	// Create Deflect Static Mesh
 	DeflectMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Deflect Mesh"));
 	DeflectMesh->SetupAttachment(RootComponent);
-	DeflectMesh->SetHiddenInGame(true);
+	DeflectMesh->SetHiddenInGame(true);	// Disable Deflect mesh at start
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
@@ -86,8 +86,6 @@ void AArenaCharacter::BeginPlay()
 
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
-
-	// Disable Deflect mesh at start
 }
 
 void AArenaCharacter::Tick(float DeltaTime)

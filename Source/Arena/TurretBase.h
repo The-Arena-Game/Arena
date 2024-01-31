@@ -11,6 +11,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretBase, Log, All);
 class UCapsuleComponent;
 class AProjectileBase;
 class AArenaCharacter;
+class AArenaGameMode;
 
 UENUM(BlueprintType)
 enum class ETurretType : uint8 {
@@ -37,6 +38,7 @@ protected:
 private:
 
 	AArenaCharacter* PlayerCharacter;
+	AArenaGameMode* GameMode;
 
 	/*----------------------------------------------------------------------------
 		Components

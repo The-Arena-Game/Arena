@@ -3,6 +3,7 @@
 
 #include "TurretBase.h"
 #include "ArenaCharacter.h"
+#include "ArenaGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
@@ -46,6 +47,7 @@ void ATurretBase::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 // Called every frame
@@ -56,6 +58,12 @@ void ATurretBase::Tick(float DeltaTime)
 	if (bDrawLines)
 	{
 		DrawLines();
+	}
+
+	// Don't execute any action further if the game state is not Play state
+	if (GameMode->GetGameState() != EGameStates::Play)
+	{
+		return;
 	}
 
 	if (TurretType == ETurretType::StableRandom)
