@@ -22,6 +22,9 @@ public:
 	/* Set the Vulnerability Status */
 	FORCEINLINE void SetValnerable(bool IsVulnerable) { bIsVulnerable = IsVulnerable; }
 
+	/* Set the Vulnerability Status */
+	FORCEINLINE void ResetHeatlh() {HeartCount = MaxHeartCount; Health = MaxHealth; }
+
 protected:
 	void BeginPlay() override;
 

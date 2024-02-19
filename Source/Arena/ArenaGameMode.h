@@ -7,8 +7,11 @@
 #include "ArenaGameMode.generated.h"
 
 class AGlobeBase;
+class AArenaCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
 
 UENUM(BlueprintType)
 enum class EGameStates : uint8 {
@@ -30,6 +33,9 @@ class AArenaGameMode : public AGameModeBase
 public:
 	AArenaGameMode();
 
+	/** Called within the RestartArenaGame function to inform other about the restart */
+	UPROPERTY(BlueprintAssignable) FRestartDelegate OnRestart;
+
 	/** Called from the ArenaCharacter when the character dies. Starts Game Over state. **/
 	void HandlePlayerDeath();
 
@@ -45,6 +51,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; }
 
+	UFUNCTION(BlueprintCallable, Category = "Arena State")
+	void RestartArenaGame();
+
 protected:
 
 	void BeginPlay() override;
@@ -53,7 +62,7 @@ protected:
 	void StartGame();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
-	void FinishGame(bool bWin);
+	void FinishGame();
 
 private:
 
@@ -79,6 +88,10 @@ private:
 	TSubclassOf<AGlobeBase> BlueGlobeClass;
 
 	TArray<AActor*> YellowGlobes;
+	int GlobeCounter;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena State", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AArenaCharacter> ArenaCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena State", meta = (AllowPrivateAccess = "true"))
 	float BlueGlobeMinSpawnDistance = 200.f;
@@ -87,7 +100,7 @@ private:
 	float BlueGlobeMaxSpawnDistance = 1000.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arena State", meta = (AllowPrivateAccess = "true"))
-	float GlobeSphereRadius = 60.f;
+	float GlobeSphereRadius = 51.f;
 
 	/*----------------------------------------------------------------------------
 		Internal functions

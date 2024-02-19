@@ -25,6 +25,9 @@ protected:
 
 private:
 
+	UFUNCTION(BlueprintCallable, Category = "Arena Function")
+	void Explode();
+
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Combat")
 	UStaticMeshComponent* ProjectileMesh;
 
@@ -39,6 +42,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Class Effects")
 	UParticleSystemComponent* TrailParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float LifeSpan = 5.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float Speed = 1500.f;

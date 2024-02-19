@@ -18,10 +18,72 @@ void AArenaGameMode::BeginPlay()
 
 	// Get all the Yellow Globes that is currently in the level
 	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), YellowGlobes);
-	ArenaGameState = EGameStates::Play;
+	GlobeCounter = YellowGlobes.Num();
+	ArenaGameState = EGameStates::Ready;
 
-	// Execute StartGame BP Event
-	StartGame();
+	RestartArenaGame();	// Execute a freash start
+}
+
+void AArenaGameMode::RestartArenaGame()
+{
+	FinishGame(); // Execute end game actions
+
+	// Get the player start location
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	FVector StartLocation = FindPlayerStart(PlayerController)->GetActorLocation();
+
+	// if player doesn't exist, this means it is dead after a game, spawn it agan.
+	AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	if (!IsValid(Player))
+	{
+		Player = GetWorld()->SpawnActor<AArenaCharacter>(ArenaCharacterClass, StartLocation, FRotator::ZeroRotator);
+
+		if (IsValid(Player))
+		{
+			// Possess the new player character
+			if (PlayerController)
+			{
+				PlayerController->Possess(Player);
+			}
+		}
+
+	}
+	// Else, relocate the player
+	else
+	{
+		Player->SetActorLocation(StartLocation);
+		Player->GetHealthComponent()->ResetHeatlh();
+	}
+	
+	Player->GetHealthComponent()->ResetHeatlh();
+
+	// Find all globes. Disable yellow ones, destroy the blue one
+	TArray<AActor*> GlobeActors;
+	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), GlobeActors);
+	for (AActor* Actor : GlobeActors)
+	{
+		AGlobeBase* Globe = Cast<AGlobeBase>(Actor);
+
+		if (Globe->IsBlue())
+		{
+			Globe->Destroy();
+		}
+		else
+		{
+			Globe->SetActorHiddenInGame(true);
+			Globe->SetActorEnableCollision(false);
+		}
+	}
+
+	// Spawn a new blue globe
+	FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
+	FRotator SpawnRotation = Player->GetActorRotation();
+
+	AGlobeBase* Globe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
+	Globe->SnapToGround();
+
+	ArenaGameState = EGameStates::Ready;
+	OnRestart.Broadcast();
 }
 
 void AArenaGameMode::HandlePlayerDeath()
@@ -39,29 +101,32 @@ void AArenaGameMode::HandlePlayerDeath()
 		ArenaGameState = EGameStates::Lost;
 
 		// Execute FinishGame BP Event
-		FinishGame(false);
+		FinishGame();
 	}
 }
 
 void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 {
-	// If the globe that calls this function is one of our globes, then destroy it
-	if (YellowGlobes.Contains<AGlobeBase*>(Globe))
+	if (!IsValid(Globe))
 	{
-		YellowGlobes.Remove(Globe);
-		Globe->Destroy();
+		return;
 	}
 
-	// If all the globes are collected by the player, then it is a win state
-	if (YellowGlobes.Num() == 0)
-	{
-		ArenaGameState = EGameStates::Win;
+	// Disable it
+	Globe->SetActorHiddenInGame(true);
+	Globe->SetActorEnableCollision(false);
 
-		AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	// Decrease the counter by 1 and check if it is zero
+	if (--GlobeCounter <= 0)
+	{
+		// If so, all of the yellow globes are collected, win state
+		ArenaGameState = EGameStates::Win;
+		FinishGame();
 
 		// Spawn blue globe		
-		if (IsValid(Player) && BlueGlobeClass != nullptr)
+		if (BlueGlobeClass != nullptr)
 		{
+			AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 			FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
 			FRotator SpawnRotation = Player->GetActorRotation();
 
@@ -71,6 +136,29 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 	}
 }
 
+void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
+{
+	if (!IsValid(Globe))
+	{
+		return;
+	}
+
+	Globe->Destroy();
+
+	// Enable all the Yellow Globes
+	for (AActor* YellowGlobe : YellowGlobes)
+	{
+		YellowGlobe->SetActorHiddenInGame(false);
+		YellowGlobe->SetActorEnableCollision(true);
+	}
+
+	GlobeCounter = YellowGlobes.Num();	// Reset the counter
+
+	ArenaGameState = EGameStates::Play;
+	StartGame();
+}
+
+// Private Functions
 FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 {
 	FVector SpawnLocation;
@@ -104,10 +192,4 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 	} while (bHit);
 
 	return SpawnLocation;
-}
-
-void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
-{
-	Globe->Destroy();
-	ArenaGameState = EGameStates::Ready;
 }

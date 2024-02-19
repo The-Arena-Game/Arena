@@ -30,6 +30,7 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
+	SetLifeSpan(LifeSpan);
 
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
 }
@@ -64,6 +65,27 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 	}
+
+	Destroy();
+}
+
+void AProjectileBase::Explode()
+{
+	if (HitParticle == nullptr)
+	{
+		UE_LOG(LogArnProjectile, Error, TEXT("The HitParticle is not set on the ProjectileBase!"));
+		Destroy();
+		return;
+	}
+	UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, GetActorLocation(), GetActorRotation());
+
+	if (HitSound == nullptr)
+	{
+		UE_LOG(LogArnProjectile, Error, TEXT("The HitSound is not set on the ProjectileBase!"));
+		Destroy();
+		return;
+	}
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	Destroy();
 }

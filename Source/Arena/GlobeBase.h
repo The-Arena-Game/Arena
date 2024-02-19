@@ -23,6 +23,8 @@ public:
 	/** Snaps the globe to the ground */
 	void SnapToGround();
 
+	FORCEINLINE bool IsBlue() { return bIsBlue; }
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
