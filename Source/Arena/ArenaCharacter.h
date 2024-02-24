@@ -36,6 +36,10 @@ public:
 	/** Returns Health Component **/
 	FORCEINLINE class UHealthComponent* GetHealthComponent() const { return HealthComp; }
 
+	/** Returns Deflect Timer **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetDeflectTimer() const { return DeflectTimer; }
+
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
@@ -108,9 +112,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
 
-	/** Sprint Speed */
+	/** Deflect Duration */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "10.0"))
-	float DeflectTime = 3.f;
+	float DeflectDuration = 2.f;
+
+	/** Deflect Duration */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "30.0"))
+	float DeflectCooldownDuration = 10.f;
+
+	float DeflectTimer = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;

@@ -22,7 +22,7 @@ DEFINE_LOG_CATEGORY(LogArnCharacter);
 
 AArenaCharacter::AArenaCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -86,13 +86,24 @@ void AArenaCharacter::BeginPlay()
 
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
+
+	DeflectTimer = 0.f;
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// --> DISABLED FROM CONSTRUCTOR <-- //
+	// Increase the timer when needed
+	if (DeflectTimer < DeflectCooldownDuration)
+	{
+		DeflectTimer += DeltaTime;
+	}
+	else
+	{
+		// Make sure it is equal to the max duration if not increased
+		DeflectTimer = DeflectCooldownDuration;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -158,6 +169,14 @@ void AArenaCharacter::StopSprint()
 
 void AArenaCharacter::EnableDeflect()
 {
+	// If the deflect timer is not full, don't enable deflect
+	if (DeflectTimer < DeflectCooldownDuration)
+	{
+		return;
+	}
+
+	DeflectTimer = 0;	// Reset timer
+
 	// Make the healt component invulnerable
 	HealthComp->SetValnerable(false);
 
@@ -166,7 +185,7 @@ void AArenaCharacter::EnableDeflect()
 
 	// Start the timer to disable it
 	FTimerHandle TimerHandle; // Create a local dummy handle. We won’t use it.
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::DisableDeflect, DeflectTime, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::DisableDeflect, DeflectDuration, false);
 }
 
 void AArenaCharacter::DisableDeflect()
