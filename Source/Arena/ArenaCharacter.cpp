@@ -144,12 +144,15 @@ void AArenaCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		const FTransform CameraTransform = FollowCamera->GetComponentTransform();
-		// Get forward vector relative to the camera
-		const FVector ForwardDirection = CameraTransform.GetUnitAxis(EAxis::X);
+	    // Top-Down -> Changed the PlayerController with CameraBoom
+		const FRotator Rotation = CameraBoom->GetRelativeRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// Get right vector relative to the camera
-		const FVector RightDirection = CameraTransform.GetUnitAxis(EAxis::Y);
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);

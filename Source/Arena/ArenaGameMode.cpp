@@ -177,7 +177,7 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 
 		FHitResult HitResult;
 		ECollisionChannel CollisionChannel = ECC_Visibility;
-		FCollisionQueryParams CollisionParams;
+		FCollisionQueryParams CollisionParams;		
 
 		// Perform the collision check
 		bHit = GetWorld()->SweepSingleByChannel(
@@ -189,6 +189,16 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 			FCollisionShape::MakeSphere(GlobeSphereRadius),
 			CollisionParams
 		);
+
+		// DEBUG
+		//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, true);
+		//UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
+		//
+		//if (bHit)
+		//{
+		//	UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		//}
+
 	} while (bHit);
 
 	return SpawnLocation;
