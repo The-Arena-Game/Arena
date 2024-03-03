@@ -39,6 +39,7 @@ private:
 
 	AArenaCharacter* PlayerCharacter;
 	AArenaGameMode* GameMode;
+	TArray<USceneComponent*> ProjectileSpawnPoints;
 
 	/*----------------------------------------------------------------------------
 		Components

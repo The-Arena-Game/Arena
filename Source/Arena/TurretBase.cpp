@@ -48,6 +48,9 @@ void ATurretBase::BeginPlay()
 
 	PlayerCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
+
+	ProjectileSpawnPoints = ProjectileSpawnPoint->GetAttachChildren();
+	//ProjectileSpawnPoint->GetChildrenComponents(true, ProjectileSpawnPoints);
 }
 
 // Called every frame
@@ -133,15 +136,25 @@ void ATurretBase::Fire()
 		return;
 	}
 
-	FVector ProjectileLocation = ProjectileSpawnPoint->GetComponentLocation();
-	FRotator ProjectileRotation = ProjectileSpawnPoint->GetComponentRotation();
+	if (ProjectileSpawnPoints.Num() == 0)
+	{
+		UE_LOG(LogArnTurretBase, Error, TEXT("There is no projectile spawn point attached on %s!"), *GetActorNameOrLabel());
+		return;
+	}
 
-	// Spawn projectile and hold its instance in Projectile Variable
-	AProjectileBase* Projectile = GetWorld()->SpawnActor<AProjectileBase>(
-		ProjectileClass, ProjectileLocation, ProjectileRotation
-	);
+	// Spawn bullet from all spawn points
+	for (USceneComponent* SpawnPoint : ProjectileSpawnPoints)
+	{
+		FVector ProjectileLocation = SpawnPoint->GetComponentLocation();
+		FRotator ProjectileRotation = SpawnPoint->GetComponentRotation();
 
-	Projectile->SetOwner(this); // Attaching the projectile to the owner, so we can access it in case of a hit
+		// Spawn projectile and hold its instance in Projectile Variable
+		AProjectileBase* Projectile = GetWorld()->SpawnActor<AProjectileBase>(
+			ProjectileClass, ProjectileLocation, ProjectileRotation
+		);
+
+		Projectile->SetOwner(this); // Attaching the projectile to the owner, so we can access it in case of a hit
+	}	
 }
 
 bool ATurretBase::InFireRange()
@@ -196,16 +209,25 @@ bool ATurretBase::IsFacingToTarget()
 
 void ATurretBase::DrawLines()
 {
-	// Fire Sweep Channel
-	FVector TraceStart = ProjectileSpawnPoint->GetComponentLocation();
-	FVector TraceEnd = ProjectileSpawnPoint->GetComponentLocation() + (ProjectileSpawnPoint->GetForwardVector() * Range);
+	if (ProjectileSpawnPoints.Num() == 0)
+	{
+		UE_LOG(LogArnTurretBase, Error, TEXT("There is no projectile spawn point attached on %s!"), *GetActorNameOrLabel());
+		return;
+	}
 
-	// Calculate the radius from the FireAccuracy
-	float Radius = 100.1f - FireAccuracy;
-	DrawSphereSweep(GetWorld(), TraceStart, TraceEnd, Radius, true, true, true, -1);
+	for (USceneComponent* SpawnPoint : ProjectileSpawnPoints)
+	{
+		// Fire Sweep Channel
+		FVector TraceStart = SpawnPoint->GetComponentLocation();
+		FVector TraceEnd = SpawnPoint->GetComponentLocation() + (SpawnPoint->GetForwardVector() * Range);
 
-	// Range
-	DrawDebugSphere(GetWorld(), TraceStart, Range, 32, FColor::Red, false, -1);
+		// Calculate the radius from the FireAccuracy
+		float Radius = 100.1f - FireAccuracy;
+		DrawSphereSweep(GetWorld(), TraceStart, TraceEnd, Radius, true, true, true, -1);
+
+		// Range
+		DrawDebugSphere(GetWorld(), TraceStart, Range, 32, FColor::Red, false, -1);
+	}	
 }
 
 void ATurretBase::DrawSphereSweep(const UWorld* InWorld, const FVector& Start, const FVector& End, const float Radius, const bool DrawOnX, const bool DrawOnZ, const bool DrawSpheres, float Lifetime)
