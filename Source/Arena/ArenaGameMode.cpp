@@ -54,8 +54,6 @@ void AArenaGameMode::RestartArenaGame()
 		Player->SetActorLocation(StartLocation);
 		Player->GetHealthComponent()->ResetHeatlh();
 	}
-	
-	Player->GetHealthComponent()->ResetHeatlh();
 
 	// Find all globes. Disable yellow ones, destroy the blue one
 	TArray<AActor*> GlobeActors;
