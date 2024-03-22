@@ -27,10 +27,15 @@ void AArenaGameMode::BeginPlay()
 void AArenaGameMode::RestartArenaGame()
 {
 	FinishGame(); // Execute end game actions
+	CloseCardSelectionUI(); // Close it in case of in a card selection state
 
 	// Get the player start location
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	FVector StartLocation = FindPlayerStart(PlayerController)->GetActorLocation();
+
+	// Reset mouse stuff
+	PlayerController->bEnableMouseOverEvents = false;
+	PlayerController->bShowMouseCursor = false;
 
 	// if player doesn't exist, this means it is dead after a game, spawn it agan.
 	AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
@@ -120,18 +125,27 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 		// If so, all of the yellow globes are collected, win state
 		ArenaGameState = EGameStates::Win;
 		FinishGame();
-
-		// Spawn blue globe		
-		if (BlueGlobeClass != nullptr)
-		{
-			AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
-			FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
-			FRotator SpawnRotation = Player->GetActorRotation();
-
-			AGlobeBase* Globe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
-			Globe->SnapToGround();
-		}
+		OpenCardSelectionUI();	
+		PlayerController->bShowMouseCursor = true;
 	}
+}
+
+void AArenaGameMode::SetReadyState()
+{
+	ArenaGameState = EGameStates::Ready;
+
+	// Spawn blue globe		
+	if (BlueGlobeClass != nullptr)
+	{
+		AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+		FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
+		FRotator SpawnRotation = Player->GetActorRotation();
+
+		AGlobeBase* Globe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
+		Globe->SnapToGround();
+	}
+
+	OnGameStateChange.Broadcast(EGameStates::Ready);
 }
 
 void AArenaGameMode::BlueTouch(AGlobeBase* Globe)

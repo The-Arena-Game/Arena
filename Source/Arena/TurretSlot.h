@@ -5,6 +5,8 @@
 #include "TurretSlot.generated.h"
 
 class ATurretBase;
+class AArenaGameMode;
+class APlayerController;
 class UBoxComponent;
 class URectLightComponent;
 
@@ -31,9 +33,22 @@ protected:
 
 	virtual void BeginPlay() override;
 
-private:	
+private:
 
+	ETurretType LastSelectedType;
 	ATurretBase* CurrentTurret;
+	AArenaGameMode* ArenaGameMode;
+
+	// Turret Type Dropdown
+	UFUNCTION()
+	FORCEINLINE TArray<ETurretType> GetTurretTypeOptions() const
+	{
+		return { ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::ThirdTurret };
+	}
+
+	// Turret Type Dropdown
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
+	ETurretType TurretType = ETurretType::SingleTurret;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UBoxComponent* BoxComp;
@@ -62,7 +77,37 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretPreviewClass;
 
+	// Inform the slots about what type selected!
 	UFUNCTION(BlueprintCallable)
 	void CardSelectionListener(ETurretType Type);
+
+	// Inform the slot the mouse is over. Spawns preview turret
+	UFUNCTION(BlueprintCallable)
+	void SlotMouseOver();
+
+	// Inform the slot the mouse is over. Destroys preview turret
+	UFUNCTION(BlueprintCallable)
+	void SlotMouseLeft();
+
+	// Inform the slot the mouse clicked on it. Destroys preview, spawns actual turret
+	UFUNCTION(BlueprintCallable)
+	void SlotMouseClicked();
+
+	// Returns the preview class based on the type
+	TSubclassOf<ATurretBase> GetPreviewClass(ETurretType Type);
+
+	// Returns the actual class based on the type
+	TSubclassOf<ATurretBase> GetActualClass(ETurretType Type);
+
+	// Called on Game Mode Restarts
+	UFUNCTION()
+	void OnRestart();
+
+	// Called on Game Mode changes GameState
+	UFUNCTION()
+	void OnGameStateChange(EGameStates NewState);
+
+	// Check if all the components and variables are set and good to go!
+	bool AreAllComponentsSet();
 
 };

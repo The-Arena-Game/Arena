@@ -11,8 +11,6 @@ class AArenaCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
-
 UENUM(BlueprintType)
 enum class EGameStates : uint8 {
 	None    UMETA(DisplayName = "None"),
@@ -25,6 +23,9 @@ enum class EGameStates : uint8 {
 	Prepare UMETA(DisplayName = "Prepare State"),
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangeDelegate, EGameStates, State);
+
 UCLASS(minimalapi)
 class AArenaGameMode : public AGameModeBase
 {
@@ -35,6 +36,9 @@ public:
 
 	/** Called within the RestartArenaGame function to inform other about the restart */
 	UPROPERTY(BlueprintAssignable) FRestartDelegate OnRestart;
+
+	/** Called within the RestartArenaGame function to inform other about the restart */
+	UPROPERTY(BlueprintAssignable) FOnStateChangeDelegate OnGameStateChange;
 
 	/** Called from the ArenaCharacter when the character dies. Starts Game Over state. **/
 	void HandlePlayerDeath();
@@ -49,10 +53,13 @@ public:
 	FORCEINLINE EGameStates GetGameState() const { return ArenaGameState; }
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; }
+	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; OnGameStateChange.Broadcast(State); }
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Arena State")
+	void SetReadyState();
 
 protected:
 
@@ -64,7 +71,15 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
 	void FinishGame();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
+	void OpenCardSelectionUI();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
+	void CloseCardSelectionUI();
+
 private:
+
+	APlayerController* PlayerController;
 
 	/*----------------------------------------------------------------------------
 		Effects

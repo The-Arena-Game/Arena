@@ -2,8 +2,10 @@
 #include "CardSelectionSubsystem.h"
 #include "ProjectileSpawner.h"
 #include "TurretBase.h"
+#include "ArenaGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Components/RectLightComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATurretSlot::ATurretSlot()
@@ -21,9 +23,25 @@ ATurretSlot::ATurretSlot()
 	LightsParent->SetupAttachment(BaseMesh);
 }
 
+bool ATurretSlot::AreAllComponentsSet()
+{
+	if (!IsValid(SingleTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretClass) || !IsValid(DualTurretPreviewClass))
+	{
+		UE_LOG(LogTemp, Error, TEXT("The Turret classes are not defined in TurretSlot BP !!!"));
+		return false;
+	}
+
+	return true;
+}
+
 void ATurretSlot::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!AreAllComponentsSet())
+	{
+		return;
+	}	
 
 	// Get all attached Rect Lights
 	const TArray<USceneComponent*>& AttachedChildren = LightsParent->GetAttachChildren();
@@ -54,6 +72,11 @@ void ATurretSlot::BeginPlay()
 	{
 		Light->SetVisibility(false);
 	}
+
+	// Set Restrat function
+	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
+	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
+	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
 }
 
 void ATurretSlot::Tick(float DeltaTime)
@@ -64,52 +87,150 @@ void ATurretSlot::Tick(float DeltaTime)
 
 void ATurretSlot::CardSelectionListener(ETurretType Type)
 {
-	UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
+	//UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 
-	if (!IsValid(SingleTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretClass) || !IsValid(DualTurretPreviewClass))
-	{
-		UE_LOG(LogTemp, Error, TEXT("The Turret classes are not defined in TurretSlot BP !!!"));
-		return;
-	}
-
-	if (Type == ETurretType::SingleTurret)
-	{
-		for (URectLightComponent* Light : Lights)
-		{
-			Light->SetVisibility(false);
-		}
-
-		if (!IsValid(CurrentTurret))
-		{
-			CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(SingleTurretClass, TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
-		}		
-	} 
-	else if (Type == ETurretType::DualTurret)
-	{
-		for (URectLightComponent* Light : Lights)
-		{
-			Light->SetVisibility(false);
-		}
-
-		if (!IsValid(CurrentTurret))
-		{
-			CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(SingleTurretPreviewClass, TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
-		}
-	}
-	else
+	// If it is our type and the CurrentTurret is empty, then lights up!
+	if (Type == TurretType && !IsValid(CurrentTurret))
 	{
 		for (URectLightComponent* Light : Lights)
 		{
 			Light->SetVisibility(true);
 		}
+	}
 
-		if (IsValid(CurrentTurret))
+	if (IsValid(ArenaGameMode))
+	{
+		ArenaGameMode->SetGameState(EGameStates::Prepare);
+	}
+
+	// Since the Type is selected on the UI, enable mouse over events
+	if (APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		Controller->bEnableMouseOverEvents = true;
+		Controller->bEnableClickEvents = true;
+	}
+
+	LastSelectedType = Type;
+}
+
+void ATurretSlot::SlotMouseOver()
+{
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	{
+		return;
+	}
+
+	// If the slot is empty
+	if (!IsValid(CurrentTurret))
+	{
+		CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetPreviewClass(TurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+	}
+}
+
+void ATurretSlot::SlotMouseLeft()
+{
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	{
+		return;
+	}
+
+	// If there is a turret
+	if (IsValid(CurrentTurret))
+	{
+		CurrentTurret->Destroy();
+	}
+}
+
+void ATurretSlot::SlotMouseClicked()
+{
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	{
+		return;
+	}
+
+	// If the slot is empty, then there is no preview also! No good!
+	if (!IsValid(CurrentTurret))
+	{
+		UE_LOG(LogTemp, Error, TEXT("There is no preview on this slot (%s)!"), *GetActorNameOrLabel());
+	}
+	else
+	{
+		CurrentTurret->Destroy();
+	}
+
+	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(TurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+
+	for (URectLightComponent* Light : Lights)
+	{
+		Light->SetVisibility(false);
+	}
+
+	// Since the Turret placement is over, disable mouse over events
+	if (APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		Controller->bEnableMouseOverEvents = false;
+		Controller->bEnableClickEvents = false;
+		Controller->bShowMouseCursor = false;
+	}
+
+	ArenaGameMode->SetReadyState();
+}
+
+TSubclassOf<ATurretBase> ATurretSlot::GetPreviewClass(ETurretType Type)
+{
+	TSubclassOf<ATurretBase> PreviewClass;
+
+	switch (Type)
+	{
+	case ETurretType::SingleTurret:
+		PreviewClass = SingleTurretPreviewClass;
+		break;
+	case ETurretType::DualTurret:
+		PreviewClass = DualTurretPreviewClass;
+		break;
+	default:
+		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
+		break;
+	}
+
+	return PreviewClass;
+}
+
+TSubclassOf<ATurretBase> ATurretSlot::GetActualClass(ETurretType Type)
+{
+	TSubclassOf<ATurretBase> ActualClass;
+
+	switch (Type)
+	{
+	case ETurretType::SingleTurret:
+		ActualClass = SingleTurretClass;
+		break;
+	case ETurretType::DualTurret:
+		ActualClass = DualTurretClass;
+		break;
+	default:
+		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
+		break;
+	}
+
+	return ActualClass;
+}
+
+void ATurretSlot::OnRestart()
+{
+	if (IsValid(CurrentTurret))
+	{
+		CurrentTurret->Destroy();
+	}
+}
+
+void ATurretSlot::OnGameStateChange(EGameStates NewState)
+{
+	if (NewState == EGameStates::Ready)
+	{
+		for (URectLightComponent* Light : Lights)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Current is valid, destroying..."));
-			CurrentTurret->Destroy();
-		}
-		else{
-			UE_LOG(LogTemp, Warning, TEXT("There is no current !!"));
+			Light->SetVisibility(false);
 		}
 	}
 }
