@@ -167,6 +167,7 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 	GlobeCounter = YellowGlobes.Num();	// Reset the counter
 
 	ArenaGameState = EGameStates::Play;
+	OnGameStateChange.Broadcast(EGameStates::Play);
 	StartGame();
 }
 

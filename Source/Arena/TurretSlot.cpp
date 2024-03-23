@@ -135,7 +135,7 @@ void ATurretSlot::SlotMouseLeft()
 	}
 
 	// If there is a turret
-	if (IsValid(CurrentTurret))
+	if (IsValid(CurrentTurret) && CurrentTurret->IsPreviewBP)
 	{
 		CurrentTurret->Destroy();
 	}

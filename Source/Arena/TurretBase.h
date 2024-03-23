@@ -23,6 +23,9 @@ public:
 
 	void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	bool IsPreviewBP = false;
+
 protected:
 	void BeginPlay() override;
 	void RotateTurret(FVector TargetLocation, float& DeltaTime);

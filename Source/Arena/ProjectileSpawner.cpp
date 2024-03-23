@@ -14,7 +14,7 @@ void UProjectileSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
-	
+	GameMode->OnGameStateChange.AddDynamic(this, &UProjectileSpawner::OnNewGameModeState);
 }
 
 // Called every frame
@@ -57,5 +57,23 @@ void UProjectileSpawner::Fire()
 
 	// Attaching the projectile to the owner, so we can access it in case of a hit
 	Projectile->SetOwner(GetOwner()); 
+}
+
+void UProjectileSpawner::OnNewGameModeState(EGameStates NewState)
+{
+	if (NewState == EGameStates::Play)
+	{
+		CurrentFireInterval = FMath::RandRange(MinimumFireDelay, MaximumFireDelay);
+
+		// Set the timer so Tick would fire accourdingly.
+		if (bIsFireOffsetActive)
+		{
+			FireTimer = CurrentFireInterval - FireOffset;
+		}
+		else
+		{
+			FireTimer = CurrentFireInterval;
+		}
+	}
 }
 

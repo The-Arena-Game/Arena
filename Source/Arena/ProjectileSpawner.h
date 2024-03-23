@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -35,9 +33,19 @@ private:
 
 	float FireTimer = 0.f;
 
+	// Called everytime the game state changes. We use it to execute initial fire on Play
+	UFUNCTION()
+	void OnNewGameModeState(EGameStates NewState);
+
 	///////////////////////////////
 	/// Stable Random Type
 	///////////////////////////////
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat - Stable Random", meta = (AllowBlueprintAccess = "true"))
+	bool bIsFireOffsetActive = false;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat - Stable Random", meta = (AllowBlueprintAccess = "true", UIMin = "0.1", UIMax = "5.0"))
+	float FireOffset = 0.1f;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat - Stable Random", meta = (AllowBlueprintAccess = "true", UIMin = "0.1", UIMax = "10.0"))
 	float MinimumFireDelay = 0.1f;
