@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; OnGameStateChange.Broadcast(State); }
 
+	// Retuns the blue globe. Nullptr if the globe is not spawned
+	FORCEINLINE AGlobeBase* GetBlueGlobe() { return BlueGlobe; }
+
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();
 
@@ -80,6 +83,7 @@ protected:
 private:
 
 	APlayerController* PlayerController;
+	AGlobeBase* BlueGlobe;
 
 	/*----------------------------------------------------------------------------
 		Effects

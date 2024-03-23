@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "ArenaCharacter.generated.h"
 
+class AArenaGameMode;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -66,6 +67,8 @@ protected:
 	virtual void BeginPlay();
 
 private:
+
+	AArenaGameMode* GameMode;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Class Camera", meta = (AllowPrivateAccess = "true"))

@@ -82,8 +82,8 @@ void AArenaGameMode::RestartArenaGame()
 	FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
 	FRotator SpawnRotation = Player->GetActorRotation();
 
-	AGlobeBase* Globe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
-	Globe->SnapToGround();
+	BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
+	BlueGlobe->SnapToGround();
 
 	ArenaGameState = EGameStates::Ready;
 	OnRestart.Broadcast();
@@ -141,8 +141,8 @@ void AArenaGameMode::SetReadyState()
 		FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
 		FRotator SpawnRotation = Player->GetActorRotation();
 
-		AGlobeBase* Globe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
-		Globe->SnapToGround();
+		BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
+		BlueGlobe->SnapToGround();
 	}
 
 	OnGameStateChange.Broadcast(EGameStates::Ready);

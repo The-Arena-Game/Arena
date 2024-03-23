@@ -3,10 +3,12 @@
 #include "ArenaCharacter.h"
 #include "HealthComponent.h"
 #include "ArenaGameMode.h"
+#include "GlobeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
@@ -68,6 +70,8 @@ AArenaCharacter::AArenaCharacter()
 	DeflectMesh->SetHiddenInGame(true);	// Disable Deflect mesh at start
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+
+	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void AArenaCharacter::BeginPlay()
@@ -103,6 +107,22 @@ void AArenaCharacter::Tick(float DeltaTime)
 	{
 		// Make sure it is equal to the max duration if not increased
 		DeflectTimer = DeflectCooldownDuration;
+	}
+
+	// Draw blue line for 
+	if (IsValid(GameMode) && GameMode->GetGameState() == EGameStates::Ready)
+	{
+		if (IsValid(GameMode->GetBlueGlobe()))
+		{
+			FVector TargetLoc = GameMode->GetBlueGlobe()->GetActorLocation();
+
+			DrawDebugLine(
+				GetWorld(),
+				GetActorLocation(),
+				TargetLoc,
+				FColor::Cyan
+			);
+		}
 	}
 }
 
@@ -225,8 +245,7 @@ void AArenaCharacter::HandleDestruction()
 	{
 		return;
 	}
-
-	AArenaGameMode* GameMode = GetWorld()->GetAuthGameMode<AArenaGameMode>();
+	
 	if (IsValid(GameMode))
 	{
 		GameMode->HandlePlayerDeath();
