@@ -5,6 +5,7 @@
 #include "ArenaCharacter.h"
 #include "ArenaGameMode.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
 #include "DrawDebugHelpers.h"
@@ -19,6 +20,9 @@ ATurretBase::ATurretBase()
 	// Create and setup components
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Root Capsule"));
 	RootComponent = CapsuleComp;
+
+	ForbidenAreaBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Forbiden Area to Spawn Blue"));
+	ForbidenAreaBoxComp->SetupAttachment(RootComponent);
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
     BaseMesh->SetupAttachment(RootComponent);

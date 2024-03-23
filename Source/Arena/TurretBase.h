@@ -9,6 +9,7 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretBase, Log, All);
 
 class UCapsuleComponent;
+class UBoxComponent;
 class AProjectileBase;
 class AArenaCharacter;
 class AArenaGameMode;
@@ -41,6 +42,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UCapsuleComponent* CapsuleComp;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
+	UBoxComponent* ForbidenAreaBoxComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UStaticMeshComponent* BaseMesh;

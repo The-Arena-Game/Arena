@@ -133,6 +133,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 void AArenaGameMode::SetReadyState()
 {
 	ArenaGameState = EGameStates::Ready;
+	OnGameStateChange.Broadcast(EGameStates::Ready);
 
 	// Spawn blue globe		
 	if (BlueGlobeClass != nullptr)
@@ -144,8 +145,6 @@ void AArenaGameMode::SetReadyState()
 		BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
 		BlueGlobe->SnapToGround();
 	}
-
-	OnGameStateChange.Broadcast(EGameStates::Ready);
 }
 
 void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
@@ -171,7 +170,6 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 	StartGame();
 }
 
-// Private Functions
 FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 {
 	FVector SpawnLocation;
@@ -203,14 +201,14 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 			CollisionParams
 		);
 
-		// DEBUG
-		//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, true);
-		//UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
-		//
-		//if (bHit)
-		//{
-		//	UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
-		//}
+		//// DEBUG
+		DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 1.f);
+		UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
+		
+		if (bHit)
+		{
+			UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		}
 
 	} while (bHit);
 
