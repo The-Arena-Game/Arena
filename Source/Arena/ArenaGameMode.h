@@ -55,12 +55,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; OnGameStateChange.Broadcast(State); }
 
+	UFUNCTION()
+	FORCEINLINE int GetLevelNumber()
+	{
+		return LevelNumber;
+	}
+
 	// Retuns the blue globe. Nullptr if the globe is not spawned
+	UFUNCTION()
 	FORCEINLINE AGlobeBase* GetBlueGlobe() { return BlueGlobe; }
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();
 
+	// Called from the Turret Slot. Starts the ready state after turret placement is done.
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void SetReadyState();
 
@@ -84,6 +92,7 @@ private:
 
 	APlayerController* PlayerController;
 	AGlobeBase* BlueGlobe;
+	int LevelNumber = 1;
 
 	/*----------------------------------------------------------------------------
 		Effects

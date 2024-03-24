@@ -20,9 +20,11 @@ ATurretBase::ATurretBase()
 	// Create and setup components
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Root Capsule"));
 	RootComponent = CapsuleComp;
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ForbidenAreaBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Forbiden Area to Spawn Blue"));
 	ForbidenAreaBoxComp->SetupAttachment(RootComponent);
+	ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
     BaseMesh->SetupAttachment(RootComponent);
@@ -48,6 +50,7 @@ void ATurretBase::BeginPlay()
 
 	PlayerCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
+	GameMode->OnGameStateChange.AddDynamic(this, &ATurretBase::OnGameStateChange);
 }
 
 // Called every frame
@@ -132,5 +135,19 @@ bool ATurretBase::IsFacingToTarget()
 	else
 	{
 		return false;
+	}
+}
+
+void ATurretBase::OnGameStateChange(EGameStates NewState)
+{
+	if (NewState == EGameStates::Prepare)
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 }

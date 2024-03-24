@@ -25,7 +25,9 @@ ATurretSlot::ATurretSlot()
 
 bool ATurretSlot::AreAllComponentsSet()
 {
-	if (!IsValid(SingleTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretClass) || !IsValid(DualTurretPreviewClass))
+	bool AllGood = !IsValid(SingleTurretClass) || !IsValid(DualTurretClass) || !IsValid(TwinTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretPreviewClass);
+
+	if (AllGood)
 	{
 		UE_LOG(LogTemp, Error, TEXT("The Turret classes are not defined in TurretSlot BP !!!"));
 		return false;
@@ -41,7 +43,7 @@ void ATurretSlot::BeginPlay()
 	if (!AreAllComponentsSet())
 	{
 		return;
-	}	
+	}
 
 	// Get all attached Rect Lights
 	const TArray<USceneComponent*>& AttachedChildren = LightsParent->GetAttachChildren();
@@ -89,8 +91,8 @@ void ATurretSlot::CardSelectionListener(ETurretType Type)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 
-	// If it is our type and the CurrentTurret is empty, then lights up!
-	if (Type == TurretType && !IsValid(CurrentTurret))
+	// If we are in the active level or above and the CurrentTurret is empty, then lights up!
+	if (ArenaGameMode->GetLevelNumber() >= ActiveLevelNumber && !IsValid(CurrentTurret))
 	{
 		for (URectLightComponent* Light : Lights)
 		{
@@ -115,7 +117,7 @@ void ATurretSlot::CardSelectionListener(ETurretType Type)
 
 void ATurretSlot::SlotMouseOver()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
 	{
 		return;
 	}
@@ -123,19 +125,20 @@ void ATurretSlot::SlotMouseOver()
 	// If the slot is empty
 	if (!IsValid(CurrentTurret))
 	{
-		CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetPreviewClass(TurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+		// We were using GetPreviewClass to display preview shape. But now, we are using the actual turret for preview as well until we decide what to do with preview.
+		CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
 	}
 }
 
 void ATurretSlot::SlotMouseLeft()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
 	{
 		return;
 	}
 
-	// If there is a turret
-	if (IsValid(CurrentTurret) && CurrentTurret->IsPreviewBP)
+	// If there is a turret but not installed before, then it is a preview turret, remove it.
+	if (IsValid(CurrentTurret) && !bIsInstalled)
 	{
 		CurrentTurret->Destroy();
 	}
@@ -143,7 +146,7 @@ void ATurretSlot::SlotMouseLeft()
 
 void ATurretSlot::SlotMouseClicked()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || LastSelectedType != TurretType)
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
 	{
 		return;
 	}
@@ -158,7 +161,8 @@ void ATurretSlot::SlotMouseClicked()
 		CurrentTurret->Destroy();
 	}
 
-	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(TurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+	bIsInstalled = true;
 
 	for (URectLightComponent* Light : Lights)
 	{
@@ -208,6 +212,9 @@ TSubclassOf<ATurretBase> ATurretSlot::GetActualClass(ETurretType Type)
 	case ETurretType::DualTurret:
 		ActualClass = DualTurretClass;
 		break;
+	case ETurretType::TwinTurret:
+		ActualClass = TwinTurretClass;
+		break;
 	default:
 		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
 		break;
@@ -221,6 +228,7 @@ void ATurretSlot::OnRestart()
 	if (IsValid(CurrentTurret))
 	{
 		CurrentTurret->Destroy();
+		bIsInstalled = false;
 	}
 }
 
@@ -234,4 +242,3 @@ void ATurretSlot::OnGameStateChange(EGameStates NewState)
 		}
 	}
 }
-

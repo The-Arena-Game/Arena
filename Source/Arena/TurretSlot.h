@@ -15,15 +15,15 @@ enum class ETurretType : uint8
 {
 	SingleTurret    UMETA(DisplayName = "Single Turret"),
 	DualTurret		UMETA(DisplayName = "Dual Turret"),
-	ThirdTurret		UMETA(DisplayName = "Third Turret"),
+	TwinTurret		UMETA(DisplayName = "Twin Turret"),
 };
 
 UCLASS()
 class ARENA_API ATurretSlot : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 
 	ATurretSlot();
 
@@ -38,18 +38,17 @@ private:
 	ETurretType LastSelectedType;
 	ATurretBase* CurrentTurret;
 	AArenaGameMode* ArenaGameMode;
+	bool bIsInstalled;
 
-	// Turret Type Dropdown
-	UFUNCTION()
-	FORCEINLINE TArray<ETurretType> GetTurretTypeOptions() const
-	{
-		return { ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::ThirdTurret };
-	}
+	/*----------------------------------------------------------------------------
+		Properties
+	----------------------------------------------------------------------------*/
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowAbstract = "true", ClampMin = "1", ClampMax = "10"))
+	int ActiveLevelNumber = 1;
 
-	// Turret Type Dropdown
-	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
-	ETurretType TurretType = ETurretType::SingleTurret;
-
+	/*----------------------------------------------------------------------------
+		Components
+	----------------------------------------------------------------------------*/
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UBoxComponent* BoxComp;
 
@@ -65,18 +64,27 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	USceneComponent* TurretSpawnPoint;
 
+	/*----------------------------------------------------------------------------
+		Turret Classes
+	----------------------------------------------------------------------------*/
 	UPROPERTY(EditAnywhere, Category = "Arena")
 	TSubclassOf<ATurretBase> SingleTurretClass;
-
-	UPROPERTY(EditAnywhere, Category = "Arena")
-	TSubclassOf<ATurretBase> SingleTurretPreviewClass;
 
 	UPROPERTY(EditAnywhere, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretClass;
 
 	UPROPERTY(EditAnywhere, Category = "Arena")
+	TSubclassOf<ATurretBase> TwinTurretClass;
+
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	TSubclassOf<ATurretBase> SingleTurretPreviewClass;
+
+	UPROPERTY(EditAnywhere, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretPreviewClass;
 
+	/*----------------------------------------------------------------------------
+		Turret Placement
+	----------------------------------------------------------------------------*/
 	// Inform the slots about what type selected!
 	UFUNCTION(BlueprintCallable)
 	void CardSelectionListener(ETurretType Type);
@@ -93,10 +101,15 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void SlotMouseClicked();
 
+	/*----------------------------------------------------------------------------
+		Others
+	----------------------------------------------------------------------------*/
 	// Returns the preview class based on the type
+	UFUNCTION()
 	TSubclassOf<ATurretBase> GetPreviewClass(ETurretType Type);
 
 	// Returns the actual class based on the type
+	UFUNCTION()
 	TSubclassOf<ATurretBase> GetActualClass(ETurretType Type);
 
 	// Called on Game Mode Restarts
@@ -108,6 +121,7 @@ private:
 	void OnGameStateChange(EGameStates NewState);
 
 	// Check if all the components and variables are set and good to go!
+	UFUNCTION()
 	bool AreAllComponentsSet();
 
 };

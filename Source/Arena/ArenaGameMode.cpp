@@ -145,6 +145,8 @@ void AArenaGameMode::SetReadyState()
 		BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
 		BlueGlobe->SnapToGround();
 	}
+
+	LevelNumber++;
 }
 
 void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
@@ -202,13 +204,13 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 		);
 
 		//// DEBUG
-		DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 1.f);
-		UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
-		
-		if (bHit)
-		{
-			UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
-		}
+		//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 1.f);
+		//UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
+		//
+		//if (bHit)
+		//{
+		//	UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		//}
 
 	} while (bHit);
 

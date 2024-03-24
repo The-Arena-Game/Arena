@@ -24,9 +24,6 @@ public:
 
 	void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category = "Arena")
-	bool IsPreviewBP = false;
-
 protected:
 	void BeginPlay() override;
 	void RotateTurret(FVector TargetLocation, float& DeltaTime);
@@ -71,4 +68,11 @@ private:
 
 	bool InFireRange();
 	bool IsFacingToTarget();
+
+	/*----------------------------------------------------------------------------
+		Others
+	----------------------------------------------------------------------------*/
+	// Called on Game Mode changes GameState. Broadcast listener. Disables collision on Prepare state
+	UFUNCTION()
+	void OnGameStateChange(EGameStates NewState);
 };
