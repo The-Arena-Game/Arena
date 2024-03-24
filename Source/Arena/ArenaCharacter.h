@@ -29,17 +29,29 @@ public:
 	void Tick(float DeltaTime) override;
 
 	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const
+	{
+		return CameraBoom;
+	}
 
 	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const
+	{
+		return FollowCamera;
+	}
 
 	/** Returns Health Component **/
-	FORCEINLINE class UHealthComponent* GetHealthComponent() const { return HealthComp; }
+	FORCEINLINE class UHealthComponent* GetHealthComponent() const
+	{
+		return HealthComp;
+	}
 
 	/** Returns Deflect Timer **/
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE float GetDeflectTimer() const { return DeflectTimer; }
+	FORCEINLINE float GetDeflectTimer() const
+	{
+		return DeflectTimer;
+	}
 
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();

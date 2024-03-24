@@ -27,7 +27,7 @@ ATurretBase::ATurretBase()
 	ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
-    BaseMesh->SetupAttachment(RootComponent);
+	BaseMesh->SetupAttachment(RootComponent);
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
 	TurretMesh->SetupAttachment(BaseMesh);
@@ -64,7 +64,7 @@ void ATurretBase::Tick(float DeltaTime)
 		return;
 	}
 
-	if (IsFollowerTurret && InFireRange()) 
+	if (IsFollowerTurret && InFireRange())
 	{
 		RotateTurret(PlayerCharacter->GetActorLocation(), DeltaTime);
 	}

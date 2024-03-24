@@ -10,7 +10,9 @@
 
 DEFINE_LOG_CATEGORY(LogArnGameMode);
 
-AArenaGameMode::AArenaGameMode() {}
+AArenaGameMode::AArenaGameMode()
+{
+}
 
 void AArenaGameMode::BeginPlay()
 {
@@ -125,7 +127,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 		// If so, all of the yellow globes are collected, win state
 		ArenaGameState = EGameStates::Win;
 		FinishGame();
-		OpenCardSelectionUI();	
+		OpenCardSelectionUI();
 		PlayerController->bShowMouseCursor = true;
 	}
 }
@@ -186,11 +188,12 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 			float XDistance = FMath::FRandRange(-BlueGlobeMaxSpawnDistance, BlueGlobeMaxSpawnDistance);
 			float YDistance = FMath::FRandRange(-BlueGlobeMaxSpawnDistance, BlueGlobeMaxSpawnDistance);
 			SpawnLocation = CenterLocation + FVector(XDistance, YDistance, 0.f);
-		} while (FVector::Dist(SpawnLocation, CenterLocation) < BlueGlobeMinSpawnDistance);
+		}
+		while (FVector::Dist(SpawnLocation, CenterLocation) < BlueGlobeMinSpawnDistance);
 
 		FHitResult HitResult;
 		ECollisionChannel CollisionChannel = ECC_Visibility;
-		FCollisionQueryParams CollisionParams;		
+		FCollisionQueryParams CollisionParams;
 
 		// Perform the collision check
 		bHit = GetWorld()->SweepSingleByChannel(
@@ -212,7 +215,8 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 		//	UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
 		//}
 
-	} while (bHit);
+	}
+	while (bHit);
 
 	return SpawnLocation;
 }

@@ -40,9 +40,9 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	AActor* MyOwner = GetOwner();
 
 	// defensive
-	if (MyOwner == nullptr) 
-	{ 
-		Destroy(); return; 
+	if (MyOwner == nullptr)
+	{
+		Destroy(); return;
 	}
 
 	AController* MyOwnerInst = MyOwner->GetInstigatorController();

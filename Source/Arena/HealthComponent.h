@@ -17,13 +17,22 @@ public:
 	UHealthComponent();
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsDead() const { return bIsHeartSystemActive ? (HeartCount <= 0 ? true : false) : (Health <= 0 ? true : false); }
+	FORCEINLINE bool IsDead() const
+	{
+		return bIsHeartSystemActive ? (HeartCount <= 0 ? true : false) : (Health <= 0 ? true : false);
+	}
 
 	/* Set the Vulnerability Status */
-	FORCEINLINE void SetValnerable(bool IsVulnerable) { bIsVulnerable = IsVulnerable; }
+	FORCEINLINE void SetValnerable(bool IsVulnerable)
+	{
+		bIsVulnerable = IsVulnerable;
+	}
 
 	/* Set the Vulnerability Status */
-	FORCEINLINE void ResetHeatlh() {HeartCount = MaxHeartCount; Health = MaxHealth; }
+	FORCEINLINE void ResetHeatlh()
+	{
+		HeartCount = MaxHeartCount; Health = MaxHealth;
+	}
 
 protected:
 	void BeginPlay() override;

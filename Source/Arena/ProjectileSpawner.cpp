@@ -4,9 +4,9 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
-UProjectileSpawner::UProjectileSpawner() 
+UProjectileSpawner::UProjectileSpawner()
 {
-  PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts
@@ -23,9 +23,10 @@ void UProjectileSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// Don't execute any action further if the game state is not Play state
-    if (GameMode->GetGameState() != EGameStates::Play) {
-      return;
-    }
+	if (GameMode->GetGameState() != EGameStates::Play)
+	{
+		return;
+	}
 
 	// If the interval not set yet, set it.
 	if (CurrentFireInterval == 0)
@@ -35,7 +36,8 @@ void UProjectileSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	FireTimer += DeltaTime;
 
-	if (FireTimer >= CurrentFireInterval) {
+	if (FireTimer >= CurrentFireInterval)
+	{
 		FireTimer = 0;
 		CurrentFireInterval = FMath::RandRange(MinimumFireDelay, MaximumFireDelay);
 		Fire();
@@ -44,19 +46,20 @@ void UProjectileSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 
 
-void UProjectileSpawner::Fire() 
+void UProjectileSpawner::Fire()
 {
-	if (ProjectileClass == nullptr) {
-	  UE_LOG(LogTemp, Error, TEXT("The Spawn Point (%s) is not set on the turret (%s)!"), *GetName(), *GetOwner()->GetActorNameOrLabel());
-	  return;
+	if (ProjectileClass == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("The Spawn Point (%s) is not set on the turret (%s)!"), *GetName(), *GetOwner()->GetActorNameOrLabel());
+		return;
 	}
 
 	// Spawn projectile and hold its instance in Projectile Variable
-	AProjectileBase *Projectile = GetWorld()->SpawnActor<AProjectileBase>(
-            ProjectileClass, GetComponentLocation(), GetComponentRotation());
+	AProjectileBase* Projectile = GetWorld()->SpawnActor<AProjectileBase>(
+		ProjectileClass, GetComponentLocation(), GetComponentRotation());
 
 	// Attaching the projectile to the owner, so we can access it in case of a hit
-	Projectile->SetOwner(GetOwner()); 
+	Projectile->SetOwner(GetOwner());
 }
 
 void UProjectileSpawner::OnNewGameModeState(EGameStates NewState)

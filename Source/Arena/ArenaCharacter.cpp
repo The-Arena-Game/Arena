@@ -132,7 +132,8 @@ void AArenaCharacter::Tick(float DeltaTime)
 void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
 
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
@@ -164,7 +165,7 @@ void AArenaCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-	    // Top-Down -> Changed the PlayerController with CameraBoom
+		// Top-Down -> Changed the PlayerController with CameraBoom
 		const FRotator Rotation = CameraBoom->GetRelativeRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -245,7 +246,7 @@ void AArenaCharacter::HandleDestruction()
 	{
 		return;
 	}
-	
+
 	if (IsValid(GameMode))
 	{
 		GameMode->HandlePlayerDeath();

@@ -7,12 +7,12 @@
 class AProjectileBase;
 class AArenaGameMode;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UProjectileSpawner : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UProjectileSpawner();
 
@@ -21,9 +21,9 @@ public:
 
 protected:
 	// Called when the game starts
-    virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 	void Fire();
-		
+
 private:
 
 	AArenaGameMode* GameMode;

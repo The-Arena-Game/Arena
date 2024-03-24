@@ -12,7 +12,8 @@ class AArenaCharacter;
 DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
 
 UENUM(BlueprintType)
-enum class EGameStates : uint8 {
+enum class EGameStates : uint8
+{
 	None    UMETA(DisplayName = "None"),
 	Menu    UMETA(DisplayName = "Menu State"),
 	Ready	UMETA(DisplayName = "Ready State"),
@@ -50,10 +51,16 @@ public:
 	void BlueTouch(AGlobeBase* Globe);
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	FORCEINLINE EGameStates GetGameState() const { return ArenaGameState; }
+	FORCEINLINE EGameStates GetGameState() const
+	{
+		return ArenaGameState;
+	}
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	FORCEINLINE void SetGameState(EGameStates State) { ArenaGameState = State; OnGameStateChange.Broadcast(State); }
+	FORCEINLINE void SetGameState(EGameStates State)
+	{
+		ArenaGameState = State; OnGameStateChange.Broadcast(State);
+	}
 
 	UFUNCTION()
 	FORCEINLINE int GetLevelNumber()
@@ -63,7 +70,10 @@ public:
 
 	// Retuns the blue globe. Nullptr if the globe is not spawned
 	UFUNCTION()
-	FORCEINLINE AGlobeBase* GetBlueGlobe() { return BlueGlobe; }
+	FORCEINLINE AGlobeBase* GetBlueGlobe()
+	{
+		return BlueGlobe;
+	}
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();

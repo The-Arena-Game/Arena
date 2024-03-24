@@ -58,7 +58,7 @@ private:
 	///////////////////////////////
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat - Follower", meta = (AllowBlueprintAccess = "true"))
-    bool IsFollowerTurret = false;
+	bool IsFollowerTurret = false;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat - Follower", meta = (AllowBlueprintAccess = "true", UIMin = "300.0", UIMax = "2000.0"))
 	float Range = 500.f;
