@@ -4,8 +4,8 @@
 
 #include "TurretSlot.h"
 
-#include "Subsystems/GameInstanceSubsystem.h"
 #include "CardSelectionSubsystem.generated.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardSelection, ETurretType, Type);
 

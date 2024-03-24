@@ -1,12 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ArenaGameMode.h"
 #include "ArenaCharacter.h"
+#include "ArenaGameMode.h"
+#include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
 #include "HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
-#include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY(LogArnGameMode);
 

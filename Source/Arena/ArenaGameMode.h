@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "ArenaGameMode.generated.h"
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "ArenaGameMode.generated.h"
 
 class AGlobeBase;
 class AArenaCharacter;

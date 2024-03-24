@@ -1,11 +1,11 @@
-#include "TurretSlot.h"
-#include "CardSelectionSubsystem.h"
-#include "ProjectileSpawner.h"
-#include "TurretBase.h"
 #include "ArenaGameMode.h"
+#include "CardSelectionSubsystem.h"
 #include "Components/BoxComponent.h"
 #include "Components/RectLightComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectileSpawner.h"
+#include "TurretBase.h"
+#include "TurretSlot.h"
 
 // Sets default values
 ATurretSlot::ATurretSlot()

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "CoreMinimal.h"
 #include "ProjectileSpawner.generated.h"
 
 class AProjectileBase;

@@ -1,7 +1,7 @@
-#include "ProjectileSpawner.h"
-#include "ProjectileBase.h"
 #include "ArenaGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectileBase.h"
+#include "ProjectileSpawner.h"
 
 // Sets default values for this component's properties
 UProjectileSpawner::UProjectileSpawner()
