@@ -29,6 +29,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	// Spawns turret. Created for editor-time spawning.
+	UFUNCTION(BlueprintCallable)
+	void SpawnEditorTurret();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -45,6 +49,17 @@ private:
 	----------------------------------------------------------------------------*/
 	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowAbstract = "true", ClampMin = "1", ClampMax = "10"))
 	int ActiveLevelNumber = 1;
+
+	// Turret Type Dropdown
+	UFUNCTION()
+	FORCEINLINE TArray<ETurretType> GetTurretTypeOptions() const
+	{
+		return { ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret };
+	}
+
+	// Turret Type Dropdown
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
+	ETurretType EditorTurretType = ETurretType::SingleTurret;
 
 	/*----------------------------------------------------------------------------
 		Components
@@ -67,19 +82,19 @@ private:
 	/*----------------------------------------------------------------------------
 		Turret Classes
 	----------------------------------------------------------------------------*/
-	UPROPERTY(EditAnywhere, Category = "Arena")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> SingleTurretClass;
 
-	UPROPERTY(EditAnywhere, Category = "Arena")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretClass;
 
-	UPROPERTY(EditAnywhere, Category = "Arena")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> TwinTurretClass;
 
-	UPROPERTY(EditAnywhere, Category = "Arena")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> SingleTurretPreviewClass;
 
-	UPROPERTY(EditAnywhere, Category = "Arena")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretPreviewClass;
 
 	/*----------------------------------------------------------------------------
@@ -123,5 +138,13 @@ private:
 	// Check if all the components and variables are set and good to go!
 	UFUNCTION()
 	bool AreAllComponentsSet();
+
+	// Controls if the current situation is suitable for turret placement action or not
+	UFUNCTION()
+	bool IsTurretPlacementAvailable();
+
+	// Controls if the current situation is suitable for turret placement action or not
+	UFUNCTION()
+	bool IsAnyTurretSpawned();
 
 };

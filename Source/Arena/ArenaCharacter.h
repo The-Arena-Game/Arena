@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "ArenaCharacter.generated.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "ArenaCharacter.generated.h"
 
 class AArenaGameMode;
 class USpringArmComponent;

@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ArenaCharacter.h"
 #include "ArenaGameMode.h"
+#include "ArenaCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
 #include "HealthComponent.h"

@@ -1,3 +1,4 @@
+#include "TurretSlot.h"
 #include "ArenaGameMode.h"
 #include "CardSelectionSubsystem.h"
 #include "Components/BoxComponent.h"
@@ -5,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectileSpawner.h"
 #include "TurretBase.h"
-#include "TurretSlot.h"
 
 // Sets default values
 ATurretSlot::ATurretSlot()
@@ -34,6 +34,55 @@ bool ATurretSlot::AreAllComponentsSet()
 	}
 
 	return true;
+}
+
+bool ATurretSlot::IsTurretPlacementAvailable()
+{
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
+	{
+		return false;
+	}
+
+	if (bIsInstalled)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool ATurretSlot::IsAnyTurretSpawned()
+{
+	// Check if any turret is spawned in editor time on the slot
+	FHitResult HitResult;
+	ECollisionChannel CollisionChannel = ECC_Camera;
+	FCollisionQueryParams CollisionParams;
+	FVector SpawnLocation = TurretSpawnPoint->GetComponentLocation();
+
+	// Perform the collision check
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		SpawnLocation,
+		SpawnLocation,
+		FQuat::Identity,
+		CollisionChannel,
+		FCollisionShape::MakeSphere(50.f),
+		CollisionParams
+	);
+
+	//// DEBUG
+	//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 3.f);
+	//if (bHit)
+	//{
+	//	if (ATurretBase* Turret = Cast<ATurretBase>(HitResult.GetActor()))
+	//	{
+	//		UE_LOG(LogArnGameMode, Log, TEXT("Editor Time Spawned Object: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+	//		bIsInstalled = true;
+	//		return true;
+	//	}
+	//}
+
+	return false;
 }
 
 void ATurretSlot::BeginPlay()
@@ -75,10 +124,13 @@ void ATurretSlot::BeginPlay()
 		Light->SetVisibility(false);
 	}
 
-	// Set Restrat function
+	// Bind Restrat function and State Change Function
 	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
 	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
+
+	// Check if any editor time turret spawned
+	IsAnyTurretSpawned();
 }
 
 void ATurretSlot::Tick(float DeltaTime)
@@ -90,6 +142,14 @@ void ATurretSlot::Tick(float DeltaTime)
 void ATurretSlot::CardSelectionListener(ETurretType Type)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
+
+	// Check if any runtime turret spawned
+	IsAnyTurretSpawned();
+
+	if (bIsInstalled)
+	{
+		return;
+	}
 
 	// If we are in the active level or above and the CurrentTurret is empty, then lights up!
 	if (ArenaGameMode->GetLevelNumber() >= ActiveLevelNumber && !IsValid(CurrentTurret))
@@ -117,7 +177,7 @@ void ATurretSlot::CardSelectionListener(ETurretType Type)
 
 void ATurretSlot::SlotMouseOver()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
+	if (!IsTurretPlacementAvailable())
 	{
 		return;
 	}
@@ -132,7 +192,7 @@ void ATurretSlot::SlotMouseOver()
 
 void ATurretSlot::SlotMouseLeft()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
+	if (!IsTurretPlacementAvailable())
 	{
 		return;
 	}
@@ -146,7 +206,7 @@ void ATurretSlot::SlotMouseLeft()
 
 void ATurretSlot::SlotMouseClicked()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
+	if (!IsTurretPlacementAvailable())
 	{
 		return;
 	}
@@ -178,6 +238,11 @@ void ATurretSlot::SlotMouseClicked()
 	}
 
 	ArenaGameMode->SetReadyState();
+}
+
+void ATurretSlot::SpawnEditorTurret()
+{
+	GetWorld()->SpawnActor<ATurretBase>(GetActualClass(EditorTurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
 }
 
 TSubclassOf<ATurretBase> ATurretSlot::GetPreviewClass(ETurretType Type)
@@ -238,7 +303,10 @@ void ATurretSlot::OnGameStateChange(EGameStates NewState)
 	{
 		for (URectLightComponent* Light : Lights)
 		{
-			Light->SetVisibility(false);
+			if (IsValid(Light))
+			{
+				Light->SetVisibility(false);
+			}
 		}
 	}
 }

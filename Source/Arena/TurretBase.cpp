@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "TurretBase.h"
 #include "ArenaCharacter.h"
 #include "ArenaGameMode.h"
 #include "Components/BoxComponent.h"
@@ -8,7 +9,6 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
-#include "TurretBase.h"
 
 DEFINE_LOG_CATEGORY(LogArnTurretBase);
 
