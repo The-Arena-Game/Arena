@@ -50,7 +50,7 @@ void ATurretBase::BeginPlay()
 
 	PlayerCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
-	GameMode->OnGameStateChange.AddDynamic(this, &ATurretBase::OnGameStateChange);
+	GameMode->OnBlueSpawnCollisionStateChange.AddDynamic(this, &ATurretBase::OnSpawnCollisionChange);
 }
 
 // Called every frame
@@ -138,16 +138,16 @@ bool ATurretBase::IsFacingToTarget()
 	}
 }
 
-void ATurretBase::OnGameStateChange(EGameStates NewState)
+void ATurretBase::OnSpawnCollisionChange(bool NewState)
 {
-	if (NewState == EGameStates::Prepare)
-	{
-		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-	else
+	if (NewState)
 	{
 		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		ForbidenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }

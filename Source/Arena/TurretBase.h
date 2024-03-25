@@ -74,5 +74,5 @@ private:
 	----------------------------------------------------------------------------*/
 	// Called on Game Mode changes GameState. Broadcast listener. Disables collision on Prepare state
 	UFUNCTION()
-	void OnGameStateChange(EGameStates NewState);
+	void OnSpawnCollisionChange(bool NewState);
 };

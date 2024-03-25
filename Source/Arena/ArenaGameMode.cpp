@@ -81,11 +81,7 @@ void AArenaGameMode::RestartArenaGame()
 	}
 
 	// Spawn a new blue globe
-	FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
-	FRotator SpawnRotation = Player->GetActorRotation();
-
-	BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
-	BlueGlobe->SnapToGround();
+	BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
 
 	ArenaGameState = EGameStates::Ready;
 	OnRestart.Broadcast();
@@ -134,20 +130,14 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 
 void AArenaGameMode::SetReadyState()
 {
-	ArenaGameState = EGameStates::Ready;
-	OnGameStateChange.Broadcast(EGameStates::Ready);
-
 	// Spawn blue globe		
-	if (BlueGlobeClass != nullptr)
+	if (AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
 	{
-		AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
-		FVector SpawnLocation = GetBlueGlobeSpawnLocation(Player->GetActorLocation());
-		FRotator SpawnRotation = Player->GetActorRotation();
-
-		BlueGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
-		BlueGlobe->SnapToGround();
+		BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
 	}
 
+	ArenaGameState = EGameStates::Ready;
+	OnGameStateChange.Broadcast(EGameStates::Ready);
 	LevelNumber++;
 }
 
@@ -172,6 +162,31 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 	ArenaGameState = EGameStates::Play;
 	OnGameStateChange.Broadcast(EGameStates::Play);
 	StartGame();
+}
+
+AGlobeBase* AArenaGameMode::SpawnBlueGlobe(FVector CenterLocation, FRotator SpawnRotation)
+{
+	// Broadcast to turn ON the forbidden area collisions
+	OnBlueSpawnCollisionStateChange.Broadcast(true);
+
+	AGlobeBase* NewGlobe = nullptr;
+	FVector SpawnLocation = GetBlueGlobeSpawnLocation(CenterLocation);
+
+	// Spawn blue globe		
+	if (BlueGlobeClass != nullptr)
+	{
+		NewGlobe = GetWorld()->SpawnActor<AGlobeBase>(BlueGlobeClass, SpawnLocation, SpawnRotation);
+		NewGlobe->SnapToGround();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BlueGlobeClass is not set on ArenaGameMode! Can not spawn the globe!"));
+	}
+
+	// Broadcast to turn OFF the forbidden area collisions
+	OnBlueSpawnCollisionStateChange.Broadcast(false);
+
+	return NewGlobe;
 }
 
 FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
@@ -208,8 +223,6 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 
 		//// DEBUG
 		//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 1.f);
-		//UE_LOG(LogArnGameMode, Log, TEXT("Blue Spawned"));
-		//
 		//if (bHit)
 		//{
 		//	UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());

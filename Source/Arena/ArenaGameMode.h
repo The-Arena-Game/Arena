@@ -26,6 +26,7 @@ enum class EGameStates : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangeDelegate, EGameStates, State);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlueSpawnCollisionStateDelegate, bool, CollisionState);
 
 UCLASS(minimalapi)
 class AArenaGameMode : public AGameModeBase
@@ -36,10 +37,16 @@ public:
 	AArenaGameMode();
 
 	/** Called within the RestartArenaGame function to inform other about the restart */
-	UPROPERTY(BlueprintAssignable) FRestartDelegate OnRestart;
+	UPROPERTY(BlueprintAssignable)
+	FRestartDelegate OnRestart;
 
 	/** Called within the RestartArenaGame function to inform other about the restart */
-	UPROPERTY(BlueprintAssignable) FOnStateChangeDelegate OnGameStateChange;
+	UPROPERTY(BlueprintAssignable)
+	FOnStateChangeDelegate OnGameStateChange;
+
+	/** Called right before and after blue globe spawn. Bound funciontion should turn on/off the collision for forbidden areas */
+	UPROPERTY(BlueprintAssignable)
+	FOnBlueSpawnCollisionStateDelegate OnBlueSpawnCollisionStateChange;
 
 	/** Called from the ArenaCharacter when the character dies. Starts Game Over state. **/
 	void HandlePlayerDeath();
@@ -143,6 +150,9 @@ private:
 	/*----------------------------------------------------------------------------
 		Internal functions
 	----------------------------------------------------------------------------*/
+	// Spawns a blue globe
+	AGlobeBase* SpawnBlueGlobe(FVector CenterLocation, FRotator SpawnRotation);
+
 	// Retuns a valid location for blue globe to spawn
 	FVector GetBlueGlobeSpawnLocation(FVector CenterLocation);
 
