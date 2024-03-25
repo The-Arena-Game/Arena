@@ -46,11 +46,18 @@ public:
 		return HealthComp;
 	}
 
-	/** Returns Deflect Timer **/
+	/** Returns Deflect Progress as percentage **/
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE float GetDeflectTimer() const
+	FORCEINLINE float GetDeflectProgressPercentage() const
 	{
-		return DeflectTimer;
+		return DeflectTimer / DeflectCooldownDuration;
+	}
+
+	/** Returns Stamina Progress as percentage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetStaminaProgressPercentage() const
+	{
+		return CurrentStamina / MaxStamina;
 	}
 
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
@@ -118,6 +125,33 @@ private:
 	// Disabled for Top-Down 
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	//UInputAction* LookAction;
+
+	float CurrentStamina = 100.f;
+	bool bSprinting = false;
+	bool bCanSprint = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float MaxStamina = 100.f;
+
+	/** Stamina increase per second in stand by position */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Per second"))
+	float StandByStaminaIncrease = 10.f;
+
+	/** Stamina decrease per second when walking */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Should be positive value! Per second"))
+	float WalkingStaminaDecrease = 5.f;
+
+	/** Stamina decrease per second when running */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Should be positive value! Per second"))
+	float SprintStaminaDecrease = 20.f;
+
+	/** Turn ON sprinting on stamina value of */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Sprinting will be turned on after this stamina level"))
+	float SprintOnStaminaLevel = 30.f;
+
+	/** Turn OFF sprinting on stamina value of */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Sprinting will be turned off after this stamina level"))
+	float SprintOffStaminaLevel = 10.f;
 
 	/** Walk Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))

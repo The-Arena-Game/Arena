@@ -109,6 +109,35 @@ void AArenaCharacter::Tick(float DeltaTime)
 		DeflectTimer = DeflectCooldownDuration;
 	}
 
+	if (CurrentStamina < 0)
+	{
+		CurrentStamina = 0;
+	}
+	else if (CurrentStamina < MaxStamina)
+	{
+		CurrentStamina += StandByStaminaIncrease * DeltaTime;
+
+		if (bSprinting)
+		{
+			CurrentStamina -= SprintStaminaDecrease * DeltaTime;
+		}
+	}
+	else
+	{
+		CurrentStamina = MaxStamina;
+	}
+
+	// When we are able to sprint, if the stamina drop below the Off limit, turn off sprinting
+	if (bCanSprint && CurrentStamina < SprintOffStaminaLevel)
+	{
+		bCanSprint = false;
+		StopSprint();
+	}
+	else if (!bCanSprint && CurrentStamina > SprintOnStaminaLevel)
+	{
+		bCanSprint = true;
+	}
+
 	// Draw blue line for 
 	if (IsValid(GameMode) && GameMode->GetGameState() == EGameStates::Ready)
 	{
@@ -178,17 +207,25 @@ void AArenaCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+
+		float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
+		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
 	}
 }
 
 void AArenaCharacter::Sprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	if (bCanSprint)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		bSprinting = true;
+	}
 }
 
 void AArenaCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	bSprinting = false;
 }
 
 void AArenaCharacter::EnableDeflect()
