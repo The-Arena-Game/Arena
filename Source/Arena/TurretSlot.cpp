@@ -43,7 +43,7 @@ bool ATurretSlot::IsTurretPlacementAvailable()
 		return false;
 	}
 
-	if (bIsInstalled)
+	if (bTurretInstalled)
 	{
 		return false;
 	}
@@ -72,15 +72,16 @@ bool ATurretSlot::IsAnyTurretSpawned()
 
 	//// DEBUG
 	//DrawDebugSphere(GetWorld(), SpawnLocation, 60.f, 12, FColor::Red, false, 3.f);
-	//if (bHit)
-	//{
-	//	if (ATurretBase* Turret = Cast<ATurretBase>(HitResult.GetActor()))
-	//	{
-	//		UE_LOG(LogArnGameMode, Log, TEXT("Editor Time Spawned Object: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
-	//		bIsInstalled = true;
-	//		return true;
-	//	}
-	//}
+
+	if (bHit)
+	{
+		if (ATurretBase* Turret = Cast<ATurretBase>(HitResult.GetActor()))
+		{
+			// UE_LOG(LogArnGameMode, Log, TEXT("Editor Time Spawned Object: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+			bTurretInstalled = true;
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -143,10 +144,13 @@ void ATurretSlot::CardSelectionListener(ETurretType Type)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 
-	// Check if any runtime turret spawned
-	IsAnyTurretSpawned();
-
-	if (bIsInstalled)
+	// Check we have turret installed on. 
+	if (bTurretInstalled)
+	{
+		return;
+	}
+	// If we don't have installed turret at the moment, Check if any runtime turret spawned 
+	else if (IsAnyTurretSpawned())
 	{
 		return;
 	}
@@ -198,7 +202,7 @@ void ATurretSlot::SlotMouseLeft()
 	}
 
 	// If there is a turret but not installed before, then it is a preview turret, remove it.
-	if (IsValid(CurrentTurret) && !bIsInstalled)
+	if (IsValid(CurrentTurret) && !bTurretInstalled)
 	{
 		CurrentTurret->Destroy();
 	}
@@ -222,7 +226,7 @@ void ATurretSlot::SlotMouseClicked()
 	}
 
 	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
-	bIsInstalled = true;
+	bTurretInstalled = true;
 
 	for (URectLightComponent* Light : Lights)
 	{
@@ -293,7 +297,7 @@ void ATurretSlot::OnRestart()
 	if (IsValid(CurrentTurret))
 	{
 		CurrentTurret->Destroy();
-		bIsInstalled = false;
+		bTurretInstalled = false;
 	}
 }
 

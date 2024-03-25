@@ -42,7 +42,7 @@ private:
 	ETurretType LastSelectedType;
 	ATurretBase* CurrentTurret;
 	AArenaGameMode* ArenaGameMode;
-	bool bIsInstalled;
+	bool bTurretInstalled;
 
 	/*----------------------------------------------------------------------------
 		Properties
