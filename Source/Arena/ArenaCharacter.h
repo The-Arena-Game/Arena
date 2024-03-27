@@ -85,6 +85,9 @@ protected:
 	/** To add mapping context */
 	virtual void BeginPlay();
 
+	/** Overrided version of jump, expenses stamina on jump */
+	virtual void Jump();
+
 private:
 
 	AArenaGameMode* GameMode;
@@ -152,6 +155,10 @@ private:
 	/** Turn OFF sprinting on stamina value of */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Sprinting will be turned off after this stamina level"))
 	float SprintOffStaminaLevel = 10.f;
+
+	/** Turn OFF sprinting on stamina value of */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
+	float JumpStaminaCost = 20.f;
 
 	/** Walk Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))

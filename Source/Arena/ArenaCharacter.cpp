@@ -109,20 +109,25 @@ void AArenaCharacter::Tick(float DeltaTime)
 		DeflectTimer = DeflectCooldownDuration;
 	}
 
+	CurrentStamina += StandByStaminaIncrease * DeltaTime;
+
+	// Check if moving?
+	if (GetCharacterMovement()->Velocity.Size() > 0.0f)
+	{
+		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
+	}
+
+	if (bSprinting)
+	{
+		CurrentStamina -= SprintStaminaDecrease * DeltaTime;
+	}
+
+	// Make sure the value stays between boundries
 	if (CurrentStamina < 0)
 	{
 		CurrentStamina = 0;
 	}
-	else if (CurrentStamina < MaxStamina)
-	{
-		CurrentStamina += StandByStaminaIncrease * DeltaTime;
-
-		if (bSprinting)
-		{
-			CurrentStamina -= SprintStaminaDecrease * DeltaTime;
-		}
-	}
-	else
+	else if (CurrentStamina > MaxStamina)
 	{
 		CurrentStamina = MaxStamina;
 	}
@@ -165,7 +170,7 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	{
 
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AArenaCharacter::Jump);	// Using overrided version here
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
@@ -209,7 +214,9 @@ void AArenaCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(RightDirection, MovementVector.X);
 
 		float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
-		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
+		//CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
+
+
 	}
 }
 
@@ -226,6 +233,15 @@ void AArenaCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	bSprinting = false;
+}
+
+void AArenaCharacter::Jump()
+{
+	if (CurrentStamina >= JumpStaminaCost)
+	{
+		Super::Jump();
+		CurrentStamina -= JumpStaminaCost;
+	}
 }
 
 void AArenaCharacter::EnableDeflect()

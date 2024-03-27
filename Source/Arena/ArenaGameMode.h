@@ -69,7 +69,7 @@ public:
 		ArenaGameState = State; OnGameStateChange.Broadcast(State);
 	}
 
-	UFUNCTION()
+	UFUNCTION(Blueprintcallable, Category = "Arena")
 	FORCEINLINE int GetLevelNumber()
 	{
 		return LevelNumber;
