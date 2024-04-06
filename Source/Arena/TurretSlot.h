@@ -16,6 +16,7 @@ enum class ETurretType : uint8
 	SingleTurret    UMETA(DisplayName = "Single Turret"),
 	DualTurret		UMETA(DisplayName = "Dual Turret"),
 	TwinTurret		UMETA(DisplayName = "Twin Turret"),
+	Chonky			UMETA(DisplayName = "Chonky Turret"),
 };
 
 UCLASS()
@@ -52,10 +53,7 @@ private:
 
 	// Turret Type Dropdown
 	UFUNCTION()
-	FORCEINLINE TArray<ETurretType> GetTurretTypeOptions() const
-	{
-		return { ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret };
-	}
+	TArray<ETurretType> GetTurretTypeOptions();
 
 	// Turret Type Dropdown
 	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
@@ -90,6 +88,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> TwinTurretClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> ChonkyTurretClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> SingleTurretPreviewClass;
