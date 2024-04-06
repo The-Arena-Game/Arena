@@ -17,6 +17,8 @@ enum class ETurretType : uint8
 	DualTurret		UMETA(DisplayName = "Dual Turret"),
 	TwinTurret		UMETA(DisplayName = "Twin Turret"),
 	Chonky			UMETA(DisplayName = "Chonky Turret"),
+	Gatling			UMETA(DisplayName = "Gatling Turret"),
+	Triplet			UMETA(DisplayName = "Triplet Turret"),
 };
 
 UCLASS()
@@ -91,6 +93,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> ChonkyTurretClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> GatlingTurretClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> TripletTurretClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> SingleTurretPreviewClass;

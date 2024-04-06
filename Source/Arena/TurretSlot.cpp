@@ -134,14 +134,6 @@ void ATurretSlot::BeginPlay()
 	IsAnyTurretSpawned();
 }
 
-TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()
-{
-	return {
-		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
-		ETurretType::Chonky
-	};
-}
-
 void ATurretSlot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -295,12 +287,26 @@ TSubclassOf<ATurretBase> ATurretSlot::GetActualClass(ETurretType Type)
 	case ETurretType::Chonky:
 		ActualClass = ChonkyTurretClass;
 		break;
+	case ETurretType::Gatling:
+		ActualClass = GatlingTurretClass;
+		break;
+	case ETurretType::Triplet:
+		ActualClass = TripletTurretClass;
+		break;
 	default:
 		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
 		break;
 	}
 
 	return ActualClass;
+}
+
+TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()
+{
+	return {
+		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
+		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet
+	};
 }
 
 void ATurretSlot::OnRestart()
