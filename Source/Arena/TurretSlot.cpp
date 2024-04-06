@@ -86,7 +86,7 @@ bool ATurretSlot::AreAllComponentsSet()
 
 bool ATurretSlot::IsTurretPlacementAvailable()
 {
-	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
+	if (!IsValid(ArenaGameMode) || ArenaGameMode->GetArenaGameState() != EGameStates::Prepare || ArenaGameMode->GetLevelNumber() < ActiveLevelNumber)
 	{
 		return false;
 	}

@@ -58,7 +58,7 @@ public:
 	void BlueTouch(AGlobeBase* Globe);
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	FORCEINLINE EGameStates GetGameState() const
+	FORCEINLINE EGameStates GetArenaGameState() const
 	{
 		return ArenaGameState;
 	}

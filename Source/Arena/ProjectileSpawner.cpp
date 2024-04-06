@@ -23,7 +23,7 @@ void UProjectileSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// Don't execute any action further if the game state is not Play state
-	if (GameMode->GetGameState() != EGameStates::Play)
+	if (GameMode->GetArenaGameState() != EGameStates::Play)
 	{
 		return;
 	}

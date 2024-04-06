@@ -59,7 +59,7 @@ void ATurretBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Don't execute any action further if the game state is not Play state
-	if (IsValid(GameMode) && GameMode->GetGameState() != EGameStates::Play)
+	if (IsValid(GameMode) && GameMode->GetArenaGameState() != EGameStates::Play)
 	{
 		return;
 	}

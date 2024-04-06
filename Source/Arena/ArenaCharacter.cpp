@@ -92,23 +92,29 @@ void AArenaCharacter::BeginPlay()
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
-	DeflectTimer = 0.f;
+	DeflectTimer = DeflectCooldownDuration;
+	CurrentStamina = MaxStamina;
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Increase the timer when needed
-	if (DeflectTimer < DeflectCooldownDuration)
+	// If there is a usage limit, process deflect timer
+	if (DeflectCounter < DeflectLimit)
 	{
-		DeflectTimer += DeltaTime;
+		// Increase the timer when it is not full
+		if (DeflectTimer < DeflectCooldownDuration)
+		{
+			DeflectTimer += DeltaTime;
+		}
+		else
+		{
+			// Make sure it is equal to the max duration if not increased
+			DeflectTimer = DeflectCooldownDuration;
+		}
 	}
-	else
-	{
-		// Make sure it is equal to the max duration if not increased
-		DeflectTimer = DeflectCooldownDuration;
-	}
+
 
 	CurrentStamina += StandByStaminaIncrease * DeltaTime;
 
@@ -145,7 +151,7 @@ void AArenaCharacter::Tick(float DeltaTime)
 	}
 
 	// Draw blue line for 
-	if (IsValid(GameMode) && GameMode->GetGameState() == EGameStates::Ready)
+	if (IsValid(GameMode) && GameMode->GetArenaGameState() == EGameStates::Ready)
 	{
 		if (IsValid(GameMode->GetBlueGlobe()))
 		{
@@ -253,6 +259,7 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 	{
 		CurrentStamina = MaxStamina;
 		DeflectTimer = DeflectCooldownDuration;
+		DeflectCounter = 0;
 	}
 }
 
@@ -264,7 +271,14 @@ void AArenaCharacter::EnableDeflect()
 		return;
 	}
 
+	// Don't use deflect if the state is not Play
+	if (GameMode->GetArenaGameState() != EGameStates::Play)
+	{
+		return;
+	}
+
 	DeflectTimer = 0;	// Reset timer
+	DeflectCounter++;
 
 	// Make the healt component invulnerable
 	HealthComp->SetValnerable(false);
