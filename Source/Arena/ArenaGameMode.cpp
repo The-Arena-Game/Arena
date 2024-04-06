@@ -21,7 +21,7 @@ void AArenaGameMode::BeginPlay()
 	// Get all the Yellow Globes that is currently in the level
 	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), YellowGlobes);
 	GlobeCounter = YellowGlobes.Num();
-	ArenaGameState = EGameStates::Ready;
+	SetArenaGameState(EGameStates::Ready);
 
 	RestartArenaGame();	// Execute a freash start
 }
@@ -83,7 +83,7 @@ void AArenaGameMode::RestartArenaGame()
 	// Spawn a new blue globe
 	BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
 
-	ArenaGameState = EGameStates::Ready;
+	SetArenaGameState(EGameStates::Ready);
 	OnRestart.Broadcast();
 }
 
@@ -99,7 +99,7 @@ void AArenaGameMode::HandlePlayerDeath()
 	// If player is still alive, don't execute game over state
 	if (Player->GetHealthComponent()->IsDead())
 	{
-		ArenaGameState = EGameStates::Lost;
+		SetArenaGameState(EGameStates::Lost);
 
 		// Execute FinishGame BP Event
 		FinishGame();
@@ -121,7 +121,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 	if (--GlobeCounter <= 0)
 	{
 		// If so, all of the yellow globes are collected, win state
-		ArenaGameState = EGameStates::Win;
+		SetArenaGameState(EGameStates::Win);
 		FinishGame();
 		OpenCardSelectionUI();
 		PlayerController->bShowMouseCursor = true;
@@ -136,8 +136,7 @@ void AArenaGameMode::SetReadyState()
 		BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
 	}
 
-	ArenaGameState = EGameStates::Ready;
-	OnGameStateChange.Broadcast(EGameStates::Ready);
+	SetArenaGameState(EGameStates::Ready);
 	LevelNumber++;
 }
 
@@ -159,8 +158,7 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 
 	GlobeCounter = YellowGlobes.Num();	// Reset the counter
 
-	ArenaGameState = EGameStates::Play;
-	OnGameStateChange.Broadcast(EGameStates::Play);
+	SetArenaGameState(EGameStates::Play);
 	StartGame();
 }
 
@@ -232,4 +230,10 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 	while (bHit);
 
 	return SpawnLocation;
+}
+
+void AArenaGameMode::SetArenaGameState(EGameStates NewState)
+{
+	ArenaGameState = NewState;
+	OnGameStateChange.Broadcast(NewState);
 }

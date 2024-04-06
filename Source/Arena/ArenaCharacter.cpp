@@ -70,14 +70,15 @@ AArenaCharacter::AArenaCharacter()
 	DeflectMesh->SetHiddenInGame(true);	// Disable Deflect mesh at start
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-
-	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void AArenaCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
+	GameMode->OnGameStateChange.AddDynamic(this, &AArenaCharacter::OnGameStateChange);
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -112,12 +113,12 @@ void AArenaCharacter::Tick(float DeltaTime)
 	CurrentStamina += StandByStaminaIncrease * DeltaTime;
 
 	// Check if moving?
-	if (GetCharacterMovement()->Velocity.Size() > 0.0f)
+	if (IsStaminaActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
 	{
 		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
 	}
 
-	if (bSprinting)
+	if (IsStaminaActive && bSprinting)
 	{
 		CurrentStamina -= SprintStaminaDecrease * DeltaTime;
 	}
@@ -241,6 +242,17 @@ void AArenaCharacter::Jump()
 	{
 		Super::Jump();
 		CurrentStamina -= JumpStaminaCost;
+	}
+}
+
+void AArenaCharacter::OnGameStateChange(EGameStates NewState)
+{
+	IsStaminaActive = (NewState == EGameStates::Play) ? true : false;
+
+	if (NewState == EGameStates::Win)
+	{
+		CurrentStamina = MaxStamina;
+		DeflectTimer = DeflectCooldownDuration;
 	}
 }
 

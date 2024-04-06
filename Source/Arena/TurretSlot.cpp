@@ -23,6 +23,54 @@ ATurretSlot::ATurretSlot()
 	LightsParent->SetupAttachment(BaseMesh);
 }
 
+void ATurretSlot::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!AreAllComponentsSet())
+	{
+		return;
+	}
+
+	// Get all attached Rect Lights
+	const TArray<USceneComponent*>& AttachedChildren = LightsParent->GetAttachChildren();
+	for (USceneComponent* ChildComponent : AttachedChildren)
+	{
+		if (URectLightComponent* RectLightComponent = Cast<URectLightComponent>(ChildComponent))
+		{
+			RectLightComponent->SetVisibility(false);
+			Lights.Add(RectLightComponent);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("The Turret Slot (%s) Actor's Parent Light has different child than RectLight!"), *GetActorNameOrLabel());
+		}
+	}
+
+	if (UCardSelectionSubsystem* CardSelectionSS = GetGameInstance()->GetSubsystem<UCardSelectionSubsystem>())
+	{
+		CardSelectionSS->OnCardSelection.AddDynamic(this, &ATurretSlot::CardSelectionListener);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Couldn't get the UCardSelecitonSubsystem!"));
+	}
+
+	// Turn off light at start
+	for (URectLightComponent* Light : Lights)
+	{
+		Light->SetVisibility(false);
+	}
+
+	// Bind Restrat function and State Change Function
+	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
+	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
+	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
+
+	// Check if any editor time turret spawned
+	IsAnyTurretSpawned();
+}
+
 bool ATurretSlot::AreAllComponentsSet()
 {
 	bool AllGood = !IsValid(SingleTurretClass) || !IsValid(DualTurretClass) || !IsValid(TwinTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretPreviewClass);
@@ -84,54 +132,6 @@ bool ATurretSlot::IsAnyTurretSpawned()
 	}
 
 	return false;
-}
-
-void ATurretSlot::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!AreAllComponentsSet())
-	{
-		return;
-	}
-
-	// Get all attached Rect Lights
-	const TArray<USceneComponent*>& AttachedChildren = LightsParent->GetAttachChildren();
-	for (USceneComponent* ChildComponent : AttachedChildren)
-	{
-		if (URectLightComponent* RectLightComponent = Cast<URectLightComponent>(ChildComponent))
-		{
-			RectLightComponent->SetVisibility(false);
-			Lights.Add(RectLightComponent);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("The Turret Slot (%s) Actor's Parent Light has different child than RectLight!"), *GetActorNameOrLabel());
-		}
-	}
-
-	if (UCardSelectionSubsystem* CardSelectionSS = GetGameInstance()->GetSubsystem<UCardSelectionSubsystem>())
-	{
-		CardSelectionSS->OnCardSelection.AddDynamic(this, &ATurretSlot::CardSelectionListener);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Couldn't get the UCardSelecitonSubsystem!"));
-	}
-
-	// Turn off light at start
-	for (URectLightComponent* Light : Lights)
-	{
-		Light->SetVisibility(false);
-	}
-
-	// Bind Restrat function and State Change Function
-	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
-	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
-	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
-
-	// Check if any editor time turret spawned
-	IsAnyTurretSpawned();
 }
 
 void ATurretSlot::Tick(float DeltaTime)

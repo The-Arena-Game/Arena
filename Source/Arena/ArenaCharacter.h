@@ -92,6 +92,9 @@ private:
 
 	AArenaGameMode* GameMode;
 
+	UFUNCTION()
+	void OnGameStateChange(EGameStates NewState);
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Class Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -135,6 +138,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float MaxStamina = 100.f;
+
+	bool IsStaminaActive = true;
 
 	/** Stamina increase per second in stand by position */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Per second"))

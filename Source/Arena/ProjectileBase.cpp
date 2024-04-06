@@ -86,7 +86,7 @@ void AProjectileBase::Explode()
 
 	if (HitSound == nullptr)
 	{
-		UE_LOG(LogArnProjectile, Error, TEXT("The HitSound is not set on the ProjectileBase!"));
+		// UE_LOG(LogArnProjectile, Error, TEXT("The HitSound is not set on the ProjectileBase!"));
 		Destroy();
 		return;
 	}
