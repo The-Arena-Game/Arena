@@ -60,6 +60,13 @@ public:
 		return CurrentStamina / MaxStamina;
 	}
 
+	/** Returns remaining deflect usage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int GetDeflectCounter() const
+	{
+		return DeflectCounter;
+	}
+
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
@@ -143,7 +150,7 @@ private:
 
 	/** Stamina increase per second in stand by position */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Per second"))
-	float StandByStaminaIncrease = 10.f;
+	float BaseStaminaIncrease = 10.f;
 
 	/** Stamina decrease per second when walking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Should be positive value! Per second"))
@@ -174,7 +181,7 @@ private:
 	float SprintSpeed = 500.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "How many times Deflect can be used in a level?"))
-	int DeflectLimit = 2;
+	int DeflectUsageLimit = 2;
 
 	/** Deflect Duration */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "10.0"))

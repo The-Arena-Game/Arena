@@ -93,6 +93,7 @@ void AArenaCharacter::BeginPlay()
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
 	DeflectTimer = DeflectCooldownDuration;
+	DeflectCounter = DeflectUsageLimit;
 	CurrentStamina = MaxStamina;
 }
 
@@ -101,7 +102,7 @@ void AArenaCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If there is a usage limit, process deflect timer
-	if (DeflectCounter < DeflectLimit)
+	if (DeflectCounter > 0)
 	{
 		// Increase the timer when it is not full
 		if (DeflectTimer < DeflectCooldownDuration)
@@ -116,17 +117,17 @@ void AArenaCharacter::Tick(float DeltaTime)
 	}
 
 
-	CurrentStamina += StandByStaminaIncrease * DeltaTime;
+	CurrentStamina += BaseStaminaIncrease * DeltaTime;
 
 	// Check if moving?
 	if (IsStaminaActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
 	{
 		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
-	}
 
-	if (IsStaminaActive && bSprinting)
-	{
-		CurrentStamina -= SprintStaminaDecrease * DeltaTime;
+		if (IsStaminaActive && bSprinting)
+		{
+			CurrentStamina -= SprintStaminaDecrease * DeltaTime;
+		}
 	}
 
 	// Make sure the value stays between boundries
@@ -255,11 +256,11 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 {
 	IsStaminaActive = (NewState == EGameStates::Play) ? true : false;
 
-	if (NewState == EGameStates::Win)
+	if (NewState == EGameStates::Win || NewState == EGameStates::Ready)
 	{
 		CurrentStamina = MaxStamina;
 		DeflectTimer = DeflectCooldownDuration;
-		DeflectCounter = 0;
+		DeflectCounter = DeflectUsageLimit;
 	}
 }
 
@@ -278,7 +279,7 @@ void AArenaCharacter::EnableDeflect()
 	}
 
 	DeflectTimer = 0;	// Reset timer
-	DeflectCounter++;
+	DeflectCounter--;
 
 	// Make the healt component invulnerable
 	HealthComp->SetValnerable(false);
