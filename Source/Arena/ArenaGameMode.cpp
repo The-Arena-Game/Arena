@@ -113,7 +113,19 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 		return;
 	}
 
-	// Disable it
+	// If this was the first yellow, then enable all yellows
+	if (!AllYellowsEnabled)
+	{
+		for (AActor* YellowGlobe : YellowGlobes)
+		{
+			YellowGlobe->SetActorHiddenInGame(false);
+			YellowGlobe->SetActorEnableCollision(true);
+		}
+
+		AllYellowsEnabled = true;
+	}
+
+	// Disable it this one
 	Globe->SetActorHiddenInGame(true);
 	Globe->SetActorEnableCollision(false);
 
@@ -147,14 +159,26 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 		return;
 	}
 
-	Globe->Destroy();
-
-	// Enable all the Yellow Globes
+	// Find the farthest yellow
+	AActor* FarthestYellow = YellowGlobes[0];
 	for (AActor* YellowGlobe : YellowGlobes)
 	{
-		YellowGlobe->SetActorHiddenInGame(false);
-		YellowGlobe->SetActorEnableCollision(true);
+		double Distance = FVector::Dist(YellowGlobe->GetActorLocation(), Globe->GetActorLocation());
+		double FarthestDistance = FVector::Dist(FarthestYellow->GetActorLocation(), Globe->GetActorLocation());
+
+		if (Distance > FarthestDistance)
+		{
+			FarthestYellow = YellowGlobe;
+		}
 	}
+
+	// Enable the closest one and destroy the blue
+	FarthestYellow->SetActorHiddenInGame(false);
+	FarthestYellow->SetActorEnableCollision(true);
+	Globe->Destroy();
+
+	// Mark as not all yellows enabled
+	AllYellowsEnabled = false;
 
 	GlobeCounter = YellowGlobes.Num();	// Reset the counter
 

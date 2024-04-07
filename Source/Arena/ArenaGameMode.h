@@ -110,6 +110,7 @@ private:
 	APlayerController* PlayerController;
 	AGlobeBase* BlueGlobe;
 	int LevelNumber = 1;
+	bool AllYellowsEnabled = false;
 
 	/*----------------------------------------------------------------------------
 		Effects
