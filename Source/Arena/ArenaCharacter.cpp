@@ -92,14 +92,18 @@ void AArenaCharacter::BeginPlay()
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
+	CurrentStamina = MaxStamina;
 	DeflectTimer = DeflectCooldownDuration;
 	DeflectCounter = DeflectUsageLimit;
-	CurrentStamina = MaxStamina;
+	DashTimer = DashCooldownDuration;
+	DashCounter = DashUsageLimit;
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	////////////////////////////////	Deflect
 
 	// If there is a usage limit, process deflect timer
 	if (DeflectCounter > 0)
@@ -115,6 +119,25 @@ void AArenaCharacter::Tick(float DeltaTime)
 			DeflectTimer = DeflectCooldownDuration;
 		}
 	}
+
+	////////////////////////////////	Dash
+
+	// If there is a usage limit, process dash timer
+	if (DashCounter > 0)
+	{
+		// Increase the timer when it is not full
+		if (DashTimer < DashCooldownDuration)
+		{
+			DashTimer += DeltaTime;
+		}
+		else
+		{
+			// Make sure it is equal to the max duration if not increased
+			DashTimer = DashCooldownDuration;
+		}
+	}
+
+	////////////////////////////////	Stamina
 
 
 	CurrentStamina += BaseStaminaIncrease * DeltaTime;
@@ -150,6 +173,8 @@ void AArenaCharacter::Tick(float DeltaTime)
 	{
 		bCanSprint = true;
 	}
+
+	////////////////////////////////	Debug lines
 
 	// Draw blue line for 
 	if (IsValid(GameMode) && GameMode->GetArenaGameState() == EGameStates::Ready)
@@ -191,6 +216,9 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		// Deflect
 		EnhancedInputComponent->BindAction(DeflectAction, ETriggerEvent::Started, this, &AArenaCharacter::EnableDeflect);
 
+		// Dashing
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AArenaCharacter::StartDash);
+
 		// Looking
 		// Disabled for Top-Down EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaCharacter::Look);
 	}
@@ -220,11 +248,6 @@ void AArenaCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
-
-		float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
-		//CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
-
-
 	}
 }
 
@@ -261,6 +284,8 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		CurrentStamina = MaxStamina;
 		DeflectTimer = DeflectCooldownDuration;
 		DeflectCounter = DeflectUsageLimit;
+		DashTimer = DashCooldownDuration;
+		DashCounter = DashUsageLimit;
 	}
 }
 
@@ -299,6 +324,34 @@ void AArenaCharacter::DisableDeflect()
 
 	// Disablethe mesh
 	DeflectMesh->SetHiddenInGame(true);
+}
+
+void AArenaCharacter::StartDash()
+{
+	// If the deflect timer is not full, don't enable deflect
+	if (DashTimer < DashCooldownDuration)
+	{
+		return;
+	}
+
+	// Don't use dash if the state is not Play
+	if (GameMode->GetArenaGameState() != EGameStates::Play)
+	{
+		return;
+	}
+
+	DashTimer = 0;	// Reset timer
+	DashCounter--;
+
+	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::FinishDash, DashingDuration);
+}
+
+void AArenaCharacter::FinishDash()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 // Disabled for Top-Down 

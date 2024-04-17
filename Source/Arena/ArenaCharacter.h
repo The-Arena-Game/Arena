@@ -67,6 +67,20 @@ public:
 		return DeflectCounter;
 	}
 
+	/** Returns Dash Progress as percentage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetDashProgressPercentage() const
+	{
+		return DashTimer / DashCooldownDuration;
+	}
+
+	/** Returns remaining Dash usage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int GetDashCounter() const
+	{
+		return DashCounter;
+	}
+
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
@@ -82,6 +96,10 @@ protected:
 	/** Called for deflect input */
 	void EnableDeflect();
 	void DisableDeflect();
+
+	/** Called for dash input */
+	void StartDash();
+	void FinishDash();
 
 	/** Called for looking input */
 	// Disabled for Top-Down --> void Look(const FInputActionValue& Value);
@@ -134,10 +152,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* DeflectAction;
 
+	/** Dash Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
+
 	/** Look Input Action */
 	// Disabled for Top-Down 
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	//UInputAction* LookAction;
+
+	////////////////////////////////	Stamina
 
 	float CurrentStamina = 100.f;
 	bool bSprinting = false;
@@ -172,6 +196,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float JumpStaminaCost = 20.f;
 
+	////////////////////////////////	Basics
+
 	/** Walk Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float WalkSpeed = 200.f;
@@ -179,6 +205,8 @@ private:
 	/** Sprint Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
+
+	////////////////////////////////	Deflect
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "How many times Deflect can be used in a level?"))
 	int DeflectUsageLimit = 2;
@@ -196,6 +224,26 @@ private:
 
 	/** Count how many times deflect used in a level */
 	int DeflectCounter = 0;
+
+	////////////////////////////////	Dash
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float DashingDuration = 0.15f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float DashSpeed = 200.f;
+
+	/* The distance from the target location that we can consider the dash action is done! */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	int DashUsageLimit = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float DashCooldownDuration = 5.0f;
+
+	float DashTimer = 0.f;
+	int DashCounter = 0;
+
+	////////////////////////////////	Component
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
