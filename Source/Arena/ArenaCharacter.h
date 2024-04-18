@@ -213,7 +213,7 @@ private:
 
 	/** Deflect Duration */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "10.0"))
-	float DeflectDuration = 2.f;
+	float DeflectDuration = 2.0f;
 
 	/** Deflect Duration */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "30.0"))
@@ -228,7 +228,7 @@ private:
 	////////////////////////////////	Dash
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float DashingDuration = 0.15f;
+	float DashDistance = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float DashSpeed = 200.f;
@@ -238,10 +238,19 @@ private:
 	int DashUsageLimit = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float DashCooldownDuration = 5.0f;
+	float DashCooldownDuration = 5.f;
 
 	float DashTimer = 0.f;
+	// Used for calculating time if the character gets stucked.
+	float DashDebugTimer = 0.f;
 	int DashCounter = 0;
+
+	bool IsDashing = false;
+	FVector DashTargetLocation = FVector::Zero();
+
+	// The distance that is acceptable as reached
+	float DashReachThreshold = 20.f;
+	float DashObstacleOffset = 150.f;
 
 	////////////////////////////////	Component
 

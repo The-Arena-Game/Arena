@@ -137,6 +137,30 @@ void AArenaCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	if (IsDashing)
+	{
+		// Start movement
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, DashTargetLocation, DeltaTime, DashSpeed);
+		SetActorLocation(NewLocation);
+
+		// Check if the actor has reached the target location
+		float DistanceToTarget = FVector::DistSquared(CurrentLocation, DashTargetLocation);
+		if (DistanceToTarget < FMath::Square(DashReachThreshold))
+		{
+			//UE_LOG(LogArnCharacter, Log, TEXT("REACHED TO THE TARGET !!"));
+			FinishDash();
+		}
+
+		// Release dash if it exceeds 1 second - Avoids bug
+		DashDebugTimer += DeltaTime;
+		if (DashDebugTimer > 1.f)
+		{
+			DashDebugTimer = 0;
+			FinishDash();
+		}
+	}
+
 	////////////////////////////////	Stamina
 
 
@@ -230,6 +254,11 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AArenaCharacter::Move(const FInputActionValue& Value)
 {
+	if (IsDashing)
+	{
+		return;
+	}
+
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -329,7 +358,7 @@ void AArenaCharacter::DisableDeflect()
 void AArenaCharacter::StartDash()
 {
 	// If the deflect timer is not full, don't enable deflect
-	if (DashTimer < DashCooldownDuration)
+	if (DashTimer < DashCooldownDuration || IsDashing)
 	{
 		return;
 	}
@@ -342,16 +371,72 @@ void AArenaCharacter::StartDash()
 
 	DashTimer = 0;	// Reset timer
 	DashCounter--;
+	IsDashing = true;
 
-	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+	// We are drawing 2 lines to check if there is something. One from left, one from right.
+	FHitResult LeftHitResult;
+	FHitResult RightHitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::FinishDash, DashingDuration);
+	// Get the location in the middle
+	FVector StartLocation = GetActorLocation() - FVector(0.f, 0.f, 85.f);	// send the line to the feet
+
+	// Offset the start location to little back avoid getting inside of thin walls
+	StartLocation -= FVector(DashObstacleOffset, DashObstacleOffset, 1.f) * GetActorForwardVector();
+
+	DashTargetLocation = GetActorLocation() + GetActorForwardVector() * DashDistance; // Get the desired location
+	DashTargetLocation -= FVector(0.f, 0.f, 85.f);	// send the line to the feet
+
+	// Right-Offset line
+	FVector StartLocation_Right = StartLocation + FVector(1.f, 100.f, 1.f) * GetActorForwardVector();
+	FVector DashTargetLocation_Right = DashTargetLocation + FVector(1.f, 100.f, 1.f) * GetActorForwardVector();
+	//DrawDebugLine(GetWorld(), StartLocation_Right, DashTargetLocation_Right, FColor::Yellow, false, 3.f);	// draw line
+	bool bHitRight = GetWorld()->LineTraceSingleByChannel(RightHitResult, StartLocation_Right, DashTargetLocation_Right, ECC_Visibility, CollisionParams);
+
+	//// Left-Offset line
+	FVector StartLocation_Left = StartLocation - FVector(1.f, 50.f, 0.f) * GetActorForwardVector();
+	FVector DashTargetLocation_Left = DashTargetLocation - FVector(1.f, 50.f, 0.f) * GetActorForwardVector();
+	//DrawDebugLine(GetWorld(), StartLocation_Left, DashTargetLocation_Left, FColor::Purple, false, 3.f);	// draw line
+	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(LeftHitResult, StartLocation_Left, DashTargetLocation_Left, ECC_Visibility, CollisionParams);
+
+	if (bHitRight || bHitLeft)
+	{
+		// Take the one hit
+		FHitResult HitResult = bHitRight ? RightHitResult : LeftHitResult;
+
+		//UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 20.f, 12, FColor::Red, false, 3.f);
+
+		// Select the target location with an offset towards the back (to the middle, where we turned behind) to avoid stucking into the obstacle!
+		DashTargetLocation = HitResult.ImpactPoint - DashObstacleOffset * GetActorForwardVector();
+		DashTargetLocation.Z = GetActorLocation().Z;	// Adjust the height of the target to the Actors height
+
+		// Calculate if the target location falls behind the character
+		FVector CharacterToTargetLocation = DashTargetLocation - GetActorLocation();
+		CharacterToTargetLocation.Normalize();
+		float DotProduct = FVector::DotProduct(CharacterToTargetLocation, GetActorForwardVector());
+
+		// If so, take ne current location as the target. Else, don't do anything and accept the target.
+		if (DotProduct < 0)
+		{
+			DashTargetLocation = GetActorLocation() - GetActorForwardVector() * 5.f;
+		}
+	}
+	else
+	{
+		// If doesn't hit anything, just calculate the target by distance. 
+		// But, again, take it little bit back to avoid getting stuck into obstacles that are not collides but nearby the target and causes bugs.
+		DashTargetLocation = GetActorLocation() + GetActorForwardVector() * (DashDistance - 50.f);
+	}
+
+	//// DEBUG
+	//DrawDebugSphere(GetWorld(), DashTargetLocation, 60.f, 12, FColor::Green, false, 3.f);
 }
 
 void AArenaCharacter::FinishDash()
 {
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	IsDashing = false;
 }
 
 // Disabled for Top-Down 
