@@ -81,6 +81,20 @@ public:
 		return DashCounter;
 	}
 
+	/** Returns Flash Progress as percentage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetFlashProgressPercentage() const
+	{
+		return FlashTimer / FlashCooldownDuration;
+	}
+
+	/** Returns remaining Flash usage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int GetFlashCounter() const
+	{
+		return FlashCounter;
+	}
+
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
@@ -97,9 +111,12 @@ protected:
 	void EnableDeflect();
 	void DisableDeflect();
 
-	/** Called for dash input */
+	/** Called for Dash input */
 	void StartDash();
 	void FinishDash();
+
+	/** Called for Flash input */
+	void StartFlash();
 
 	/** Called for looking input */
 	// Disabled for Top-Down --> void Look(const FInputActionValue& Value);
@@ -155,6 +172,10 @@ private:
 	/** Dash Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* DashAction;
+
+	/** Flash Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* FlashAction;
 
 	/** Look Input Action */
 	// Disabled for Top-Down 
@@ -233,7 +254,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float DashSpeed = 200.f;
 
-	/* The distance from the target location that we can consider the dash action is done! */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	int DashUsageLimit = 3;
 
@@ -250,10 +270,36 @@ private:
 
 	// The distance that is acceptable as reached
 	float DashReachThreshold = 20.f;
-	float DashObstacleOffset = 150.f;
+	float DashObstacleOffset = 50.f;
+	float CharacterFeetDistanceFromCenter = 85.f;
+	float CollisionLineOffset = 50.f;
+
+	////////////////////////////////	Flash
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float FlashDistance = 200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	int FlashUsageLimit = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float FlashCooldownDuration = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
+	UParticleSystem* FlashInitialParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
+	UParticleSystem* FlashTargetParticle;
+
+	float FlashTimer = 0.f;
+	int FlashCounter = 0;
 
 	////////////////////////////////	Component
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
+
+	////////////////////////////////	Internal Functions
+
+	FVector GetDashLocation(float TargetDistance, bool& SameLocation);
 };

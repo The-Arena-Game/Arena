@@ -97,6 +97,8 @@ void AArenaCharacter::BeginPlay()
 	DeflectCounter = DeflectUsageLimit;
 	DashTimer = DashCooldownDuration;
 	DashCounter = DashUsageLimit;
+	FlashTimer = FlashCooldownDuration;
+	FlashCounter = FlashUsageLimit;
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
@@ -158,6 +160,23 @@ void AArenaCharacter::Tick(float DeltaTime)
 		{
 			DashDebugTimer = 0;
 			FinishDash();
+		}
+	}
+
+	////////////////////////////////	Flash
+
+	// If there is a usage limit, process Flash timer
+	if (FlashCounter > 0)
+	{
+		// Increase the timer when it is not full
+		if (FlashTimer < FlashCooldownDuration)
+		{
+			FlashTimer += DeltaTime;
+		}
+		else
+		{
+			// Make sure it is equal to the max duration if not increased
+			FlashTimer = FlashCooldownDuration;
 		}
 	}
 
@@ -237,11 +256,10 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AArenaCharacter::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AArenaCharacter::StopSprint);
 
-		// Deflect
+		// Deflect, Dash, Flash
 		EnhancedInputComponent->BindAction(DeflectAction, ETriggerEvent::Started, this, &AArenaCharacter::EnableDeflect);
-
-		// Dashing
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AArenaCharacter::StartDash);
+		EnhancedInputComponent->BindAction(FlashAction, ETriggerEvent::Started, this, &AArenaCharacter::StartFlash);
 
 		// Looking
 		// Disabled for Top-Down EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaCharacter::Look);
@@ -315,6 +333,71 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		DeflectCounter = DeflectUsageLimit;
 		DashTimer = DashCooldownDuration;
 		DashCounter = DashUsageLimit;
+		FlashTimer = FlashCooldownDuration;
+		FlashCounter = FlashUsageLimit;
+	}
+}
+
+FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocation)
+{
+	// We are drawing 2 lines to check if there is something. One from left, one from right.
+	FHitResult LeftHitResult;
+	FHitResult RightHitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector StartLocation = GetActorLocation() - FVector(0.f, 0.f, CharacterFeetDistanceFromCenter);	// send the line to the feet
+	FVector TargetLocation = GetActorLocation() + GetActorForwardVector() * TargetDistance; // Get the desired location
+	TargetLocation -= FVector(0.f, 0.f, CharacterFeetDistanceFromCenter);	// send the line to the feet
+
+	// Offset the start location to little back avoid getting inside of thin walls
+	StartLocation -= FVector(DashObstacleOffset, DashObstacleOffset, 1.f) * GetActorForwardVector();
+
+	// Right-Offset line
+	FVector StartLocation_Right = StartLocation + FVector(1.f, CollisionLineOffset, 1.f) * GetActorForwardVector();
+	FVector TargetLocation_Right = TargetLocation + FVector(1.f, CollisionLineOffset, 1.f) * GetActorForwardVector();
+	// DrawDebugLine(GetWorld(), StartLocation_Right, TargetLocation_Right, FColor::Yellow, false, 3.f);	// draw line
+	bool bHitRight = GetWorld()->LineTraceSingleByChannel(RightHitResult, StartLocation_Right, TargetLocation_Right, ECC_Visibility, CollisionParams);
+
+	//// Left-Offset line
+	FVector StartLocation_Left = StartLocation - FVector(1.f, CollisionLineOffset, 0.f) * GetActorForwardVector();
+	FVector TargetLocation_Left = TargetLocation - FVector(1.f, CollisionLineOffset, 0.f) * GetActorForwardVector();
+	// DrawDebugLine(GetWorld(), StartLocation_Left, TargetLocation_Left, FColor::Purple, false, 3.f);	// draw line
+	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(LeftHitResult, StartLocation_Left, TargetLocation_Left, ECC_Visibility, CollisionParams);
+
+	if (bHitRight || bHitLeft)
+	{
+		// Take the one hit
+		FHitResult HitResult = bHitRight ? RightHitResult : LeftHitResult;
+
+		//UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 20.f, 12, FColor::Red, false, 3.f);
+
+		// Select the target location with an offset towards the back (to the middle, where we turned behind) to avoid stucking into the obstacle!
+		TargetLocation = HitResult.ImpactPoint - DashObstacleOffset * GetActorForwardVector();
+		TargetLocation.Z = GetActorLocation().Z;	// Adjust the height of the target to the Actors height
+
+		// Calculate if the target location falls behind the character
+		FVector CharacterToTargetLocation = TargetLocation - GetActorLocation();
+		CharacterToTargetLocation.Normalize();
+		float DotProduct = FVector::DotProduct(CharacterToTargetLocation, GetActorForwardVector());
+
+		// If so, take ne current location as the target. Else, don't do anything and accept the target.
+		if (DotProduct < 0)
+		{
+			SameLocation = true;
+			return GetActorLocation() - GetActorForwardVector() * 5.f;
+		}
+		else
+		{
+			return TargetLocation;
+		}
+	}
+	else
+	{
+		// If doesn't hit anything, just calculate the target by distance. 
+		// But, again, take it little bit back to avoid getting stuck into obstacles that are not collides but nearby the target and causes bugs.
+		return GetActorLocation() + GetActorForwardVector() * (TargetDistance - 50.f);
 	}
 }
 
@@ -357,7 +440,7 @@ void AArenaCharacter::DisableDeflect()
 
 void AArenaCharacter::StartDash()
 {
-	// If the deflect timer is not full, don't enable deflect
+	// If the the timer is not full OR is dashing, don't execute action
 	if (DashTimer < DashCooldownDuration || IsDashing)
 	{
 		return;
@@ -369,74 +452,72 @@ void AArenaCharacter::StartDash()
 		return;
 	}
 
+	bool SameLocation = false;
+	DashTargetLocation = GetDashLocation(DashDistance, SameLocation);
+	// DrawDebugSphere(GetWorld(), DashTargetLocation, 60.f, 12, FColor::Green, false, 3.f);
+
+	// If the location is not changed, don't execute dash
+	if (SameLocation)
+	{
+		return;
+	}
+
 	DashTimer = 0;	// Reset timer
 	DashCounter--;
 	IsDashing = true;
-
-	// We are drawing 2 lines to check if there is something. One from left, one from right.
-	FHitResult LeftHitResult;
-	FHitResult RightHitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-
-	// Get the location in the middle
-	FVector StartLocation = GetActorLocation() - FVector(0.f, 0.f, 85.f);	// send the line to the feet
-
-	// Offset the start location to little back avoid getting inside of thin walls
-	StartLocation -= FVector(DashObstacleOffset, DashObstacleOffset, 1.f) * GetActorForwardVector();
-
-	DashTargetLocation = GetActorLocation() + GetActorForwardVector() * DashDistance; // Get the desired location
-	DashTargetLocation -= FVector(0.f, 0.f, 85.f);	// send the line to the feet
-
-	// Right-Offset line
-	FVector StartLocation_Right = StartLocation + FVector(1.f, 100.f, 1.f) * GetActorForwardVector();
-	FVector DashTargetLocation_Right = DashTargetLocation + FVector(1.f, 100.f, 1.f) * GetActorForwardVector();
-	//DrawDebugLine(GetWorld(), StartLocation_Right, DashTargetLocation_Right, FColor::Yellow, false, 3.f);	// draw line
-	bool bHitRight = GetWorld()->LineTraceSingleByChannel(RightHitResult, StartLocation_Right, DashTargetLocation_Right, ECC_Visibility, CollisionParams);
-
-	//// Left-Offset line
-	FVector StartLocation_Left = StartLocation - FVector(1.f, 50.f, 0.f) * GetActorForwardVector();
-	FVector DashTargetLocation_Left = DashTargetLocation - FVector(1.f, 50.f, 0.f) * GetActorForwardVector();
-	//DrawDebugLine(GetWorld(), StartLocation_Left, DashTargetLocation_Left, FColor::Purple, false, 3.f);	// draw line
-	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(LeftHitResult, StartLocation_Left, DashTargetLocation_Left, ECC_Visibility, CollisionParams);
-
-	if (bHitRight || bHitLeft)
-	{
-		// Take the one hit
-		FHitResult HitResult = bHitRight ? RightHitResult : LeftHitResult;
-
-		//UE_LOG(LogArnGameMode, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetActorNameOrLabel());
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 20.f, 12, FColor::Red, false, 3.f);
-
-		// Select the target location with an offset towards the back (to the middle, where we turned behind) to avoid stucking into the obstacle!
-		DashTargetLocation = HitResult.ImpactPoint - DashObstacleOffset * GetActorForwardVector();
-		DashTargetLocation.Z = GetActorLocation().Z;	// Adjust the height of the target to the Actors height
-
-		// Calculate if the target location falls behind the character
-		FVector CharacterToTargetLocation = DashTargetLocation - GetActorLocation();
-		CharacterToTargetLocation.Normalize();
-		float DotProduct = FVector::DotProduct(CharacterToTargetLocation, GetActorForwardVector());
-
-		// If so, take ne current location as the target. Else, don't do anything and accept the target.
-		if (DotProduct < 0)
-		{
-			DashTargetLocation = GetActorLocation() - GetActorForwardVector() * 5.f;
-		}
-	}
-	else
-	{
-		// If doesn't hit anything, just calculate the target by distance. 
-		// But, again, take it little bit back to avoid getting stuck into obstacles that are not collides but nearby the target and causes bugs.
-		DashTargetLocation = GetActorLocation() + GetActorForwardVector() * (DashDistance - 50.f);
-	}
-
-	//// DEBUG
-	//DrawDebugSphere(GetWorld(), DashTargetLocation, 60.f, 12, FColor::Green, false, 3.f);
 }
 
 void AArenaCharacter::FinishDash()
 {
 	IsDashing = false;
+}
+
+void AArenaCharacter::StartFlash()
+{
+	// If the the timer is not full OR is dashing, don't execute action
+	if (FlashTimer < FlashCooldownDuration || IsDashing)
+	{
+		return;
+	}
+
+	// Don't use dash if the state is not Play
+	if (GameMode->GetArenaGameState() != EGameStates::Play)
+	{
+		return;
+	}
+
+	// Get locations
+	bool SameLocation = false;
+	FVector InitialLocation = GetActorLocation();
+	FVector TargetLocation = GetDashLocation(FlashDistance, SameLocation);
+
+	// Unreal has built-in teleport function but ours more functional for our purpose.
+	// FVector TargetLocation = GetActorLocation() + GetActorForwardVector() * (FlashDistance - 50.f);
+	// SetActorLocation(TargetLocation, true);
+
+	// If the location is not changed, don't execute Flash
+	if (SameLocation)
+	{
+		return;
+	}
+
+	// Teleport
+	SetActorLocation(TargetLocation);
+	// DrawDebugSphere(GetWorld(), TargetLocation, 60.f, 12, FColor::Green, false, 3.f);
+
+	FlashTimer = 0;	// Reset timer
+	FlashCounter--;
+
+	// TODO: Perform VFX, SFX
+	if (FlashInitialParticle != nullptr && FlashTargetParticle != nullptr)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, FlashInitialParticle, InitialLocation, GetActorRotation());
+		UGameplayStatics::SpawnEmitterAtLocation(this, FlashTargetParticle, GetActorLocation(), GetActorRotation());
+	}
+	else
+	{
+		UE_LOG(LogArnCharacter, Warning, TEXT("The Flash Particles Effects are not set!"));
+	}
 }
 
 // Disabled for Top-Down 
