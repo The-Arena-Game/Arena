@@ -12,6 +12,15 @@ class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
 
+UENUM(BlueprintType)
+enum class EProjectileType : uint8
+{
+	Regular		UMETA(DisplayName = "Regular Projectile Type"),
+	TypeZ		UMETA(DisplayName = "Type Z Projectile"),
+	TypeV		UMETA(DisplayName = "Type V Projectile"),
+	TypeS		UMETA(DisplayName = "Type S Projectile"),
+};
+
 UCLASS()
 class AProjectileBase : public AActor
 {
@@ -21,9 +30,20 @@ public:
 	AProjectileBase();
 
 protected:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 private:
+
+	// Bullet Type Dropdown
+	UFUNCTION()
+	TArray<EProjectileType> GetProjectileTypeOptions()
+	{
+		return { EProjectileType::Regular, EProjectileType::TypeZ, EProjectileType::TypeV, EProjectileType::TypeS };
+	}
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type", meta = (AllowPrivateAccess = "true", GetOptions = "GetProjectileTypeOptions"))
+	EProjectileType ProjectileType = EProjectileType::Regular;
 
 	UFUNCTION(BlueprintCallable, Category = "Arena Function")
 	void Explode();
@@ -57,5 +77,28 @@ private:
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	///////////////////////////////
+	/// Type Z
+	///////////////////////////////
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - Z", meta = (AllowPrivateAccess = "true"))
+	float TypeZ_DistanceX = 300.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - Z", meta = (AllowPrivateAccess = "true"))
+	float TypeZ_DistanceY = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - Z", meta = (AllowPrivateAccess = "true"))
+	float TypeZ_MovementSpeed = 250.f;
+
+	enum class ETypeZSteps : uint8
+	{
+		StepOne, StepTwo, StepThree, StepFour
+	};
+
+	ETypeZSteps TypeZ_Step = ETypeZSteps::StepOne;
+
+	FVector TypeZ_TargetLocation = FVector::Zero();
+
+	void HandleTypeZ(float DeltaTime);
 
 };
