@@ -124,19 +124,16 @@ void AArenaCharacter::Tick(float DeltaTime)
 
 	////////////////////////////////	Dash
 
-	// If there is a usage limit, process dash timer
-	if (DashCounter > 0)
+	// REMOVED: If there is a usage limit, process dash timer
+	// Increase the timer when it is not full
+	if (DashTimer < DashCooldownDuration)
 	{
-		// Increase the timer when it is not full
-		if (DashTimer < DashCooldownDuration)
-		{
-			DashTimer += DeltaTime;
-		}
-		else
-		{
-			// Make sure it is equal to the max duration if not increased
-			DashTimer = DashCooldownDuration;
-		}
+		DashTimer += DeltaTime;
+	}
+	else
+	{
+		// Make sure it is equal to the max duration if not increased
+		DashTimer = DashCooldownDuration;
 	}
 
 	if (IsDashing)
@@ -165,19 +162,16 @@ void AArenaCharacter::Tick(float DeltaTime)
 
 	////////////////////////////////	Flash
 
-	// If there is a usage limit, process Flash timer
-	if (FlashCounter > 0)
+	// REMOVED: If there is a usage limit, process Flash timer
+	// Increase the timer when it is not full
+	if (FlashTimer < FlashCooldownDuration)
 	{
-		// Increase the timer when it is not full
-		if (FlashTimer < FlashCooldownDuration)
-		{
-			FlashTimer += DeltaTime;
-		}
-		else
-		{
-			// Make sure it is equal to the max duration if not increased
-			FlashTimer = FlashCooldownDuration;
-		}
+		FlashTimer += DeltaTime;
+	}
+	else
+	{
+		// Make sure it is equal to the max duration if not increased
+		FlashTimer = FlashCooldownDuration;
 	}
 
 	////////////////////////////////	Stamina
@@ -463,7 +457,7 @@ void AArenaCharacter::StartDash()
 	}
 
 	DashTimer = 0;	// Reset timer
-	DashCounter--;
+	// DashCounter--; REMOVED
 	IsDashing = true;
 }
 
@@ -506,7 +500,7 @@ void AArenaCharacter::StartFlash()
 	// DrawDebugSphere(GetWorld(), TargetLocation, 60.f, 12, FColor::Green, false, 3.f);
 
 	FlashTimer = 0;	// Reset timer
-	FlashCounter--;
+	// FlashCounter--; REMOVED
 
 	// TODO: Perform VFX, SFX
 	if (FlashInitialParticle != nullptr && FlashTargetParticle != nullptr)
