@@ -126,4 +126,24 @@ private:
 
 	void HandleTypeV(float DeltaTime);
 
+	///////////////////////////////
+	/// Type S
+	///////////////////////////////
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
+	float TypeS_DistanceX = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
+	float TypeS_DistanceY = 3.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
+	float TypeS_SpeedX = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
+	float TypeS_SpeedY = 5.f;
+
+	float TypeS_Timer = 0.f;
+
+	FVector TypeS_TargetLocation = FVector::Zero();
+
+	void HandleTypeS(float DeltaTime);
 };

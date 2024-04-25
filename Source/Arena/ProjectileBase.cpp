@@ -48,6 +48,12 @@ void AProjectileBase::BeginPlay()
 			// Set the initial target
 			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX / 2) + (GetActorRightVector() * TypeV_DistanceY / 2);
 		}
+
+		else if (ProjectileType == EProjectileType::TypeS)
+		{
+			// Set the wave offset to center the wave
+			TypeS_Timer += TypeS_DistanceY / 2;
+		}
 	}
 }
 
@@ -62,6 +68,9 @@ void AProjectileBase::Tick(float DeltaTime)
 		break;
 	case EProjectileType::TypeV:
 		HandleTypeV(DeltaTime);
+		break;
+	case EProjectileType::TypeS:
+		HandleTypeS(DeltaTime);
 		break;
 	default:
 		// UE_LOG(LogArnProjectile, Warning, TEXT("The unsupported type selected!"));
@@ -164,6 +173,15 @@ void AProjectileBase::HandleTypeV(float DeltaTime)
 
 		IsMovingRight = !IsMovingRight;
 	}
+}
+
+void AProjectileBase::HandleTypeS(float DeltaTime)
+{
+	// Move
+	TypeS_Timer += DeltaTime * TypeS_SpeedY;
+	float ValueY = TypeS_DistanceY * FMath::Sin(TypeS_Timer / TypeS_DistanceX);
+	FVector FromZero = FVector(TypeS_SpeedX, ValueY, 0.f);
+	AddActorLocalOffset(FromZero);
 }
 
 void AProjectileBase::Explode()
