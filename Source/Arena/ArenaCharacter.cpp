@@ -105,6 +105,11 @@ void AArenaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Character Movement Component bug fix - By forcing to move, we are activating collision detection
+	FHitResult OutHit;
+	GetCharacterMovement()->SafeMoveUpdatedComponent(FVector(0.f, 0.f, 0.01f), GetActorRotation(), true, OutHit);
+	GetCharacterMovement()->SafeMoveUpdatedComponent(FVector(0.f, 0.f, -0.01f), GetActorRotation(), true, OutHit);
+
 	////////////////////////////////	Deflect
 
 	// If there is a usage limit, process deflect timer

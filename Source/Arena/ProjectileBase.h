@@ -101,4 +101,29 @@ private:
 
 	void HandleTypeZ(float DeltaTime);
 
+	///////////////////////////////
+	/// Type V
+	///////////////////////////////
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - V", meta = (AllowPrivateAccess = "true"))
+	float TypeV_DistanceX = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - V", meta = (AllowPrivateAccess = "true"))
+	float TypeV_DistanceY = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - V", meta = (AllowPrivateAccess = "true"))
+	float TypeV_MovementSpeed = 400.f;
+
+	enum class ETypeVSteps : uint8
+	{
+		StepZero, StepOne, StepTwo
+	};
+
+	ETypeVSteps TypeV_Step = ETypeVSteps::StepZero;
+
+	bool IsMovingRight = true;
+
+	FVector TypeV_TargetLocation = FVector::Zero();
+
+	void HandleTypeV(float DeltaTime);
+
 };

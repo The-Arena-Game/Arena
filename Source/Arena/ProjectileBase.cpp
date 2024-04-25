@@ -43,6 +43,11 @@ void AProjectileBase::BeginPlay()
 			// Set the initial target
 			TypeZ_TargetLocation = GetActorLocation() + GetActorForwardVector() * TypeZ_DistanceX;
 		}
+		else if (ProjectileType == EProjectileType::TypeV)
+		{
+			// Set the initial target
+			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX / 2) + (GetActorRightVector() * TypeV_DistanceY / 2);
+		}
 	}
 }
 
@@ -54,6 +59,9 @@ void AProjectileBase::Tick(float DeltaTime)
 	{
 	case EProjectileType::TypeZ:
 		HandleTypeZ(DeltaTime);
+		break;
+	case EProjectileType::TypeV:
+		HandleTypeV(DeltaTime);
 		break;
 	default:
 		// UE_LOG(LogArnProjectile, Warning, TEXT("The unsupported type selected!"));
@@ -131,6 +139,30 @@ void AProjectileBase::HandleTypeZ(float DeltaTime)
 			TypeZ_TargetLocation = GetActorLocation() + GetActorForwardVector() * TypeZ_DistanceX;
 			TypeZ_Step = ETypeZSteps::StepOne;
 		}
+	}
+}
+
+void AProjectileBase::HandleTypeV(float DeltaTime)
+{
+	// Start movement
+	FVector CurrentLocation = GetActorLocation();
+	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TypeV_TargetLocation, DeltaTime, TypeV_MovementSpeed);
+	SetActorLocation(NewLocation);
+
+	// Check if the actor has reached the target location, if so, set a new target
+	float DistanceToTarget = FVector::DistSquared(CurrentLocation, TypeV_TargetLocation);
+	if (DistanceToTarget < FMath::Square(1.0f))
+	{
+		if (IsMovingRight)
+		{
+			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX) - (GetActorRightVector() * TypeV_DistanceY);
+		}
+		else
+		{
+			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX) + (GetActorRightVector() * TypeV_DistanceY);
+		}
+
+		IsMovingRight = !IsMovingRight;
 	}
 }
 
