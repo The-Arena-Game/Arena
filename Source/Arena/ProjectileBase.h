@@ -141,6 +141,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
 	float TypeS_SpeedY = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type - S", meta = (AllowPrivateAccess = "true"))
+	bool TypeS_Reverse = false;
+
 	float TypeS_Timer = 0.f;
 
 	FVector TypeS_TargetLocation = FVector::Zero();

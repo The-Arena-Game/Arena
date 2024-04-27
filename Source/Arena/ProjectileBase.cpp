@@ -53,6 +53,11 @@ void AProjectileBase::BeginPlay()
 		{
 			// Set the wave offset to center the wave
 			TypeS_Timer += TypeS_DistanceY / 2;
+
+			if (TypeS_Reverse)
+			{
+				TypeS_DistanceX = -TypeS_DistanceX;
+			}
 		}
 	}
 }
