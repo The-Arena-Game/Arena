@@ -355,13 +355,13 @@ FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocatio
 	// Right-Offset line
 	FVector StartLocation_Right = StartLocation + FVector(1.f, CollisionLineOffset, 1.f) * GetActorForwardVector();
 	FVector TargetLocation_Right = TargetLocation + FVector(1.f, CollisionLineOffset, 1.f) * GetActorForwardVector();
-	// DrawDebugLine(GetWorld(), StartLocation_Right, TargetLocation_Right, FColor::Yellow, false, 3.f);	// draw line
+	//DrawDebugLine(GetWorld(), StartLocation_Right, TargetLocation_Right, FColor::Yellow, false, 3.f);	// draw line
 	bool bHitRight = GetWorld()->LineTraceSingleByChannel(RightHitResult, StartLocation_Right, TargetLocation_Right, ECC_Visibility, CollisionParams);
 
 	//// Left-Offset line
 	FVector StartLocation_Left = StartLocation - FVector(1.f, CollisionLineOffset, 0.f) * GetActorForwardVector();
 	FVector TargetLocation_Left = TargetLocation - FVector(1.f, CollisionLineOffset, 0.f) * GetActorForwardVector();
-	// DrawDebugLine(GetWorld(), StartLocation_Left, TargetLocation_Left, FColor::Purple, false, 3.f);	// draw line
+	//DrawDebugLine(GetWorld(), StartLocation_Left, TargetLocation_Left, FColor::Purple, false, 3.f);	// draw line
 	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(LeftHitResult, StartLocation_Left, TargetLocation_Left, ECC_Visibility, CollisionParams);
 
 	if (bHitRight || bHitLeft)
@@ -385,10 +385,13 @@ FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocatio
 		if (DotProduct < 0)
 		{
 			SameLocation = true;
+			//FVector DebugLoc = GetActorLocation() - GetActorForwardVector() * 5.f;
+			//DrawDebugSphere(GetWorld(), DebugLoc, 20.f, 12, FColor::Red, false, 3.f);
 			return GetActorLocation() - GetActorForwardVector() * 5.f;
 		}
 		else
 		{
+			//DrawDebugSphere(GetWorld(), TargetLocation, 20.f, 12, FColor::Red, false, 3.f);
 			return TargetLocation;
 		}
 	}
@@ -396,6 +399,8 @@ FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocatio
 	{
 		// If doesn't hit anything, just calculate the target by distance. 
 		// But, again, take it little bit back to avoid getting stuck into obstacles that are not collides but nearby the target and causes bugs.
+		//FVector DebugLoc = GetActorLocation() + GetActorForwardVector() * (TargetDistance - 50.f);
+		//DrawDebugSphere(GetWorld(), DebugLoc, 20.f, 12, FColor::Red, false, 3.f);
 		return GetActorLocation() + GetActorForwardVector() * (TargetDistance - 50.f);
 	}
 }
