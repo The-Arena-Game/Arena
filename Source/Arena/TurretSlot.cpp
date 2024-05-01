@@ -293,6 +293,19 @@ TSubclassOf<ATurretBase> ATurretSlot::GetActualClass(ETurretType Type)
 	case ETurretType::Triplet:
 		ActualClass = TripletTurretClass;
 		break;
+	case ETurretType::Lazer:
+		ActualClass = LazerTurretClass;
+		break;
+	case ETurretType::Knight:
+		ActualClass = KnightTurretClass;
+		break;
+	//Sinus deactivated until Sinus Bullet is fixed.
+	//case ETurretType::Sinus:
+	//	ActualClass = SinusTurretClass;
+	//	break;
+	case ETurretType::MinusSinus:
+		ActualClass = MinusSinusTurretClass;
+		break;
 	default:
 		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
 		break;
@@ -305,7 +318,8 @@ TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()
 {
 	return {
 		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
-		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet
+		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet,
+		ETurretType::Lazer, ETurretType::Knight, ETurretType::MinusSinus
 	};
 }
 

@@ -19,6 +19,11 @@ enum class ETurretType : uint8
 	Chonky			UMETA(DisplayName = "Chonky Turret"),
 	Gatling			UMETA(DisplayName = "Gatling Turret"),
 	Triplet			UMETA(DisplayName = "Triplet Turret"),
+	Lazer			UMETA(DisplayName = "Lazer Turret"),
+	Knight			UMETA(DisplayName = "Knight Turret"),
+	//Sinus deactivated until Sinus Bullet is fixed.
+	//Sinus			UMETA(DisplayName = "Sinus Turret"),
+	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
 };
 
 UCLASS()
@@ -105,6 +110,19 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	TSubclassOf<ATurretBase> DualTurretPreviewClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> LazerTurretClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> KnightTurretClass;
+
+	//Sinus deactivated until Sinus Bullet is fixed.
+	//UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	//TSubclassOf<ATurretBase> SinusTurretClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<ATurretBase> MinusSinusTurretClass;
 
 	/*----------------------------------------------------------------------------
 		Turret Placement
