@@ -19,6 +19,7 @@ enum class EProjectileType : uint8
 	TypeZ		UMETA(DisplayName = "Type Z Projectile"),
 	TypeV		UMETA(DisplayName = "Type V Projectile"),
 	TypeS		UMETA(DisplayName = "Type S Projectile"),
+	Laser		UMETA(DisplayName = "Lazer Projectile"),
 };
 
 UCLASS()
@@ -39,7 +40,9 @@ private:
 	UFUNCTION()
 	TArray<EProjectileType> GetProjectileTypeOptions()
 	{
-		return { EProjectileType::Regular, EProjectileType::TypeZ, EProjectileType::TypeV, EProjectileType::TypeS };
+		return { EProjectileType::Regular, EProjectileType::TypeZ, EProjectileType::TypeV, EProjectileType::TypeS,
+			EProjectileType::Laser
+		};
 	}
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Type", meta = (AllowPrivateAccess = "true", GetOptions = "GetProjectileTypeOptions"))

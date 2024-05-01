@@ -48,7 +48,6 @@ void AProjectileBase::BeginPlay()
 			// Set the initial target
 			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX / 2) + (GetActorRightVector() * TypeV_DistanceY / 2);
 		}
-
 		else if (ProjectileType == EProjectileType::TypeS)
 		{
 			// Set the wave offset to center the wave
@@ -58,6 +57,10 @@ void AProjectileBase::BeginPlay()
 			{
 				TypeS_DistanceX = -TypeS_DistanceX;
 			}
+		}
+		else if (ProjectileType == EProjectileType::Laser)
+			{
+			// We already stop the movement, so, nothing to do else.
 		}
 	}
 }
@@ -107,7 +110,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 			return;
 		}
 
-		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, GetActorLocation(), GetActorRotation());
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, Hit.Location, GetActorRotation());
 
 		if (HitSound == nullptr)
 		{
