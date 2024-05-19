@@ -5,6 +5,8 @@
 #include "ArenaGameMode.h"
 #include "ProjectileSpawner.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogArnProjectileSpawner, Log, All);
+
 class AProjectileBase;
 class AArenaGameMode;
 

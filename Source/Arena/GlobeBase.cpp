@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
+DEFINE_LOG_CATEGORY(LogArnGlobeBase);
+
 // Sets default values
 AGlobeBase::AGlobeBase()
 {

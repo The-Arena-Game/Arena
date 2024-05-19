@@ -8,6 +8,22 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretBase, Log, All);
 
+UENUM(BlueprintType)
+enum class ETurretType : uint8
+{
+	SingleTurret    UMETA(DisplayName = "Single Turret"),
+	DualTurret		UMETA(DisplayName = "Dual Turret"),
+	TwinTurret		UMETA(DisplayName = "Twin Turret"),
+	Chonky			UMETA(DisplayName = "Chonky Turret"),
+	Gatling			UMETA(DisplayName = "Gatling Turret"),
+	Triplet			UMETA(DisplayName = "Triplet Turret"),
+	Lazer			UMETA(DisplayName = "Lazer Turret"),
+	Knight			UMETA(DisplayName = "Knight Turret"),
+	//Sinus deactivated until Sinus Bullet is fixed.
+	//Sinus			UMETA(DisplayName = "Sinus Turret"),
+	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
+};
+
 class UCapsuleComponent;
 class UBoxComponent;
 class AProjectileBase;
@@ -23,6 +39,11 @@ public:
 	ATurretBase();
 
 	void Tick(float DeltaTime) override;
+
+	ETurretType GetTurretType() const
+	{
+		return TurretType;
+	}
 
 protected:
 	void BeginPlay() override;
@@ -48,6 +69,18 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UStaticMeshComponent* TurretMesh;
+
+	/*----------------------------------------------------------------------------
+		Definition
+	----------------------------------------------------------------------------*/
+
+	// Turret Type Dropdown
+	UFUNCTION()
+	TArray<ETurretType> GetTurretTypeOptions();
+
+	// Turret Type Dropdown
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
+	ETurretType TurretType = ETurretType::SingleTurret;
 
 	/*----------------------------------------------------------------------------
 		Combat

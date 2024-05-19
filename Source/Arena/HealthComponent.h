@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "HealthComponent.generated.h"
 
-
+DECLARE_LOG_CATEGORY_EXTERN(LogArnHealthComponent, Log, All);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "GlobeBase.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogArnGlobeBase, Log, All);
+
 class USphereComponent;
 
 UCLASS()
@@ -23,7 +25,10 @@ public:
 	/** Snaps the globe to the ground */
 	void SnapToGround();
 
-	FORCEINLINE bool IsBlue() { return bIsBlue; }
+	FORCEINLINE bool IsBlue()
+	{
+		return bIsBlue;
+	}
 
 protected:
 	// Called when the game starts or when spawned

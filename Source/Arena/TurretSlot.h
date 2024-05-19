@@ -2,29 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TurretBase.h"
 #include "TurretSlot.generated.h"
 
-class ATurretBase;
+DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretSlot, Log, All);
+
 class AArenaGameMode;
 class APlayerController;
 class UBoxComponent;
 class URectLightComponent;
-
-UENUM(BlueprintType)
-enum class ETurretType : uint8
-{
-	SingleTurret    UMETA(DisplayName = "Single Turret"),
-	DualTurret		UMETA(DisplayName = "Dual Turret"),
-	TwinTurret		UMETA(DisplayName = "Twin Turret"),
-	Chonky			UMETA(DisplayName = "Chonky Turret"),
-	Gatling			UMETA(DisplayName = "Gatling Turret"),
-	Triplet			UMETA(DisplayName = "Triplet Turret"),
-	Lazer			UMETA(DisplayName = "Lazer Turret"),
-	Knight			UMETA(DisplayName = "Knight Turret"),
-	//Sinus deactivated until Sinus Bullet is fixed.
-	//Sinus			UMETA(DisplayName = "Sinus Turret"),
-	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
-};
 
 UCLASS()
 class ARENA_API ATurretSlot : public AActor
@@ -88,41 +74,7 @@ private:
 		Turret Classes
 	----------------------------------------------------------------------------*/
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> SingleTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> DualTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> TwinTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> ChonkyTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> GatlingTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> TripletTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> SingleTurretPreviewClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> DualTurretPreviewClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> LazerTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> KnightTurretClass;
-
-	//Sinus deactivated until Sinus Bullet is fixed.
-	//UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	//TSubclassOf<ATurretBase> SinusTurretClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena")
-	TSubclassOf<ATurretBase> MinusSinusTurretClass;
+	TArray<TSubclassOf<ATurretBase>> TurretClasses;
 
 	/*----------------------------------------------------------------------------
 		Turret Placement
@@ -146,13 +98,10 @@ private:
 	/*----------------------------------------------------------------------------
 		Others
 	----------------------------------------------------------------------------*/
-	// Returns the preview class based on the type
-	UFUNCTION()
-	TSubclassOf<ATurretBase> GetPreviewClass(ETurretType Type);
 
 	// Returns the actual class based on the type
 	UFUNCTION()
-	TSubclassOf<ATurretBase> GetActualClass(ETurretType Type);
+	TSubclassOf<ATurretBase> GetTurretClass(const ETurretType& Type);
 
 	// Called on Game Mode Restarts
 	UFUNCTION()
@@ -161,10 +110,6 @@ private:
 	// Called on Game Mode changes GameState
 	UFUNCTION()
 	void OnGameStateChange(EGameStates NewState);
-
-	// Check if all the components and variables are set and good to go!
-	UFUNCTION()
-	bool AreAllComponentsSet();
 
 	// Controls if the current situation is suitable for turret placement action or not
 	UFUNCTION()

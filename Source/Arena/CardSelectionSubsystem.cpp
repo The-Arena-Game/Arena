@@ -3,3 +3,4 @@
 
 #include "CardSelectionSubsystem.h"
 
+DEFINE_LOG_CATEGORY(LogArnCardSelection);

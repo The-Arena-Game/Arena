@@ -26,6 +26,27 @@ void AArenaGameMode::BeginPlay()
 	RestartArenaGame();	// Execute a freash start
 }
 
+void AArenaGameMode::CollectAllYellows()
+{
+	if (ArenaGameState != EGameStates::Play)
+	{
+		return;
+	}
+
+	for (AActor* YellowGlobe : YellowGlobes)
+	{
+		YellowGlobe->SetActorHiddenInGame(true);
+		YellowGlobe->SetActorEnableCollision(false);
+	}
+
+	GlobeCounter = 0;
+
+	SetArenaGameState(EGameStates::Win);
+	FinishGame();
+	OpenCardSelectionUI();
+	PlayerController->bShowMouseCursor = true;
+}
+
 void AArenaGameMode::RestartArenaGame()
 {
 	FinishGame(); // Execute end game actions
@@ -202,7 +223,7 @@ AGlobeBase* AArenaGameMode::SpawnBlueGlobe(FVector CenterLocation, FRotator Spaw
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("BlueGlobeClass is not set on ArenaGameMode! Can not spawn the globe!"));
+		UE_LOG(LogArnGameMode, Error, TEXT("BlueGlobeClass is not set on ArenaGameMode! Can not spawn the globe!"));
 	}
 
 	// Broadcast to turn OFF the forbidden area collisions

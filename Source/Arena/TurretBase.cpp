@@ -88,6 +88,16 @@ void ATurretBase::RotateTurret(FVector TargetLocation, float& DeltaTime)
 	));
 }
 
+TArray<ETurretType> ATurretBase::GetTurretTypeOptions()
+{
+	return {
+		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
+		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet,
+		ETurretType::Lazer, ETurretType::Knight, ETurretType::MinusSinus
+	};
+}
+
+
 bool ATurretBase::InFireRange()
 {
 	if (!IsValid(PlayerCharacter))

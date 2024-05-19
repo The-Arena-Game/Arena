@@ -7,6 +7,8 @@
 #include "ProjectileSpawner.h"
 #include "TurretBase.h"
 
+DEFINE_LOG_CATEGORY(LogArnTurretSlot);
+
 // Sets default values
 ATurretSlot::ATurretSlot()
 {
@@ -27,11 +29,6 @@ void ATurretSlot::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!AreAllComponentsSet())
-	{
-		return;
-	}
-
 	// Get all attached Rect Lights
 	const TArray<USceneComponent*>& AttachedChildren = LightsParent->GetAttachChildren();
 	for (USceneComponent* ChildComponent : AttachedChildren)
@@ -43,7 +40,7 @@ void ATurretSlot::BeginPlay()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("The Turret Slot (%s) Actor's Parent Light has different child than RectLight!"), *GetActorNameOrLabel());
+			UE_LOG(LogArnTurretSlot, Error, TEXT("The Turret Slot (%s) Actor's Parent Light has different child than RectLight!"), *GetActorNameOrLabel());
 		}
 	}
 
@@ -53,7 +50,7 @@ void ATurretSlot::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Couldn't get the UCardSelecitonSubsystem!"));
+		UE_LOG(LogArnTurretSlot, Error, TEXT("Couldn't get the UCardSelecitonSubsystem!"));
 	}
 
 	// Turn off light at start
@@ -62,26 +59,13 @@ void ATurretSlot::BeginPlay()
 		Light->SetVisibility(false);
 	}
 
-	// Bind Restrat function and State Change Function
+	// Bind Restart function and State Change Function
 	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
 	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
 
 	// Check if any editor time turret spawned
 	IsAnyTurretSpawned();
-}
-
-bool ATurretSlot::AreAllComponentsSet()
-{
-	bool AllGood = !IsValid(SingleTurretClass) || !IsValid(DualTurretClass) || !IsValid(TwinTurretClass) || !IsValid(SingleTurretPreviewClass) || !IsValid(DualTurretPreviewClass);
-
-	if (AllGood)
-	{
-		UE_LOG(LogTemp, Error, TEXT("The Turret classes are not defined in TurretSlot BP !!!"));
-		return false;
-	}
-
-	return true;
 }
 
 bool ATurretSlot::IsTurretPlacementAvailable()
@@ -142,7 +126,7 @@ void ATurretSlot::Tick(float DeltaTime)
 
 void ATurretSlot::CardSelectionListener(ETurretType Type)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
+	//UE_LOG(LogArnTurretSlot, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 
 	// Check we have turret installed on. 
 	if (bTurretInstalled)
@@ -190,7 +174,7 @@ void ATurretSlot::SlotMouseOver()
 	if (!IsValid(CurrentTurret))
 	{
 		// We were using GetPreviewClass to display preview shape. But now, we are using the actual turret for preview as well until we decide what to do with preview.
-		CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+		CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetTurretClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
 	}
 }
 
@@ -218,14 +202,14 @@ void ATurretSlot::SlotMouseClicked()
 	// If the slot is empty, then there is no preview also! No good!
 	if (!IsValid(CurrentTurret))
 	{
-		UE_LOG(LogTemp, Error, TEXT("There is no preview on this slot (%s)!"), *GetActorNameOrLabel());
+		UE_LOG(LogArnTurretSlot, Error, TEXT("There is no preview on this slot (%s)!"), *GetActorNameOrLabel());
 	}
 	else
 	{
 		CurrentTurret->Destroy();
 	}
 
-	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetActualClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+	CurrentTurret = GetWorld()->SpawnActor<ATurretBase>(GetTurretClass(LastSelectedType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
 	bTurretInstalled = true;
 
 	for (URectLightComponent* Light : Lights)
@@ -246,72 +230,30 @@ void ATurretSlot::SlotMouseClicked()
 
 void ATurretSlot::SpawnEditorTurret()
 {
-	GetWorld()->SpawnActor<ATurretBase>(GetActualClass(EditorTurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
+	GetWorld()->SpawnActor<ATurretBase>(GetTurretClass(EditorTurretType), TurretSpawnPoint->GetComponentLocation(), GetActorRotation());
 }
 
-TSubclassOf<ATurretBase> ATurretSlot::GetPreviewClass(ETurretType Type)
+TSubclassOf<ATurretBase> ATurretSlot::GetTurretClass(const ETurretType& Type)
 {
-	TSubclassOf<ATurretBase> PreviewClass;
-
-	switch (Type)
+	for (TSubclassOf<ATurretBase> Class : TurretClasses)
 	{
-	case ETurretType::SingleTurret:
-		PreviewClass = SingleTurretPreviewClass;
-		break;
-	case ETurretType::DualTurret:
-		PreviewClass = DualTurretPreviewClass;
-		break;
-	default:
-		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
-		break;
+		ATurretBase* Turret = Class.GetDefaultObject();
+
+		if (!IsValid(Turret))
+		{
+			UE_LOG(LogArnTurretSlot, Error, TEXT("Turret isn't valid!!!"));
+			return nullptr;
+		}
+
+		if (Turret->GetTurretType() == Type)
+		{
+			return Class;
+		}
 	}
 
-	return PreviewClass;
-}
+	UE_LOG(LogArnTurretSlot, Error, TEXT("Couldn't find turret type (%s)!"), *UEnum::GetValueAsString<ETurretType>(Type));
 
-TSubclassOf<ATurretBase> ATurretSlot::GetActualClass(ETurretType Type)
-{
-	TSubclassOf<ATurretBase> ActualClass;
-
-	switch (Type)
-	{
-	case ETurretType::SingleTurret:
-		ActualClass = SingleTurretClass;
-		break;
-	case ETurretType::DualTurret:
-		ActualClass = DualTurretClass;
-		break;
-	case ETurretType::TwinTurret:
-		ActualClass = TwinTurretClass;
-		break;
-	case ETurretType::Chonky:
-		ActualClass = ChonkyTurretClass;
-		break;
-	case ETurretType::Gatling:
-		ActualClass = GatlingTurretClass;
-		break;
-	case ETurretType::Triplet:
-		ActualClass = TripletTurretClass;
-		break;
-	case ETurretType::Lazer:
-		ActualClass = LazerTurretClass;
-		break;
-	case ETurretType::Knight:
-		ActualClass = KnightTurretClass;
-		break;
-	//Sinus deactivated until Sinus Bullet is fixed.
-	//case ETurretType::Sinus:
-	//	ActualClass = SinusTurretClass;
-	//	break;
-	case ETurretType::MinusSinus:
-		ActualClass = MinusSinusTurretClass;
-		break;
-	default:
-		UE_LOG(LogTemp, Error, TEXT("Received unregistered turret type (%s) on the Turret Slot!"), *UEnum::GetValueAsString<ETurretType>(Type));
-		break;
-	}
-
-	return ActualClass;
+	return nullptr;
 }
 
 TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()

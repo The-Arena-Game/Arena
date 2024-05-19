@@ -3,11 +3,11 @@
 #include "ArenaCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values for this component's properties
+DEFINE_LOG_CATEGORY(LogArnHealthComponent);
+
 UHealthComponent::UHealthComponent()
 {
 }
-
 
 // Called when the game starts
 void UHealthComponent::BeginPlay()

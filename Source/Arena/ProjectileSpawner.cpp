@@ -3,6 +3,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectileBase.h"
 
+DEFINE_LOG_CATEGORY(LogArnProjectileSpawner);
+
 // Sets default values for this component's properties
 UProjectileSpawner::UProjectileSpawner()
 {
@@ -42,7 +44,7 @@ void UProjectileSpawner::Fire()
 {
 	if (ProjectileClass == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("The Spawn Point (%s) is not set on the turret (%s)!"), *GetName(), *GetOwner()->GetActorNameOrLabel());
+		UE_LOG(LogArnProjectileSpawner, Error, TEXT("The Spawn Point (%s) is not set on the turret (%s)!"), *GetName(), *GetOwner()->GetActorNameOrLabel());
 		return;
 	}
 
@@ -84,7 +86,7 @@ float UProjectileSpawner::GetNewFireInterval()
 	{
 		if (FireDelays.Num() == 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("The FireDelay array has no element in it!"));
+			UE_LOG(LogArnProjectileSpawner, Warning, TEXT("The FireDelay array has no element in it!"));
 			return FMath::RandRange(MinimumFireDelay, MaximumFireDelay);
 		}
 		else

@@ -83,6 +83,9 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
+	void CollectAllYellows();
+
+	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();
 
 	// Called from the Turret Slot. Starts the ready state after turret placement is done.
