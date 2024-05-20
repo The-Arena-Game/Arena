@@ -79,8 +79,11 @@ void AArenaGameMode::RestartArenaGame()
 	// Else, relocate the player
 	else
 	{
-		Player->SetActorLocation(StartLocation);
-		Player->GetHealthComponent()->ResetHeatlh();
+		if (IsValid(Player) && IsValid(Player->GetHealthComponent()))
+		{
+			Player->SetActorLocation(StartLocation);
+			Player->GetHealthComponent()->ResetHeatlh();
+		}
 	}
 
 	// Find all globes. Disable yellow ones, destroy the blue one
