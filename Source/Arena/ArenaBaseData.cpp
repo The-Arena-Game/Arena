@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CardSelectionSubsystem.h"
+#include "ArenaBaseData.h"
 
-DEFINE_LOG_CATEGORY(LogArnCardSelection);

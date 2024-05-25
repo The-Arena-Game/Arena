@@ -2,6 +2,7 @@
 
 #include "ArenaGameMode.h"
 #include "ArenaCharacter.h"
+#include "CardManagementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
 #include "HealthComponent.h"
@@ -12,18 +13,26 @@ DEFINE_LOG_CATEGORY(LogArnGameMode);
 
 AArenaGameMode::AArenaGameMode()
 {
+	CardManagementComp = CreateDefaultSubobject<UCardManagementComponent>("Card Management Component");
+	check(CardManagementComp);
 }
 
 void AArenaGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// CardManagementComp = Cast<UCardManagementComponent>(GetComponentByClass(UCardManagementComponent::StaticClass()));
+	// if (!IsValid(CardManagementComp))
+	// {
+	// 	CardManagementComp
+	// }
+
 	// Get all the Yellow Globes that is currently in the level
 	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), YellowGlobes);
 	GlobeCounter = YellowGlobes.Num();
 	SetArenaGameState(EGameStates::Ready);
 
-	RestartArenaGame();	// Execute a freash start
+	RestartArenaGame();	// Execute a fresh start
 }
 
 void AArenaGameMode::CollectAllYellows()
@@ -41,6 +50,8 @@ void AArenaGameMode::CollectAllYellows()
 
 	GlobeCounter = 0;
 
+	CardManagementComp->GetCardData(LevelNumber, CardsData);
+
 	SetArenaGameState(EGameStates::Win);
 	FinishGame();
 	OpenCardSelectionUI();
@@ -54,6 +65,7 @@ void AArenaGameMode::RestartArenaGame()
 
 	// Get the player start location
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	PlayerController->SetInputMode(FInputModeGameAndUI());	// Make the default input mode work with both UI and game, default is GameOnly!
 	FVector StartLocation = FindPlayerStart(PlayerController)->GetActorLocation();
 
 	// Reset mouse stuff
@@ -156,6 +168,8 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 	// Decrease the counter by 1 and check if it is zero
 	if (--GlobeCounter <= 0)
 	{
+		CardManagementComp->GetCardData(LevelNumber, CardsData);
+
 		// If so, all of the yellow globes are collected, win state
 		SetArenaGameState(EGameStates::Win);
 		FinishGame();

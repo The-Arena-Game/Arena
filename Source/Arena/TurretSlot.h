@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ArenaBaseData.h"
 #include "TurretBase.h"
 #include "TurretSlot.generated.h"
 
@@ -36,6 +37,7 @@ private:
 	ETurretType LastSelectedType;
 	ATurretBase* CurrentTurret;
 	AArenaGameMode* ArenaGameMode;
+
 	bool bTurretInstalled;
 
 	/*----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ private:
 	----------------------------------------------------------------------------*/
 	// Inform the slots about what type selected!
 	UFUNCTION(BlueprintCallable)
-	void CardSelectionListener(ETurretType Type);
+	void OnTurretSelection(ETurretType Type);
 
 	// Inform the slot the mouse is over. Spawns preview turret
 	UFUNCTION(BlueprintCallable)

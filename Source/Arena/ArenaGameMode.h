@@ -2,31 +2,22 @@
 
 #pragma once
 
+#include "ArenaBaseData.h"
 #include "CoreMinimal.h"
+#include "TurretBase.h"
 #include "GameFramework/GameModeBase.h"
 #include "ArenaGameMode.generated.h"
 
+class UCardManagementComponent;
 class AGlobeBase;
 class AArenaCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
 
-UENUM(BlueprintType)
-enum class EGameStates : uint8
-{
-	None    UMETA(DisplayName = "None"),
-	Menu    UMETA(DisplayName = "Menu State"),
-	Ready	UMETA(DisplayName = "Ready State"),
-	Play	UMETA(DisplayName = "Play State"),
-	Pause	UMETA(DisplayName = "Pause State"),
-	Lost	UMETA(DisplayName = "Lost State"),
-	Win		UMETA(DisplayName = "Win State"),
-	Prepare UMETA(DisplayName = "Prepare State"),
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangeDelegate, EGameStates, State);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlueSpawnCollisionStateDelegate, bool, CollisionState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTurretSelection, ETurretType, Type);
 
 UCLASS(minimalapi)
 class AArenaGameMode : public AGameModeBase
@@ -35,6 +26,10 @@ class AArenaGameMode : public AGameModeBase
 
 public:
 	AArenaGameMode();
+
+	/** Broadcasts the selected turret type */
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnTurretSelection OnTurretSelection;
 
 	/** Called within the RestartArenaGame function to inform other about the restart */
 	UPROPERTY(BlueprintAssignable)
@@ -102,16 +97,25 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
 	void FinishGame();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Arena")
 	void OpenCardSelectionUI();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Arena State")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Arena")
 	void CloseCardSelectionUI();
 
 private:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UCardManagementComponent* CardManagementComp;
+
+	UPROPERTY()
 	APlayerController* PlayerController;
+	UPROPERTY()
 	AGlobeBase* BlueGlobe;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<FCardData> CardsData;
+
 	int LevelNumber = 1;
 	bool AllYellowsEnabled = false;
 

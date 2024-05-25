@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArenaBaseData.h"
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
@@ -11,16 +12,6 @@ DECLARE_LOG_CATEGORY_EXTERN(LogArnProjectile, Log, All);
 class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
-
-UENUM(BlueprintType)
-enum class EProjectileType : uint8
-{
-	Regular		UMETA(DisplayName = "Regular Projectile Type"),
-	TypeZ		UMETA(DisplayName = "Type Z Projectile"),
-	TypeV		UMETA(DisplayName = "Type V Projectile"),
-	TypeS		UMETA(DisplayName = "Type S Projectile"),
-	Laser		UMETA(DisplayName = "Lazer Projectile"),
-};
 
 UCLASS()
 class AProjectileBase : public AActor
