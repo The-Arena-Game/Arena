@@ -1,6 +1,5 @@
 #include "TurretSlot.h"
 #include "ArenaGameMode.h"
-#include "CardSelectionSubsystem.h"
 #include "Components/BoxComponent.h"
 #include "Components/RectLightComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -44,15 +43,6 @@ void ATurretSlot::BeginPlay()
 		}
 	}
 
-	if (UCardSelectionSubsystem* CardSelectionSS = GetGameInstance()->GetSubsystem<UCardSelectionSubsystem>())
-	{
-		CardSelectionSS->OnCardSelection.AddDynamic(this, &ATurretSlot::CardSelectionListener);
-	}
-	else
-	{
-		UE_LOG(LogArnTurretSlot, Error, TEXT("Couldn't get the UCardSelecitonSubsystem!"));
-	}
-
 	// Turn off light at start
 	for (URectLightComponent* Light : Lights)
 	{
@@ -63,6 +53,7 @@ void ATurretSlot::BeginPlay()
 	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
 	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
+	ArenaGameMode->OnTurretSelection.AddDynamic(this, &ATurretSlot::OnTurretSelection);
 
 	// Check if any editor time turret spawned
 	IsAnyTurretSpawned();
@@ -124,7 +115,7 @@ void ATurretSlot::Tick(float DeltaTime)
 
 }
 
-void ATurretSlot::CardSelectionListener(ETurretType Type)
+void ATurretSlot::OnTurretSelection(ETurretType Type)
 {
 	//UE_LOG(LogArnTurretSlot, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 

@@ -3,26 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArenaBaseData.h"
 #include "GameFramework/Actor.h"
 #include "TurretBase.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretBase, Log, All);
-
-UENUM(BlueprintType)
-enum class ETurretType : uint8
-{
-	SingleTurret    UMETA(DisplayName = "Single Turret"),
-	DualTurret		UMETA(DisplayName = "Dual Turret"),
-	TwinTurret		UMETA(DisplayName = "Twin Turret"),
-	Chonky			UMETA(DisplayName = "Chonky Turret"),
-	Gatling			UMETA(DisplayName = "Gatling Turret"),
-	Triplet			UMETA(DisplayName = "Triplet Turret"),
-	Lazer			UMETA(DisplayName = "Lazer Turret"),
-	Knight			UMETA(DisplayName = "Knight Turret"),
-	//Sinus deactivated until Sinus Bullet is fixed.
-	//Sinus			UMETA(DisplayName = "Sinus Turret"),
-	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
-};
 
 class UCapsuleComponent;
 class UBoxComponent;
