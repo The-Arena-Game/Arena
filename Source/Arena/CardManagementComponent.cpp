@@ -12,6 +12,8 @@ void UCardManagementComponent::BeginPlay()
 	Pools.Add(ERarity::Rare, { ERarity::Rare, RareTurretPool, RareBuffPool });
 	Pools.Add(ERarity::Epic, { ERarity::Epic, EpicTurretPool, EpicBuffPool });
 	Pools.Add(ERarity::Legendary, { ERarity::Legendary, LegendaryTurretPool, LegendaryBuffPool });
+
+	OnBuffSelected.AddDynamic(this, &UCardManagementComponent::BuffSelected);
 }
 
 ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
@@ -50,8 +52,55 @@ ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
 	}
 }
 
-void UCardManagementComponent::GetCardData(const uint8& Level, TArray<FCardData>& CardData)
+void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 {
+	// Find the buff and decrease the counter
+	if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
+	{
+		for (FArenaBuff Buff : RarityPools->BuffPool)
+		{
+			if (Buff.Type == EBuffType::TestBuff_10 || Buff.Type == EBuffType::TestBuff_11)
+			{
+				Buff.Unlocked = true;
+				Buff.UsageCount--;
+			}
+		}
+	}
+
+	if (InBuff.UsageCount <= 0)
+	{
+		if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
+		{
+			RarityPools->BuffPool.Remove(InBuff);
+		}
+	}
+}
+
+void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
+{
+	// Manage unlocks based on Level number
+	if (Level == 5)
+	{
+		// Check common buffs
+		if (FRarityPools* RarityPools = Pools.Find(ERarity::Common))
+		{
+			for (FArenaBuff Buff : RarityPools->BuffPool)
+			{
+				// Unlock Deflect and its bonuses
+				if (Buff.Type == EBuffType::TestBuff_10 || Buff.Type == EBuffType::TestBuff_11)
+				{
+					Buff.Unlocked = true;
+				}
+			}
+		}
+	}
+}
+
+void UCardManagementComponent::GenerateCardData(const uint8& Level)
+{
+	CheckLevelUnlocks(Level);
+
+	CardsData.Empty();
 	TArray<FCardData> NewCards = TArray<FCardData>();
 
 	// Define rarity, get turrets and buffs based on that rarity for each 3 cards!
@@ -87,10 +136,10 @@ void UCardManagementComponent::GetCardData(const uint8& Level, TArray<FCardData>
 		{
 			ElementFound = false;
 			//UE_LOG(LogArnCardManagement, Log, TEXT("Getting new Turret"));
-			int Index = FMath::RandRange(0, SelectedPools->TurretPool.Num() - 1);
+			const int Index = FMath::RandRange(0, SelectedPools->TurretPool.Num() - 1);
 			NewTurret = SelectedPools->TurretPool[Index];
 
-			for (FCardData Card : NewCards)
+			for (const FCardData Card : NewCards)
 			{
 				if (Card.TurretType == NewTurret)
 				{
@@ -115,7 +164,7 @@ void UCardManagementComponent::GetCardData(const uint8& Level, TArray<FCardData>
 		do
 		{
 			ElementFound = false;
-			int Index = FMath::RandRange(0, SelectedPools->BuffPool.Num() - 1);
+			const int Index = FMath::RandRange(0, SelectedPools->BuffPool.Num() - 1);
 			NewBuff = SelectedPools->BuffPool[Index];
 
 			for (FCardData Card : NewCards)
@@ -135,9 +184,9 @@ void UCardManagementComponent::GetCardData(const uint8& Level, TArray<FCardData>
 				NewCards[i].Buff = NewBuff;
 			}
 		}
-		while (ElementFound);	// If the selected turret is already in others, then pick another!
+		while (ElementFound || !NewBuff.IsActive());	// If the selected turret is already in others OR it is not active, then pick another!
 	}
 
 	//UE_LOG(LogArnCardManagement, Warning, TEXT("Finito. Number of cards: %i"), NewCards.Num());
-	CardData = NewCards;
+	CardsData = NewCards;
 }

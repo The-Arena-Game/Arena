@@ -83,7 +83,7 @@ private:
 	----------------------------------------------------------------------------*/
 	// Inform the slots about what type selected!
 	UFUNCTION(BlueprintCallable)
-	void OnTurretSelection(ETurretType Type);
+	void OnTurretSelected(const ETurretType& Type);
 
 	// Inform the slot the mouse is over. Spawns preview turret
 	UFUNCTION(BlueprintCallable)

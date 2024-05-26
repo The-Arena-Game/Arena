@@ -41,6 +41,13 @@ enum class EBuffType : uint8
 	TestBuff_7		UMETA(DisplayName = "Test Buff Name 7"),
 	TestBuff_8		UMETA(DisplayName = "Test Buff Name 8"),
 	TestBuff_9		UMETA(DisplayName = "Test Buff Name 9"),
+	TestBuff_10		UMETA(DisplayName = "Test Buff Name 10"),
+	TestBuff_11		UMETA(DisplayName = "Test Buff Name 11"),
+	TestBuff_12		UMETA(DisplayName = "Test Buff Name 12"),
+	TestBuff_13		UMETA(DisplayName = "Test Buff Name 13"),
+	TestBuff_14		UMETA(DisplayName = "Test Buff Name 14"),
+	TestBuff_15		UMETA(DisplayName = "Test Buff Name 15"),
+	TestBuff_16		UMETA(DisplayName = "Test Buff Name 16"),
 };
 
 UENUM(BlueprintType)
@@ -86,11 +93,9 @@ struct FArenaBuff
 	GENERATED_BODY()
 
 	FArenaBuff() = default;
-	FArenaBuff(const EBuffType& InType, const FString& InDescription)
-	{
-		Type = InType;
-		Description = InDescription;
-	};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ERarity Rarity = ERarity::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBuffType Type = EBuffType::None;
@@ -98,10 +103,21 @@ struct FArenaBuff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description = TEXT("No description defined!");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Unlocked = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 UsageCount = 1;
+
 	bool operator==(const FArenaBuff& Other) const
 	{
 		// We just need to compare the Type.
 		return Type == Other.Type;
+	}
+
+	bool IsActive() const
+	{
+		return Unlocked && UsageCount > 0;
 	}
 };
 

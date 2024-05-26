@@ -17,7 +17,6 @@ DECLARE_LOG_CATEGORY_EXTERN(LogArnGameMode, Log, All);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestartDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangeDelegate, EGameStates, State);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlueSpawnCollisionStateDelegate, bool, CollisionState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTurretSelection, ETurretType, Type);
 
 UCLASS(minimalapi)
 class AArenaGameMode : public AGameModeBase
@@ -26,10 +25,6 @@ class AArenaGameMode : public AGameModeBase
 
 public:
 	AArenaGameMode();
-
-	/** Broadcasts the selected turret type */
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnTurretSelection OnTurretSelection;
 
 	/** Called within the RestartArenaGame function to inform other about the restart */
 	UPROPERTY(BlueprintAssignable)
@@ -59,26 +54,36 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	FORCEINLINE void SetGameState(EGameStates State)
+	FORCEINLINE void SetGameState(const EGameStates State)
 	{
 		ArenaGameState = State; OnGameStateChange.Broadcast(State);
 	}
 
 	UFUNCTION(Blueprintcallable, Category = "Arena")
-	FORCEINLINE int GetLevelNumber()
+	FORCEINLINE int GetLevelNumber() const
 	{
 		return LevelNumber;
 	}
 
-	// Retuns the blue globe. Nullptr if the globe is not spawned
+	// Returns the blue globe. Nullptr if the globe is not spawned
 	UFUNCTION()
-	FORCEINLINE AGlobeBase* GetBlueGlobe()
+	FORCEINLINE AGlobeBase* GetBlueGlobe() const
 	{
 		return BlueGlobe;
 	}
 
+	// Returns the card management component
+	UFUNCTION(Blueprintcallable, Category = "Arena")
+	UCardManagementComponent* GetCardComp() const
+	{
+		return CardManagementComp;
+	}
+
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
-	void CollectAllYellows();
+	void Cheat_CollectAllYellows();
+
+	UFUNCTION(BlueprintCallable, Category = "Arena State")
+	void Cheat_CollectBlue();
 
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void RestartArenaGame();
@@ -112,9 +117,6 @@ private:
 	APlayerController* PlayerController;
 	UPROPERTY()
 	AGlobeBase* BlueGlobe;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<FCardData> CardsData;
 
 	uint8 LevelNumber = 1;
 	bool AllYellowsEnabled = false;

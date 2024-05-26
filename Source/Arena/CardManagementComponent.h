@@ -9,6 +9,9 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnCardManagement, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTurretSelected, const ETurretType&, Type);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffSelected, const FArenaBuff&, Buff);
+
 /* This is a CardManagementComponent specific struct to manage pools */
 USTRUCT()
 struct FRarityPools
@@ -40,9 +43,17 @@ class ARENA_API UCardManagementComponent : public UActorComponent
 
 public:
 
+	/** Broadcasts the selected turret type */
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnTurretSelected OnTurretSelected;
+
+	/** Broadcasts the selected Buff */
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnBuffSelected OnBuffSelected;
+
 	/** Generates 3 Card Data with the algorithm based on Level Number */
 	UFUNCTION()
-	void GetCardData(const uint8& Level, TArray<FCardData>& CardData);
+	void GenerateCardData(const uint8& Level);
 
 	UPROPERTY()
 	TMap<ERarity, FRarityPools> Pools;
@@ -77,6 +88,9 @@ protected:
 
 private:
 
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<FCardData> CardsData;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float CommonBaseValue = 75.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
@@ -105,4 +119,10 @@ private:
 
 	UFUNCTION()
 	ERarity GetRarity(const uint8& Level) const;
+
+	UFUNCTION()
+	void BuffSelected(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckLevelUnlocks(const uint8& Level);
 };

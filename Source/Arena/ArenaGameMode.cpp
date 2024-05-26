@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
 #include "HealthComponent.h"
+#include "ToolBuilderUtil.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -35,7 +36,7 @@ void AArenaGameMode::BeginPlay()
 	RestartArenaGame();	// Execute a fresh start
 }
 
-void AArenaGameMode::CollectAllYellows()
+void AArenaGameMode::Cheat_CollectAllYellows()
 {
 	if (ArenaGameState != EGameStates::Play)
 	{
@@ -50,12 +51,34 @@ void AArenaGameMode::CollectAllYellows()
 
 	GlobeCounter = 0;
 
-	CardManagementComp->GetCardData(LevelNumber, CardsData);
+	CardManagementComp->GenerateCardData(LevelNumber);
 
 	SetArenaGameState(EGameStates::Win);
 	FinishGame();
 	OpenCardSelectionUI();
 	PlayerController->bShowMouseCursor = true;
+}
+
+void AArenaGameMode::Cheat_CollectBlue()
+{
+	if (ArenaGameState != EGameStates::Ready)
+	{
+		return;
+	}
+
+	AGlobeBase* Blue = nullptr;
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), Actors);
+	for (AActor* Actor : Actors)
+	{
+		if (AGlobeBase* Globe = Cast<AGlobeBase>(Actor))
+		{
+			if (Globe->IsBlue())
+			{
+				BlueTouch(Globe);
+			}
+		}
+	}
 }
 
 void AArenaGameMode::RestartArenaGame()
@@ -168,7 +191,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 	// Decrease the counter by 1 and check if it is zero
 	if (--GlobeCounter <= 0)
 	{
-		CardManagementComp->GetCardData(LevelNumber, CardsData);
+		CardManagementComp->GenerateCardData(LevelNumber);
 
 		// If so, all of the yellow globes are collected, win state
 		SetArenaGameState(EGameStates::Win);

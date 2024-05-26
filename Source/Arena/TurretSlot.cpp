@@ -1,5 +1,6 @@
 #include "TurretSlot.h"
 #include "ArenaGameMode.h"
+#include "CardManagementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/RectLightComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -53,7 +54,7 @@ void ATurretSlot::BeginPlay()
 	ArenaGameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 	ArenaGameMode->OnRestart.AddDynamic(this, &ATurretSlot::OnRestart);
 	ArenaGameMode->OnGameStateChange.AddDynamic(this, &ATurretSlot::OnGameStateChange);
-	ArenaGameMode->OnTurretSelection.AddDynamic(this, &ATurretSlot::OnTurretSelection);
+	ArenaGameMode->GetCardComp()->OnTurretSelected.AddDynamic(this, &ATurretSlot::OnTurretSelected);
 
 	// Check if any editor time turret spawned
 	IsAnyTurretSpawned();
@@ -115,7 +116,7 @@ void ATurretSlot::Tick(float DeltaTime)
 
 }
 
-void ATurretSlot::OnTurretSelection(ETurretType Type)
+void ATurretSlot::OnTurretSelected(const ETurretType& Type)
 {
 	//UE_LOG(LogArnTurretSlot, Log, TEXT("Turret Slot (%s) Received Type: %s"), *GetActorNameOrLabel(), *UEnum::GetDisplayValueAsText(Type).ToString());
 
