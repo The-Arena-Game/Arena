@@ -107,7 +107,7 @@ struct FArenaBuff
 	bool Unlocked = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint8 UsageCount = 1;
+	uint8 UsageCount = 255;
 
 	bool operator==(const FArenaBuff& Other) const
 	{

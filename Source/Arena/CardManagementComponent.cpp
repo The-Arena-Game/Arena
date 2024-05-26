@@ -26,9 +26,9 @@ ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
 	const float TotalWeight = CommonWeight + RareWeight + EpicWeight + LegendaryWeight;
 	const float Random = FMath::RandRange(0.f, 1.f);
 
-	UE_LOG(LogArnCardManagement, Log, TEXT("Level: %i - Random: %f | Common: %f, Rare: %f, Epic: %f, Legendary: %f"),
-		Level, Random * 100, (CommonWeight / TotalWeight) * 100, (RareWeight / TotalWeight) * 100, (EpicWeight / TotalWeight) * 100, (LegendaryWeight / TotalWeight) * 100
-	);
+	// UE_LOG(LogArnCardManagement, Log, TEXT("Level: %i - Random: %f | Common: %f, Rare: %f, Epic: %f, Legendary: %f"),
+	// 	Level, Random * 100, (CommonWeight / TotalWeight) * 100, (RareWeight / TotalWeight) * 100, (EpicWeight / TotalWeight) * 100, (LegendaryWeight / TotalWeight) * 100
+	// );
 
 	const float CommonValue = (CommonWeight / TotalWeight);
 	const float RareValue = CommonValue + (RareWeight / TotalWeight);
@@ -57,21 +57,26 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	// Find the buff and decrease the counter
 	if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
 	{
-		for (FArenaBuff Buff : RarityPools->BuffPool)
+		for (FArenaBuff& Buff : RarityPools->BuffPool)
 		{
-			if (Buff.Type == EBuffType::TestBuff_10 || Buff.Type == EBuffType::TestBuff_11)
+			if (InBuff == Buff)
 			{
-				Buff.Unlocked = true;
 				Buff.UsageCount--;
 			}
 		}
 	}
 
-	if (InBuff.UsageCount <= 0)
+	if (InBuff.Type == EBuffType::TestBuff_10)
 	{
 		if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
 		{
-			RarityPools->BuffPool.Remove(InBuff);
+			for (FArenaBuff& Buff : RarityPools->BuffPool)
+			{
+				if (Buff.Type == EBuffType::TestBuff_11)
+				{
+					Buff.Unlocked = true;
+				}
+			}
 		}
 	}
 }
@@ -84,11 +89,12 @@ void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 		// Check common buffs
 		if (FRarityPools* RarityPools = Pools.Find(ERarity::Common))
 		{
-			for (FArenaBuff Buff : RarityPools->BuffPool)
+			for (FArenaBuff& Buff : RarityPools->BuffPool)
 			{
-				// Unlock Deflect and its bonuses
-				if (Buff.Type == EBuffType::TestBuff_10 || Buff.Type == EBuffType::TestBuff_11)
+				// Unlock Deflect and bonuses
+				if (Buff.Type == EBuffType::TestBuff_10)
 				{
+					UE_LOG(LogArnCardManagement, Log, TEXT("Buff 10 unlocked"));
 					Buff.Unlocked = true;
 				}
 			}
@@ -112,7 +118,7 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 		// Define the rarity, rarity can be same for all cards, doesn't matter!
 		ERarity NewRarity = GetRarity(Level);
 		NewCards[i].Rarity = NewRarity;
-		UE_LOG(LogArnCardManagement, Warning, TEXT("Selected Rarity: %s"), *UEnum::GetValueAsString(NewRarity));
+		// UE_LOG(LogArnCardManagement, Warning, TEXT("Selected Rarity: %s"), *UEnum::GetValueAsString(NewRarity));
 
 		const FRarityPools* SelectedPools = Pools.Find(NewRarity);
 		if (SelectedPools == nullptr)
@@ -176,6 +182,9 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 					break;
 				}
 			}
+
+			FString UnlockStr = NewBuff.Unlocked ? TEXT("True") : TEXT("False");
+			UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - Unlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
 
 			// If not found in others, get this one
 			if (!ElementFound)
