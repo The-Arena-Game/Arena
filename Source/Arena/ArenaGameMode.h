@@ -116,7 +116,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FCardData> CardsData;
 
-	int LevelNumber = 1;
+	uint8 LevelNumber = 1;
 	bool AllYellowsEnabled = false;
 
 	/*----------------------------------------------------------------------------

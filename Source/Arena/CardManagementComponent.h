@@ -42,7 +42,7 @@ public:
 
 	/** Generates 3 Card Data with the algorithm based on Level Number */
 	UFUNCTION()
-	void GetCardData(const int& Level, TArray<FCardData>& CardData);
+	void GetCardData(const uint8& Level, TArray<FCardData>& CardData);
 
 	UPROPERTY()
 	TMap<ERarity, FRarityPools> Pools;
@@ -74,4 +74,35 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float CommonBaseValue = 75.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float CommonGrowthRate = 0.1f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float RareBaseValue = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float RareGrowthRate = 0.2f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float EpicBaseValue = 5.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float EpicGrowthRate = 0.3f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float LegendaryBaseValue = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	float LegendaryGrowthRate = 0.4f;
+
+	UFUNCTION()
+	static float GetWeight(const uint8& Level, const float& BaseValue, const float& GrowthRate)
+	{
+		return BaseValue * FMath::Pow((1 + GrowthRate), Level);
+	}
+
+	UFUNCTION()
+	ERarity GetRarity(const uint8& Level) const;
 };

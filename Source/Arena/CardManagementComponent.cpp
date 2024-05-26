@@ -14,7 +14,43 @@ void UCardManagementComponent::BeginPlay()
 	Pools.Add(ERarity::Legendary, { ERarity::Legendary, LegendaryTurretPool, LegendaryBuffPool });
 }
 
-void UCardManagementComponent::GetCardData(const int& Level, TArray<FCardData>& CardData)
+ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
+{
+	const float CommonWeight = GetWeight(Level, CommonBaseValue, CommonGrowthRate);
+	const float& RareWeight = GetWeight(Level, RareBaseValue, RareGrowthRate);
+	const float& EpicWeight = GetWeight(Level, EpicBaseValue, EpicGrowthRate);
+	const float& LegendaryWeight = GetWeight(Level, LegendaryBaseValue, LegendaryGrowthRate);
+
+	const float TotalWeight = CommonWeight + RareWeight + EpicWeight + LegendaryWeight;
+	const float Random = FMath::RandRange(0.f, 1.f);
+
+	UE_LOG(LogArnCardManagement, Log, TEXT("Level: %i - Random: %f | Common: %f, Rare: %f, Epic: %f, Legendary: %f"),
+		Level, Random * 100, (CommonWeight / TotalWeight) * 100, (RareWeight / TotalWeight) * 100, (EpicWeight / TotalWeight) * 100, (LegendaryWeight / TotalWeight) * 100
+	);
+
+	const float CommonValue = (CommonWeight / TotalWeight);
+	const float RareValue = CommonValue + (RareWeight / TotalWeight);
+	const float EpicValue = RareValue + (EpicWeight / TotalWeight);
+
+	if (Random <= CommonValue)
+	{
+		return ERarity::Common;
+	}
+	else if (Random <= RareValue)
+	{
+		return ERarity::Rare;
+	}
+	else if (Random <= EpicValue)
+	{
+		return ERarity::Epic;
+	}
+	else
+	{
+		return ERarity::Legendary;
+	}
+}
+
+void UCardManagementComponent::GetCardData(const uint8& Level, TArray<FCardData>& CardData)
 {
 	TArray<FCardData> NewCards = TArray<FCardData>();
 
@@ -24,10 +60,10 @@ void UCardManagementComponent::GetCardData(const int& Level, TArray<FCardData>& 
 		//UE_LOG(LogArnCardManagement, Warning, TEXT("Creating new one, current card number: %i"), NewCards.Num());
 		NewCards.Add(FCardData());	// Add a new card
 
-		// TODO: Level number is irrelevant right now. I'll add rarity algorithm later! Current we are choosing only from the common pool
 		// Define the rarity, rarity can be same for all cards, doesn't matter!
-		ERarity NewRarity = ERarity::Common;
+		ERarity NewRarity = GetRarity(Level);
 		NewCards[i].Rarity = NewRarity;
+		UE_LOG(LogArnCardManagement, Warning, TEXT("Selected Rarity: %s"), *UEnum::GetValueAsString(NewRarity));
 
 		const FRarityPools* SelectedPools = Pools.Find(NewRarity);
 		if (SelectedPools == nullptr)
