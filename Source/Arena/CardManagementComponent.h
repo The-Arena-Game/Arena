@@ -58,28 +58,28 @@ public:
 	UPROPERTY()
 	TMap<ERarity, FRarityPools> Pools;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Turret Pools")
 	TArray<ETurretType> CommonTurretPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Turret Pools")
 	TArray<ETurretType> RareTurretPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Turret Pools")
 	TArray<ETurretType> EpicTurretPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Turret Pools")
 	TArray<ETurretType> LegendaryTurretPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Buff Pools")
 	TArray<FArenaBuff> CommonBuffPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Buff Pools")
 	TArray<FArenaBuff> RareBuffPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Buff Pools")
 	TArray<FArenaBuff> EpicBuffPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Buff Pools")
 	TArray<FArenaBuff> LegendaryBuffPool;
 
 protected:
@@ -88,27 +88,40 @@ protected:
 
 private:
 
+	bool RareUnlocked = false;
+	bool EpicUnlocked = false;
+	bool LegendaryUnlocked = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Unlocks", meta = (AllowPrivateAccess = "true"))
+	int RareUnlockLevel = 5;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Unlocks", meta = (AllowPrivateAccess = "true"))
+	int EpicUnlockLevel = 10;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Unlocks", meta = (AllowPrivateAccess = "true"))
+	int LegendaryUnlockLevel = 15;
+
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FCardData> CardsData;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float CommonBaseValue = 75.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float CommonGrowthRate = 0.1f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float RareBaseValue = 20.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float RareGrowthRate = 0.2f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float EpicBaseValue = 5.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float EpicGrowthRate = 0.3f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float LegendaryBaseValue = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float LegendaryGrowthRate = 0.4f;
 
 	UFUNCTION()

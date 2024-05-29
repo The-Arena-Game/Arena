@@ -18,38 +18,47 @@ void UCardManagementComponent::BeginPlay()
 
 ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
 {
+	ERarity SelectedRarity = ERarity::None;
+
 	const float CommonWeight = GetWeight(Level, CommonBaseValue, CommonGrowthRate);
 	const float& RareWeight = GetWeight(Level, RareBaseValue, RareGrowthRate);
 	const float& EpicWeight = GetWeight(Level, EpicBaseValue, EpicGrowthRate);
 	const float& LegendaryWeight = GetWeight(Level, LegendaryBaseValue, LegendaryGrowthRate);
 
 	const float TotalWeight = CommonWeight + RareWeight + EpicWeight + LegendaryWeight;
-	const float Random = FMath::RandRange(0.f, 1.f);
-
-	// UE_LOG(LogArnCardManagement, Log, TEXT("Level: %i - Random: %f | Common: %f, Rare: %f, Epic: %f, Legendary: %f"),
-	// 	Level, Random * 100, (CommonWeight / TotalWeight) * 100, (RareWeight / TotalWeight) * 100, (EpicWeight / TotalWeight) * 100, (LegendaryWeight / TotalWeight) * 100
-	// );
 
 	const float CommonValue = (CommonWeight / TotalWeight);
 	const float RareValue = CommonValue + (RareWeight / TotalWeight);
 	const float EpicValue = RareValue + (EpicWeight / TotalWeight);
 
-	if (Random <= CommonValue)
+	do
 	{
-		return ERarity::Common;
+		const float Random = FMath::RandRange(0.f, 1.f);
+
+		UE_LOG(LogArnCardManagement, Log, TEXT("Level: %i - Random: %f | Common: %f, Rare: %f, Epic: %f, Legendary: %f"),
+			Level, Random * 100, (CommonWeight / TotalWeight) * 100, (RareWeight / TotalWeight) * 100, (EpicWeight / TotalWeight) * 100, (LegendaryWeight / TotalWeight) * 100
+		);
+
+		if (Random <= CommonValue)
+		{
+			SelectedRarity = ERarity::Common;
+		}
+		else if (Random <= RareValue)
+		{
+			SelectedRarity = ERarity::Rare;
+		}
+		else if (Random <= EpicValue)
+		{
+			SelectedRarity = ERarity::Epic;
+		}
+		else
+		{
+			SelectedRarity = ERarity::Legendary;
+		}
 	}
-	else if (Random <= RareValue)
-	{
-		return ERarity::Rare;
-	}
-	else if (Random <= EpicValue)
-	{
-		return ERarity::Epic;
-	}
-	else
-	{
-		return ERarity::Legendary;
-	}
+	while ((!RareUnlocked && SelectedRarity == ERarity::Rare) || (!EpicUnlocked && SelectedRarity == ERarity::Epic) || (!LegendaryUnlocked && SelectedRarity == ERarity::Legendary));
+
+	return SelectedRarity;
 }
 
 void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
@@ -83,7 +92,6 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 {
-	// Manage unlocks based on Level number
 	if (Level == 5)
 	{
 		// Check common buffs
@@ -99,6 +107,20 @@ void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 				}
 			}
 		}
+	}
+
+	// Rarity Unlocks
+	if (Level == RareUnlockLevel)
+	{
+		RareUnlocked = true;
+	}
+	else if (Level == EpicUnlockLevel)
+	{
+		EpicUnlocked = true;
+	}
+	else if (Level == LegendaryUnlockLevel)
+	{
+		LegendaryUnlocked = true;
 	}
 }
 
@@ -184,7 +206,7 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 			}
 
 			FString UnlockStr = NewBuff.Unlocked ? TEXT("True") : TEXT("False");
-			UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - Unlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
+			//UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - Unlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
 
 			// If not found in others, get this one
 			if (!ElementFound)
