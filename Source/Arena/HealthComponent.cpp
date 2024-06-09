@@ -14,9 +14,10 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Health = MaxHealth;
-	HeartCount = MaxHeartCount;
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
+
+	HeartCount = MaxHeartCount;
+	OnHealthChange.Broadcast(HeartCount);
 }
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
@@ -34,11 +35,10 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		UGameplayStatics::PlaySoundAtLocation(this, DamageTakenSound, GetOwner()->GetActorLocation());
 	}
 
-	Health -= Damage;
 	HeartCount--;
+	OnHealthChange.Broadcast(HeartCount);
 
-	// If the Heart system is false AND health is 0 - OR - heart system is true and heart count is 0
-	if ((!bIsHeartSystemActive && Health <= 0) || (bIsHeartSystemActive && HeartCount <= 0))
+	if (HeartCount <= 0)
 	{
 		if (DeathSound != nullptr)
 		{

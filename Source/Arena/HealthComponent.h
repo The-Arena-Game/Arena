@@ -8,6 +8,8 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnHealthComponent, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChange, int, HealthCount);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
@@ -16,10 +18,13 @@ class UHealthComponent : public UActorComponent
 public:
 	UHealthComponent();
 
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChange OnHealthChange;
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool IsDead() const
 	{
-		return bIsHeartSystemActive ? (HeartCount <= 0 ? true : false) : (Health <= 0 ? true : false);
+		return HeartCount <= 0 ? true : false;
 	}
 
 	/* Set the Vulnerability Status */
@@ -31,7 +36,8 @@ public:
 	/* Set the Vulnerability Status */
 	FORCEINLINE void ResetHeatlh()
 	{
-		HeartCount = MaxHeartCount; Health = MaxHealth;
+		HeartCount = MaxHeartCount;
+		OnHealthChange.Broadcast(HeartCount);
 	}
 
 protected:
@@ -40,16 +46,6 @@ protected:
 private:
 
 	bool bIsVulnerable = true;
-
-	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "100.0"))
-	float MaxHealth = 100.f;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
-	float Health;
-
-	// Heart System
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
-	bool bIsHeartSystemActive = true;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "10.0"))
 	int MaxHeartCount = 3;
