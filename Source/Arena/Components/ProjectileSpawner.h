@@ -2,7 +2,7 @@
 
 #include "Components/SceneComponent.h"
 #include "CoreMinimal.h"
-#include "ArenaGameMode.h"
+#include "Arena/Core/ArenaGameMode.h"
 #include "ProjectileSpawner.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnProjectileSpawner, Log, All);

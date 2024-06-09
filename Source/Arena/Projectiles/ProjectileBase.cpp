@@ -2,7 +2,7 @@
 
 
 #include "ProjectileBase.h"
-#include "ArenaCharacter.h"
+#include "Arena/Core/ArenaCharacter.h"
 #include "GameFramework/DamageType.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,7 +59,7 @@ void AProjectileBase::BeginPlay()
 			}
 		}
 		else if (ProjectileType == EProjectileType::Laser)
-			{
+		{
 			// We already stop the movement, so, nothing to do else.
 		}
 	}

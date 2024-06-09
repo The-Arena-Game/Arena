@@ -154,3 +154,27 @@ class ARENA_API UArenaBaseData : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 };
+
+UCLASS()
+class UTurtlePermDamageType : public UDamageType
+{
+	GENERATED_BODY()
+};
+
+UCLASS()
+class UTurtleTempDamageType : public UDamageType
+{
+	GENERATED_BODY()
+};
+
+UCLASS()
+class UDarknessDamageType : public UDamageType
+{
+	GENERATED_BODY()
+};
+
+UCLASS()
+class UExhaustionDamageType : public UDamageType
+{
+	GENERATED_BODY()
+};

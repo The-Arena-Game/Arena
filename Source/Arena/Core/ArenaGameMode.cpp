@@ -2,10 +2,10 @@
 
 #include "ArenaGameMode.h"
 #include "ArenaCharacter.h"
-#include "CardManagementComponent.h"
+#include "Arena/Components/CardManagementComponent.h"
+#include "Arena/Components/HealthComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
-#include "HealthComponent.h"
 #include "ToolBuilderUtil.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"

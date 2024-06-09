@@ -1,7 +1,7 @@
 #include "ProjectileSpawner.h"
-#include "ArenaGameMode.h"
+#include "Arena/Core/ArenaGameMode.h"
+#include "Arena/Projectiles/ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectileBase.h"
 
 DEFINE_LOG_CATEGORY(LogArnProjectileSpawner);
 

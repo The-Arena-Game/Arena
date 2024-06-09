@@ -1,11 +1,10 @@
 #include "TurretSlot.h"
 #include "ArenaGameMode.h"
-#include "CardManagementComponent.h"
+#include "Arena/Components/CardManagementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/RectLightComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectileSpawner.h"
-#include "TurretBase.h"
+#include "Arena/Turrets/TurretBase.h"
 
 DEFINE_LOG_CATEGORY(LogArnTurretSlot);
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ArenaBaseData.h"
+#include "Arena/Core/ArenaBaseData.h"
 #include "Components/ActorComponent.h"
 #include "CardManagementComponent.generated.h"
 

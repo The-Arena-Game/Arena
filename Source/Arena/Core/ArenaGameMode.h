@@ -4,7 +4,7 @@
 
 #include "ArenaBaseData.h"
 #include "CoreMinimal.h"
-#include "TurretBase.h"
+#include "Arena/Turrets/TurretBase.h"
 #include "GameFramework/GameModeBase.h"
 #include "ArenaGameMode.generated.h"
 

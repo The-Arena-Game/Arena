@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "HealthComponent.h"
-#include "ArenaCharacter.h"
+#include "Arena/Core/ArenaCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogArnHealthComponent);

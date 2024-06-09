@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ArenaBaseData.h"
-#include "TurretBase.h"
+#include "Arena/Turrets/TurretBase.h"
 #include "TurretSlot.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnTurretSlot, Log, All);

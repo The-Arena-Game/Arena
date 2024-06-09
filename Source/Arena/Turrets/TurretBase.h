@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ArenaBaseData.h"
+#include "Arena/Core/ArenaBaseData.h"
 #include "GameFramework/Actor.h"
 #include "TurretBase.generated.h"
 
@@ -30,13 +30,24 @@ public:
 		return TurretType;
 	}
 
+	AArenaCharacter* GetPlayerCharacter() const
+	{
+		return PlayerCharacter;
+	}
+
+	UStaticMeshComponent* GetTurretMesh() const
+	{
+		return TurretMesh;
+	}
+
 protected:
 	void BeginPlay() override;
-	void RotateTurret(FVector TargetLocation, float& DeltaTime);
 
 private:
 
+	UPROPERTY()
 	AArenaCharacter* PlayerCharacter;
+	UPROPERTY()
 	AArenaGameMode* GameMode;
 
 	/*----------------------------------------------------------------------------
@@ -47,7 +58,7 @@ private:
 	UCapsuleComponent* CapsuleComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
-	UBoxComponent* ForbidenAreaBoxComp;
+	UBoxComponent* ForbiddenAreaBoxComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Component")
 	UStaticMeshComponent* BaseMesh;
@@ -66,26 +77,6 @@ private:
 	// Turret Type Dropdown
 	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
 	ETurretType TurretType = ETurretType::SingleTurret;
-
-	/*----------------------------------------------------------------------------
-		Combat
-	----------------------------------------------------------------------------*/
-
-	///////////////////////////////
-	/// Follower Type
-	///////////////////////////////
-
-	UPROPERTY(EditAnywhere, Category = "Arena Combat - Follower", meta = (AllowBlueprintAccess = "true"))
-	bool IsFollowerTurret = false;
-
-	UPROPERTY(EditAnywhere, Category = "Arena Combat - Follower", meta = (AllowBlueprintAccess = "true", UIMin = "300.0", UIMax = "2000.0"))
-	float Range = 500.f;
-
-	UPROPERTY(EditAnywhere, Category = "Arena Combat - Follower", meta = (AllowBlueprintAccess = "true", UIMin = "1.0", UIMax = "10.0"))
-	float TurnSpeed = 3.f;
-
-	bool InFireRange();
-	bool IsFacingToTarget();
 
 	/*----------------------------------------------------------------------------
 		Others

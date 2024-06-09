@@ -13,7 +13,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GlobeBase.h"
-#include "HealthComponent.h"
+#include "Arena/Components/HealthComponent.h"
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
 
