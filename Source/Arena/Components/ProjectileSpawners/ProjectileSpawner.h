@@ -25,16 +25,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Pattern System", meta = (ToolTip = "Enter fire delays for each step. If the given value is less then 0.2, it will be overwritten as 0.2!"))
 	TArray<float> FireDelays;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Laser Type")
-	TArray<float> LaserPatternValues;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	void Fire();
+	virtual void Fire();
 
-private:
-
+	UPROPERTY()
 	AArenaGameMode* GameMode;
 
 	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true"))
@@ -47,19 +43,6 @@ private:
 	void OnNewGameModeState(EGameStates NewState);
 
 	float GetNewFireInterval();
-
-	///////////////////////////////
-	/// Laser Type
-	///////////////////////////////
-
-	UPROPERTY(EditAnywhere, Category = "Arena - Laser Type", meta = (AllowBlueprintAccess = "true"))
-	bool IsLaserType = false;
-
-	TArray<float> VfxToggleTimes;
-
-	void SetVfxToggleTimes();
-
-	void HandleVfx();
 
 	///////////////////////////////
 	/// Stable Random Type
