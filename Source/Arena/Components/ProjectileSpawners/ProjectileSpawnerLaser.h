@@ -24,9 +24,6 @@ protected:
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Laser Type", meta = (AllowBlueprintAccess = "true"))
-	bool IsLaserType = true;
-
 	TArray<float> VfxToggleTimes;
 
 	void SetVfxToggleTimes();

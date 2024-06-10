@@ -25,6 +25,7 @@ enum class ETurretType : uint8
 	//Sinus deactivated until Sinus Bullet is fixed.
 	//Sinus			UMETA(DisplayName = "Sinus Turret"),
 	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
+	Angry			UMETA(DisplayName = "Angry Turret"),
 };
 
 UENUM(BlueprintType)

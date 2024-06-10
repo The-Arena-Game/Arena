@@ -11,7 +11,7 @@ void UProjectileSpawnerLaser::BeginPlay()
 		if (Value < 0.01)
 		{
 			UE_LOG(LogArnProjectileSpawner, Error, TEXT("Laser VFX pattern value can not be less than 0.01!"));
-			IsLaserType = false;
+			IsSystemActive = false;
 			break;
 		}
 		Sum += Value;
@@ -19,7 +19,7 @@ void UProjectileSpawnerLaser::BeginPlay()
 	if (Sum >= MinimumFireDelay)
 	{
 		UE_LOG(LogArnProjectileSpawner, Error, TEXT("Minimum fire time is lower than the VFX timer! VFX disabled!"));
-		IsLaserType = false;
+		IsSystemActive = false;
 	}
 	else
 	{

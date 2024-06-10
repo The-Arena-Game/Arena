@@ -36,7 +36,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true"))
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
+	UPROPERTY()
 	float FireTimer = 0.f;
+
+	UPROPERTY()
+	bool IsSystemActive = true;
 
 	// Called everytime the game state changes. We use it to execute initial fire on Play
 	UFUNCTION()
