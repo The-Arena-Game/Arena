@@ -14,6 +14,7 @@
 #include "GlobeBase.h"
 #include "Arena/Components/HealthComponent.h"
 #include "InputActionValue.h"
+#include "Arena/Projectiles/BlackHoleProjectile.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogArnCharacter);
@@ -232,6 +233,8 @@ void AArenaCharacter::Tick(float DeltaTime)
 			);
 		}
 	}
+
+	HandleBlackHoleAffect(DeltaTime);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -333,6 +336,64 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		DashCounter = DashUsageLimit;
 		FlashTimer = FlashCooldownDuration;
 		FlashCounter = FlashUsageLimit;
+	}
+
+	CurrentGameState = NewState;
+}
+
+void AArenaCharacter::UpdateBlackHoleArray()
+{
+	BlackHoles.Empty();
+
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, ABlackHoleProjectile::StaticClass(), Actors);
+
+	TargetBlackHole = nullptr;
+	float Distance = 1000000000.f;
+
+	for (AActor* Actor : Actors)
+	{
+		if (ABlackHoleProjectile* BlackHole = Cast<ABlackHoleProjectile>(Actor))
+		{
+			BlackHoles.Add(BlackHole);
+
+			if (FVector::Dist(GetActorLocation(), BlackHole->GetActorLocation()) < Distance)
+			{
+				TargetBlackHole = BlackHole;
+				Distance = FVector::Dist(GetActorLocation(), BlackHole->GetActorLocation());
+			}
+		}
+	}
+
+	if (!IsValid(TargetBlackHole))
+	{
+		BlackHoles.Empty();
+	}
+}
+
+void AArenaCharacter::HandleBlackHoleAffect(float DeltaTime)
+{
+	if (BlackHoles.IsEmpty() || BlackHoles.Num() == 0 || CurrentGameState != EGameStates::Play)
+	{
+		return;
+	}
+
+	if (!IsValid(TargetBlackHole))
+	{
+		UE_LOG(LogArnCharacter, Error, TEXT("The target blackhole is not valid! Something is wrong!"));
+		UpdateBlackHoleArray();
+		return;
+	}
+
+	// Movement Action
+	float TargetDistance = FVector::Distance(TargetBlackHole->GetActorLocation(), GetActorLocation());
+	if (TargetDistance < TargetBlackHole->MaxRange)
+	{
+		float ReverseDistance = TargetBlackHole->MaxRange - TargetDistance;
+
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetBlackHole->GetActorLocation(), DeltaTime, TargetBlackHole->PullSpeed);
+		SetActorLocation(NewLocation);
 	}
 }
 

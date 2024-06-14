@@ -16,10 +16,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Arena - Angry Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Angry Type")
 	TArray<float> DistanceLevels;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Arena - Angry Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Angry Type")
 	TArray<float> FireDelayLevels;
 
 protected:

@@ -34,34 +34,32 @@ void AProjectileBase::BeginPlay()
 
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
 
-	if (ProjectileType != EProjectileType::Regular)
+	if (ProjectileType == EProjectileType::TypeZ)
 	{
 		MovementComponent->Deactivate();
+		// Set the initial target
+		TypeZ_TargetLocation = GetActorLocation() + GetActorForwardVector() * TypeZ_DistanceX;
+	}
+	else if (ProjectileType == EProjectileType::TypeV)
+	{
+		MovementComponent->Deactivate();
+		// Set the initial target
+		TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX / 2) + (GetActorRightVector() * TypeV_DistanceY / 2);
+	}
+	else if (ProjectileType == EProjectileType::TypeS)
+	{
+		MovementComponent->Deactivate();
+		// Set the wave offset to center the wave
+		TypeS_Timer += TypeS_DistanceY / 2;
 
-		if (ProjectileType == EProjectileType::TypeZ)
+		if (TypeS_Reverse)
 		{
-			// Set the initial target
-			TypeZ_TargetLocation = GetActorLocation() + GetActorForwardVector() * TypeZ_DistanceX;
+			TypeS_DistanceX = -TypeS_DistanceX;
 		}
-		else if (ProjectileType == EProjectileType::TypeV)
-		{
-			// Set the initial target
-			TypeV_TargetLocation = GetActorLocation() + (GetActorForwardVector() * TypeV_DistanceX / 2) + (GetActorRightVector() * TypeV_DistanceY / 2);
-		}
-		else if (ProjectileType == EProjectileType::TypeS)
-		{
-			// Set the wave offset to center the wave
-			TypeS_Timer += TypeS_DistanceY / 2;
-
-			if (TypeS_Reverse)
-			{
-				TypeS_DistanceX = -TypeS_DistanceX;
-			}
-		}
-		else if (ProjectileType == EProjectileType::Laser)
-		{
-			// We already stop the movement, so, nothing to do else.
-		}
+	}
+	else if (ProjectileType == EProjectileType::Laser)
+	{
+		MovementComponent->Deactivate();
 	}
 }
 

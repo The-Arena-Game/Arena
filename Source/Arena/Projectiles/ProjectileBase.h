@@ -25,6 +25,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Type", meta = (AllowPrivateAccess = "true", GetOptions = "GetProjectileTypeOptions"))
+	EProjectileType ProjectileType = EProjectileType::Regular;
+
 private:
 
 	// Bullet Type Dropdown
@@ -35,9 +38,6 @@ private:
 			EProjectileType::Laser
 		};
 	}
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena Type", meta = (AllowPrivateAccess = "true", GetOptions = "GetProjectileTypeOptions"))
-	EProjectileType ProjectileType = EProjectileType::Regular;
 
 	UFUNCTION(BlueprintCallable, Category = "Arena Function")
 	void Explode();

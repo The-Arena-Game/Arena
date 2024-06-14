@@ -8,6 +8,7 @@
 #include "Logging/LogMacros.h"
 #include "ArenaCharacter.generated.h"
 
+class ABlackHoleProjectile;
 class AArenaGameMode;
 class USpringArmComponent;
 class UCameraComponent;
@@ -96,6 +97,16 @@ public:
 		return FlashCounter;
 	}
 
+	UFUNCTION()
+	void UpdateBlackHoleArray();
+
+	//UFUNCTION()
+	//void UnregisterBlackHole(ABlackHoleProjectile* BlackHole)
+	//{
+	//	BlackHoles.Remove(BlackHole);
+	//	BlackHoleArrayChanged = true;
+	//}
+
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
@@ -133,7 +144,11 @@ protected:
 
 private:
 
+	UPROPERTY()
 	AArenaGameMode* GameMode;
+
+	UPROPERTY()
+	EGameStates CurrentGameState;
 
 	UFUNCTION()
 	void OnGameStateChange(EGameStates NewState);
@@ -294,6 +309,19 @@ private:
 
 	float FlashTimer = 0.f;
 	int FlashCounter = 0;
+
+	////////////////////////////////	Black hole bullet affect
+	UPROPERTY()
+	TArray<ABlackHoleProjectile*> BlackHoles;
+
+	UPROPERTY()
+	bool BlackHoleArrayChanged = false;
+
+	UPROPERTY()
+	ABlackHoleProjectile* TargetBlackHole;
+
+	UFUNCTION()
+	void HandleBlackHoleAffect(float DelataTime);
 
 	////////////////////////////////	Component
 

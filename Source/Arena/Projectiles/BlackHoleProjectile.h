@@ -14,4 +14,18 @@ class ARENA_API ABlackHoleProjectile : public AProjectileBase
 {
 	GENERATED_BODY()
 
+	virtual ~ABlackHoleProjectile() override;
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Blackhole")
+	float MaxRange = 1000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Blackhole", meta = (UIMin = "20", UIMax = "200"))
+	float PullSpeed = 50.f;
+
+protected:
+
+	virtual void BeginPlay() override;
+
 };
