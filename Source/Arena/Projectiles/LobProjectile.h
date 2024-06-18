@@ -14,4 +14,14 @@ class ARENA_API ALobProjectile : public AProjectileBase
 {
 	GENERATED_BODY()
 
+protected:
+
+	void BeginPlay() override;
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AProjectileBase> ProjectileClass;
+
 };

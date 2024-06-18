@@ -21,9 +21,6 @@ AProjectileBase::AProjectileBase()
 	TrailParticle->SetupAttachment(RootComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
-	MovementComponent->MaxSpeed = Speed;
-	MovementComponent->InitialSpeed = Speed;
-	MovementComponent->ProjectileGravityScale = GravityScale;
 }
 
 // Called when the game starts or when spawned
