@@ -253,7 +253,7 @@ TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()
 		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
 		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet,
 		ETurretType::Lazer, ETurretType::Knight, ETurretType::MinusSinus,
-		ETurretType::BlackHole, ETurretType::LobTurret
+		ETurretType::BlackHole, ETurretType::LobTurret, ETurretType::BoomerangTurret
 	};
 }
 

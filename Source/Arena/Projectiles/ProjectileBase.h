@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Type", meta = (AllowPrivateAccess = "true", GetOptions = "GetProjectileTypeOptions"))
 	EProjectileType ProjectileType = EProjectileType::Regular;
 
+	UPROPERTY(EditAnywhere, Category = "Class Combat", meta = (AllowPrivateAccess = "true"))
+	UProjectileMovementComponent* MovementComponent;
+
 private:
 
 	// Bullet Type Dropdown
@@ -47,9 +50,6 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Combat")
 	UStaticMeshComponent* ProjectileMesh;
-
-	UPROPERTY(EditAnywhere, Category = "Class Combat", meta = (AllowPrivateAccess = "true"))
-	UProjectileMovementComponent* MovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Sounds")
 	USoundBase* HitSound;

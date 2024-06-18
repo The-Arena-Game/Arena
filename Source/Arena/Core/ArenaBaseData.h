@@ -28,6 +28,7 @@ enum class ETurretType : uint8
 	Angry			UMETA(DisplayName = "Angry Turret"),
 	BlackHole		UMETA(DisplayName = "Black Hole Turret"),
 	LobTurret		UMETA(DisplayName = "Lob Turret"),
+	BoomerangTurret	UMETA(DisplayName = "Boomerang Turret"),
 };
 
 UENUM(BlueprintType)
@@ -86,6 +87,7 @@ enum class EProjectileType : uint8
 	Laser		UMETA(DisplayName = "Lazer Projectile"),
 	BlackHole	UMETA(DisplayName = "Black Hole Projectile"),
 	Lob			UMETA(DisplayName = "Lob Projectile"),
+	Boomerang	UMETA(DisplayName = "Boomerang Projectile"),
 };
 
 /*----------------------------------------------------------------------------
