@@ -14,7 +14,8 @@ class ARENA_API ABlackHoleProjectile : public AProjectileBase
 {
 	GENERATED_BODY()
 
-	virtual ~ABlackHoleProjectile() override;
+	ABlackHoleProjectile();
+	~ABlackHoleProjectile();
 
 public:
 

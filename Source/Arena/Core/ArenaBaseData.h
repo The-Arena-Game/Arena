@@ -22,9 +22,9 @@ enum class ETurretType : uint8
 	Triplet			UMETA(DisplayName = "Triplet Turret"),
 	Lazer			UMETA(DisplayName = "Lazer Turret"),
 	Knight			UMETA(DisplayName = "Knight Turret"),
-	//Sinus deactivated until Sinus Bullet is fixed.
-	//Sinus			UMETA(DisplayName = "Sinus Turret"),
+	Sinus			UMETA(DisplayName = "Sinus Turret"),
 	MinusSinus		UMETA(DisplayName = "Minus Sinus Turret"),
+	ZigZag			UMETA(DisplayName = "ZigZag Turret"),
 	Angry			UMETA(DisplayName = "Angry Turret"),
 	BlackHole		UMETA(DisplayName = "Black Hole Turret"),
 	LobTurret		UMETA(DisplayName = "Lob Turret"),
@@ -81,9 +81,9 @@ UENUM(BlueprintType)
 enum class EProjectileType : uint8
 {
 	Regular		UMETA(DisplayName = "Regular Projectile Type"),
-	TypeZ		UMETA(DisplayName = "Type Z Projectile"),
-	TypeV		UMETA(DisplayName = "Type V Projectile"),
-	TypeS		UMETA(DisplayName = "Type S Projectile"),
+	SquareSinus	UMETA(DisplayName = "SquareSinus Projectile"),
+	ZigZag		UMETA(DisplayName = "ZigZag Projectile"),
+	Sinus		UMETA(DisplayName = "Sinus Projectile"),
 	Laser		UMETA(DisplayName = "Lazer Projectile"),
 	BlackHole	UMETA(DisplayName = "Black Hole Projectile"),
 	Lob			UMETA(DisplayName = "Lob Projectile"),

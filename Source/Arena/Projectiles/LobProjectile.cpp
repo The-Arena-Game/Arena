@@ -4,6 +4,11 @@
 #include "LobProjectile.h"
 
 
+ALobProjectile::ALobProjectile()
+{
+	ProjectileType = EProjectileType::Lob;
+}
+
 void ALobProjectile::BeginPlay()
 {
 	Super::BeginPlay();

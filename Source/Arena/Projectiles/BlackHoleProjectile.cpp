@@ -6,6 +6,11 @@
 #include "Arena/Core/ArenaCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+ABlackHoleProjectile::ABlackHoleProjectile()
+{
+	ProjectileType = EProjectileType::BlackHole;
+}
+
 ABlackHoleProjectile::~ABlackHoleProjectile()
 {
 	if (AArenaCharacter* Player = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
@@ -22,7 +27,4 @@ void ABlackHoleProjectile::BeginPlay()
 	{
 		Player->UpdateBlackHoleArray();
 	}
-
-
-	ProjectileType = EProjectileType::BlackHole;
 }

@@ -15,6 +15,7 @@ ABoomerangProjectile::~ABoomerangProjectile()
 ABoomerangProjectile::ABoomerangProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	ProjectileType = EProjectileType::Boomerang;
 }
 
 void ABoomerangProjectile::BeginPlay()

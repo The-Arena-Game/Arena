@@ -14,6 +14,9 @@ class ARENA_API ALobProjectile : public AProjectileBase
 {
 	GENERATED_BODY()
 
+public:
+	ALobProjectile();
+
 protected:
 
 	void BeginPlay() override;
