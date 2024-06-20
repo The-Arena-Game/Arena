@@ -19,8 +19,9 @@
 
 DEFINE_LOG_CATEGORY(LogArnCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// AArenaCharacter
+/*----------------------------------------------------------------------
+		Base
+----------------------------------------------------------------------*/
 
 AArenaCharacter::AArenaCharacter()
 {
@@ -237,8 +238,9 @@ void AArenaCharacter::Tick(float DeltaTime)
 	HandleBlackHoleAffect(DeltaTime);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+/*----------------------------------------------------------------------
+		Inputs
+----------------------------------------------------------------------*/
 
 void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -270,6 +272,10 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		UE_LOG(LogArnCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+
+/*----------------------------------------------------------------------
+		Movement
+----------------------------------------------------------------------*/
 
 void AArenaCharacter::Move(const FInputActionValue& Value)
 {
@@ -323,6 +329,10 @@ void AArenaCharacter::Jump()
 	}
 }
 
+/*----------------------------------------------------------------------
+		Others
+----------------------------------------------------------------------*/
+
 void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 {
 	IsStaminaActive = (NewState == EGameStates::Play) ? true : false;
@@ -340,6 +350,26 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 
 	CurrentGameState = NewState;
 }
+
+void AArenaCharacter::HandleDestruction()
+{
+	// TODO: SFX, VFX, etc.
+	if (!HealthComp->IsDead())
+	{
+		return;
+	}
+
+	if (IsValid(GameMode))
+	{
+		GameMode->HandlePlayerDeath();
+	}
+
+	Destroy();
+}
+
+/*----------------------------------------------------------------------
+		Projectile Affects
+----------------------------------------------------------------------*/
 
 void AArenaCharacter::UpdateBlackHoleArray()
 {
@@ -396,6 +426,35 @@ void AArenaCharacter::HandleBlackHoleAffect(float DeltaTime)
 		SetActorLocation(NewLocation);
 	}
 }
+
+void AArenaCharacter::OnTurtlePermHit()
+{
+	WalkSpeed *= UTurtlePermDamageType::DecreasePercentage;
+	SprintSpeed *= UTurtlePermDamageType::DecreasePercentage;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AArenaCharacter::OnTurtleTempHit()
+{
+	const float ReducedWalkSpeed = WalkSpeed * UTurtleTempDamageType::DecreasePercentage;
+	const float ReducedSprintSpeed = SprintSpeed * UTurtleTempDamageType::DecreasePercentage;
+
+	WalkSpeed -= ReducedWalkSpeed;
+	SprintSpeed -= ReducedSprintSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, ReducedWalkSpeed, ReducedSprintSpeed]()
+		{
+			WalkSpeed += ReducedWalkSpeed;
+			SprintSpeed += ReducedSprintSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		}, UTurtleTempDamageType::Time, false);
+}
+
+/*----------------------------------------------------------------------
+		Special Movement
+----------------------------------------------------------------------*/
 
 FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocation)
 {
@@ -601,19 +660,3 @@ void AArenaCharacter::Look(const FInputActionValue& Value)
 }
 
 */
-
-void AArenaCharacter::HandleDestruction()
-{
-	// TODO: SFX, VFX, etc.
-	if (!HealthComp->IsDead())
-	{
-		return;
-	}
-
-	if (IsValid(GameMode))
-	{
-		GameMode->HandlePlayerDeath();
-	}
-
-	Destroy();
-}

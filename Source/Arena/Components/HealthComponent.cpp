@@ -14,7 +14,11 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
+	if (AArenaCharacter* ArenaCharacter = Cast<AArenaCharacter>(GetOwner()))
+	{
+		Player = ArenaCharacter;
+		Player->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
+	}
 
 	HeartCount = MaxHeartCount;
 	OnHealthChange.Broadcast(HeartCount);
@@ -29,14 +33,35 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(DamageTakenCameraShakeClass);
 	}
 
+	if (IsValid(Player) && IsValid(DamageType))
+	{
+		if (DamageType->IsA(UTurtlePermDamageType::StaticClass()))
+		{
+			Player->OnTurtlePermHit();
+		}
+		else if (DamageType->IsA(UTurtleTempDamageType::StaticClass()))
+		{
+			Player->OnTurtleTempHit();
+		}
+		else if (DamageType->IsA(UDarknessDamageType::StaticClass()))
+		{
+			// TODO
+		}
+		else if (DamageType->IsA(UExhaustionDamageType::StaticClass()))
+		{
+			// TODO
+		}
+		else
+		{
+			HeartCount--;
+			OnHealthChange.Broadcast(HeartCount);
+		}
+	}
 
 	if (DamageTakenSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, DamageTakenSound, GetOwner()->GetActorLocation());
 	}
-
-	HeartCount--;
-	OnHealthChange.Broadcast(HeartCount);
 
 	if (HeartCount <= 0)
 	{
@@ -45,7 +70,7 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 			UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetOwner()->GetActorLocation());
 		}
 
-		if (AArenaCharacter* Player = GetOwner<AArenaCharacter>())
+		if (IsValid(Player))
 		{
 			Player->HandleDestruction();
 		}

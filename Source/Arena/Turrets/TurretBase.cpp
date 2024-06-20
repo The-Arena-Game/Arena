@@ -65,15 +65,6 @@ void ATurretBase::Tick(float DeltaTime)
 	}
 }
 
-TArray<ETurretType> ATurretBase::GetTurretTypeOptions()
-{
-	return {
-		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
-		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet,
-		ETurretType::Lazer, ETurretType::Knight, ETurretType::MinusSinus
-	};
-}
-
 void ATurretBase::OnSpawnCollisionChange(bool NewState)
 {
 	if (NewState)

@@ -52,7 +52,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 
 	AController* MyOwnerInst = MyOwner->GetInstigatorController();
-	UClass* DamageTypeClass = UDamageType::StaticClass();	// We don't specify any class yet
+	UClass* DamageTypeClass = GetDamageType();
 
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
 	{
@@ -99,5 +99,26 @@ void AProjectileBase::Explode()
 	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	Destroy();
+}
+
+UClass* AProjectileBase::GetDamageType() const
+{
+	switch (ProjectileType)
+	{
+	case EProjectileType::TurtleTemp:
+		return UTurtleTempDamageType::StaticClass();
+		break;
+	case EProjectileType::TurtlePerm:
+		return UTurtlePermDamageType::StaticClass();
+		break;
+	case EProjectileType::Darkness:
+		return UDarknessDamageType::StaticClass();
+		break;
+	case EProjectileType::Exhaustion:
+		return UExhaustionDamageType::StaticClass();
+		break;
+	default:
+		return UDamageType::StaticClass();
+	}
 }
 

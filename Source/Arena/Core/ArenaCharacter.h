@@ -110,6 +110,16 @@ public:
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
 	void HandleDestruction();
 
+	/*--------------------------
+			Apply Affects
+	--------------------------*/
+
+	UFUNCTION()
+	void OnTurtlePermHit();
+
+	UFUNCTION()
+	void OnTurtleTempHit();
+
 protected:
 
 	/** Called for movement input */
@@ -198,7 +208,9 @@ private:
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class Input", meta = (AllowPrivateAccess = "true"))
 	//UInputAction* LookAction;
 
-	////////////////////////////////	Stamina
+	/*--------------------------
+			Stamina
+	--------------------------*/
 
 	float CurrentStamina = 100.f;
 	bool bSprinting = false;
@@ -233,7 +245,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float JumpStaminaCost = 20.f;
 
-	////////////////////////////////	Basics
+	/*--------------------------
+			Basics
+	--------------------------*/
 
 	/** Walk Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
@@ -243,7 +257,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
 
-	////////////////////////////////	Deflect
+	/*--------------------------
+			Deflect
+	--------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "How many times Deflect can be used in a level?"))
 	int DeflectUsageLimit = 2;
@@ -262,7 +278,9 @@ private:
 	/** Count how many times deflect used in a level */
 	int DeflectCounter = 0;
 
-	////////////////////////////////	Dash
+	/*--------------------------
+			Dash
+	--------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float DashDistance = 200.f;
@@ -290,7 +308,9 @@ private:
 	float CharacterFeetDistanceFromCenter = 85.f;
 	float CollisionLineOffset = 50.f;
 
-	////////////////////////////////	Flash
+	/*--------------------------
+			Flash
+	--------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float FlashDistance = 200.f;
@@ -310,7 +330,10 @@ private:
 	float FlashTimer = 0.f;
 	int FlashCounter = 0;
 
-	////////////////////////////////	Black hole bullet affect
+	/*--------------------------
+			Black Hole Affect
+	--------------------------*/
+
 	UPROPERTY()
 	TArray<ABlackHoleProjectile*> BlackHoles;
 
@@ -323,12 +346,16 @@ private:
 	UFUNCTION()
 	void HandleBlackHoleAffect(float DelataTime);
 
-	////////////////////////////////	Component
+	/*--------------------------
+			Components
+	--------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComp;
 
-	////////////////////////////////	Internal Functions
+	/*--------------------------
+			Utils
+	--------------------------*/
 
 	FVector GetDashLocation(float TargetDistance, bool& SameLocation);
 };

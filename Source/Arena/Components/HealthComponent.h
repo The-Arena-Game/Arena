@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "HealthComponent.generated.h"
 
+class AArenaCharacter;
 DECLARE_LOG_CATEGORY_EXTERN(LogArnHealthComponent, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChange, int, HealthCount);
@@ -44,6 +45,9 @@ protected:
 	void BeginPlay() override;
 
 private:
+
+	UPROPERTY()
+	AArenaCharacter* Player;
 
 	bool bIsVulnerable = true;
 

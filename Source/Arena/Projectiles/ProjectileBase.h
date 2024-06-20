@@ -56,4 +56,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.f;
 
+	/*--------------------------
+			Utils
+	--------------------------*/
+
+	UFUNCTION()
+	UClass* GetDamageType() const;
+
 };

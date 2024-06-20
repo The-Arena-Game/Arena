@@ -6,17 +6,17 @@
 #include "Engine/DataAsset.h"
 #include "ArenaBaseData.generated.h"
 
-/*----------------------------------------------------------------------------
-		Enums
-----------------------------------------------------------------------------*/
+/*----------------------------
+			Enums
+----------------------------*/
 
 UENUM(BlueprintType)
 enum class ETurretType : uint8
 {
 	None			UMETA(DisplayName = "None"),
-	SingleTurret    UMETA(DisplayName = "Single Turret"),
-	DualTurret		UMETA(DisplayName = "Dual Turret"),
-	TwinTurret		UMETA(DisplayName = "Twin Turret"),
+	Single			UMETA(DisplayName = "Single Turret"),
+	Dual			UMETA(DisplayName = "Dual Turret"),
+	Twin			UMETA(DisplayName = "Twin Turret"),
 	Chonky			UMETA(DisplayName = "Chonky Turret"),
 	Gatling			UMETA(DisplayName = "Gatling Turret"),
 	Triplet			UMETA(DisplayName = "Triplet Turret"),
@@ -28,7 +28,11 @@ enum class ETurretType : uint8
 	Angry			UMETA(DisplayName = "Angry Turret"),
 	BlackHole		UMETA(DisplayName = "Black Hole Turret"),
 	LobTurret		UMETA(DisplayName = "Lob Turret"),
-	BoomerangTurret	UMETA(DisplayName = "Boomerang Turret"),
+	Boomerang		UMETA(DisplayName = "Boomerang Turret"),
+	TurtlePerm		UMETA(DisplayName = "Turtle Perm Turret"),
+	TurtleTemp		UMETA(DisplayName = "Turtle Temp Turret"),
+	Darkness		UMETA(DisplayName = "Darkness Turret"),
+	Exhaustion		UMETA(DisplayName = "Exhaustion Turret"),
 };
 
 UENUM(BlueprintType)
@@ -88,11 +92,15 @@ enum class EProjectileType : uint8
 	BlackHole	UMETA(DisplayName = "Black Hole Projectile"),
 	Lob			UMETA(DisplayName = "Lob Projectile"),
 	Boomerang	UMETA(DisplayName = "Boomerang Projectile"),
+	TurtlePerm	UMETA(DisplayName = "Turtle Perm Projectile"),
+	TurtleTemp	UMETA(DisplayName = "Turtle Temp Projectile"),
+	Darkness	UMETA(DisplayName = "Darkness Projectile"),
+	Exhaustion	UMETA(DisplayName = "Exhaustion Projectile"),
 };
 
-/*----------------------------------------------------------------------------
-		Structs
-----------------------------------------------------------------------------*/
+/*----------------------------
+			Structs
+----------------------------*/
 
 USTRUCT(BlueprintType)
 struct FArenaBuff
@@ -162,16 +170,33 @@ class ARENA_API UArenaBaseData : public UPrimaryDataAsset
 
 };
 
+/*--------------------------
+		Damage Types
+--------------------------*/
+
 UCLASS()
 class UTurtlePermDamageType : public UDamageType
 {
 	GENERATED_BODY()
+
+public:
+
+	/** From 0.0f to 1.0f - Currently set to 5% */
+	static constexpr float DecreasePercentage = 0.05f;
 };
 
 UCLASS()
 class UTurtleTempDamageType : public UDamageType
 {
 	GENERATED_BODY()
+
+public:
+
+	/** From 0.0f to 1.0f - Currently set to 30% */
+	static constexpr float DecreasePercentage = 0.3f;
+
+	/** From 1.0f to 10.0f */
+	static constexpr float Time = 5.0f;
 };
 
 UCLASS()

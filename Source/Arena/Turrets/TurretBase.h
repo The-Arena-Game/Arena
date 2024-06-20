@@ -71,12 +71,8 @@ private:
 	----------------------------------------------------------------------------*/
 
 	// Turret Type Dropdown
-	UFUNCTION()
-	TArray<ETurretType> GetTurretTypeOptions();
-
-	// Turret Type Dropdown
-	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
-	ETurretType TurretType = ETurretType::SingleTurret;
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true"))
+	ETurretType TurretType = ETurretType::Single;
 
 	/*----------------------------------------------------------------------------
 		Others

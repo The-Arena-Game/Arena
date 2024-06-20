@@ -247,16 +247,6 @@ TSubclassOf<ATurretBase> ATurretSlot::GetTurretClass(const ETurretType& Type)
 	return nullptr;
 }
 
-TArray<ETurretType> ATurretSlot::GetTurretTypeOptions()
-{
-	return {
-		ETurretType::SingleTurret, ETurretType::DualTurret, ETurretType::TwinTurret,
-		ETurretType::Chonky, ETurretType::Gatling, ETurretType::Triplet,
-		ETurretType::Lazer, ETurretType::Knight, ETurretType::MinusSinus,
-		ETurretType::BlackHole, ETurretType::LobTurret, ETurretType::BoomerangTurret
-	};
-}
-
 void ATurretSlot::OnRestart()
 {
 	if (IsValid(CurrentTurret))

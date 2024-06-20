@@ -35,7 +35,11 @@ protected:
 private:
 
 	ETurretType LastSelectedType;
+
+	UPROPERTY()
 	ATurretBase* CurrentTurret;
+
+	UPROPERTY()
 	AArenaGameMode* ArenaGameMode;
 
 	bool bTurretInstalled;
@@ -47,12 +51,8 @@ private:
 	int ActiveLevelNumber = 1;
 
 	// Turret Type Dropdown
-	UFUNCTION()
-	TArray<ETurretType> GetTurretTypeOptions();
-
-	// Turret Type Dropdown
-	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true", GetOptions = "GetTurretTypeOptions"))
-	ETurretType EditorTurretType = ETurretType::SingleTurret;
+	UPROPERTY(EditAnywhere, Category = "Arena", meta = (AllowBlueprintAccess = "true"))
+	ETurretType EditorTurretType = ETurretType::Single;
 
 	/*----------------------------------------------------------------------------
 		Components
