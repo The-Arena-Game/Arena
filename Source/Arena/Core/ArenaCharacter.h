@@ -97,6 +97,13 @@ public:
 		return FlashCounter;
 	}
 
+	/** Returns Darkness Value (0.f to 1.f) **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetDarknessValue() const
+	{
+		return DarknessValue;
+	}
+
 	UFUNCTION()
 	void UpdateBlackHoleArray();
 
@@ -122,6 +129,9 @@ public:
 
 	UFUNCTION()
 	void OnExhaustionHit();
+
+	UFUNCTION()
+	void OnDarknessHit();
 
 protected:
 
@@ -168,6 +178,9 @@ private:
 	EGameStates CurrentGameState;
 
 	bool PreventStaminaToFill = false;
+
+	float DarknessValue = 0.f;
+	float DarknessTimer = 0.f;
 
 	/*----------------------------------------------------------------------
 		Base Functions
@@ -367,8 +380,24 @@ private:
 	UPROPERTY()
 	ABlackHoleProjectile* TargetBlackHole;
 
+	/*----------------------------------------------------------------------
+		Handlers
+	----------------------------------------------------------------------*/
+
 	UFUNCTION()
-	void HandleBlackHoleAffect(float DelataTime);
+	void HandleBlackHoleAffect(const float DeltaTime);
+	UFUNCTION()
+	void HandleDarkness(const float DeltaTime);
+	UFUNCTION()
+	void HandleDeflect(const float DeltaTime);
+	UFUNCTION()
+	void HandleDash(const float DeltaTime);
+	UFUNCTION()
+	void HandleFlash(const float DeltaTime);
+	UFUNCTION()
+	void HandleStamina(const float DeltaTime);
+	UFUNCTION()
+	void HandleDebugLines() const;
 
 	/*----------------------------------------------------------------------
 		Utils

@@ -222,10 +222,10 @@ class UDarknessDamageType : public UDamageType
 public:
 
 	/** Time for 100% blocking */
-	static constexpr float FullBlockTime = 2.0f;
+	static constexpr float FullBlockTime = 1.0f;
 
 	/** Time for full reveal */
-	static constexpr float RevealingTime = 10.0f;
+	static constexpr float RevealingTime = 5.0f;
 };
 
 /**

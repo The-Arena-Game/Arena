@@ -45,7 +45,7 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		}
 		else if (DamageType->IsA(UDarknessDamageType::StaticClass()))
 		{
-			// TODO
+			Player->OnDarknessHit();
 		}
 		else if (DamageType->IsA(UExhaustionDamageType::StaticClass()))
 		{

@@ -112,133 +112,12 @@ void AArenaCharacter::Tick(float DeltaTime)
 	GetCharacterMovement()->SafeMoveUpdatedComponent(FVector(0.f, 0.f, 0.01f), GetActorRotation(), true, OutHit);
 	GetCharacterMovement()->SafeMoveUpdatedComponent(FVector(0.f, 0.f, -0.01f), GetActorRotation(), true, OutHit);
 
-	////////////////////////////////	Deflect
-
-	// If there is a usage limit, process deflect timer
-	if (DeflectCounter > 0)
-	{
-		// Increase the timer when it is not full
-		if (DeflectTimer < DeflectCooldownDuration)
-		{
-			DeflectTimer += DeltaTime;
-		}
-		else
-		{
-			// Make sure it is equal to the max duration if not increased
-			DeflectTimer = DeflectCooldownDuration;
-		}
-	}
-
-	////////////////////////////////	Dash
-
-	// REMOVED: If there is a usage limit, process dash timer
-	// Increase the timer when it is not full
-	if (DashTimer < DashCooldownDuration)
-	{
-		DashTimer += DeltaTime;
-	}
-	else
-	{
-		// Make sure it is equal to the max duration if not increased
-		DashTimer = DashCooldownDuration;
-	}
-
-	if (IsDashing)
-	{
-		// Start movement
-		FVector CurrentLocation = GetActorLocation();
-		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, DashTargetLocation, DeltaTime, DashSpeed);
-		SetActorLocation(NewLocation);
-
-		// Check if the actor has reached the target location
-		float DistanceToTarget = FVector::DistSquared(CurrentLocation, DashTargetLocation);
-		if (DistanceToTarget < FMath::Square(DashReachThreshold))
-		{
-			//UE_LOG(LogArnCharacter, Log, TEXT("REACHED TO THE TARGET !!"));
-			FinishDash();
-		}
-
-		// Release dash if it exceeds 1 second - Avoids bug
-		DashDebugTimer += DeltaTime;
-		if (DashDebugTimer > 1.f)
-		{
-			DashDebugTimer = 0;
-			FinishDash();
-		}
-	}
-
-	////////////////////////////////	Flash
-
-	// REMOVED: If there is a usage limit, process Flash timer
-	// Increase the timer when it is not full
-	if (FlashTimer < FlashCooldownDuration)
-	{
-		FlashTimer += DeltaTime;
-	}
-	else
-	{
-		// Make sure it is equal to the max duration if not increased
-		FlashTimer = FlashCooldownDuration;
-	}
-
-	////////////////////////////////	Stamina
-
-
-	if (!PreventStaminaToFill)
-	{
-		CurrentStamina += BaseStaminaIncrease * DeltaTime;
-	}
-
-	// Check if moving?
-	if (IsStaminaActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
-	{
-		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
-
-		if (IsStaminaActive && bSprinting)
-		{
-			CurrentStamina -= SprintStaminaDecrease * DeltaTime;
-		}
-	}
-
-	// Make sure the value stays between boundries
-	if (CurrentStamina < 0)
-	{
-		CurrentStamina = 0;
-	}
-	else if (CurrentStamina > MaxStamina)
-	{
-		CurrentStamina = MaxStamina;
-	}
-
-	// When we are able to sprint, if the stamina drop below the Off limit, turn off sprinting
-	if (bCanSprint && CurrentStamina < SprintOffStaminaLevel)
-	{
-		bCanSprint = false;
-		StopSprint();
-	}
-	else if (!bCanSprint && CurrentStamina > SprintOnStaminaLevel)
-	{
-		bCanSprint = true;
-	}
-
-	////////////////////////////////	Debug lines
-
-	// Draw blue line for 
-	if (IsValid(GameMode) && GameMode->GetArenaGameState() == EGameStates::Ready)
-	{
-		if (IsValid(GameMode->GetBlueGlobe()))
-		{
-			FVector TargetLoc = GameMode->GetBlueGlobe()->GetActorLocation();
-
-			DrawDebugLine(
-				GetWorld(),
-				GetActorLocation(),
-				TargetLoc,
-				FColor::Cyan
-			);
-		}
-	}
-
+	HandleDarkness(DeltaTime);
+	HandleDeflect(DeltaTime);
+	HandleDash(DeltaTime);
+	HandleFlash(DeltaTime);
+	HandleStamina(DeltaTime);
+	HandleDebugLines();
 	HandleBlackHoleAffect(DeltaTime);
 }
 
@@ -405,32 +284,6 @@ void AArenaCharacter::UpdateBlackHoleArray()
 	}
 }
 
-void AArenaCharacter::HandleBlackHoleAffect(float DeltaTime)
-{
-	if (BlackHoles.IsEmpty() || BlackHoles.Num() == 0 || CurrentGameState != EGameStates::Play)
-	{
-		return;
-	}
-
-	if (!IsValid(TargetBlackHole))
-	{
-		UE_LOG(LogArnCharacter, Error, TEXT("The target blackhole is not valid! Something is wrong!"));
-		UpdateBlackHoleArray();
-		return;
-	}
-
-	// Movement Action
-	float TargetDistance = FVector::Distance(TargetBlackHole->GetActorLocation(), GetActorLocation());
-	if (TargetDistance < TargetBlackHole->MaxRange)
-	{
-		float ReverseDistance = TargetBlackHole->MaxRange - TargetDistance;
-
-		FVector CurrentLocation = GetActorLocation();
-		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetBlackHole->GetActorLocation(), DeltaTime, TargetBlackHole->PullSpeed);
-		SetActorLocation(NewLocation);
-	}
-}
-
 void AArenaCharacter::OnTurtlePermHit()
 {
 	WalkSpeed *= UTurtlePermDamageType::DecreasePercentage;
@@ -471,6 +324,27 @@ void AArenaCharacter::OnExhaustionHit()
 		{
 			PreventStaminaToFill = false;
 		}, UExhaustionDamageType::Time, false
+	);
+}
+
+void AArenaCharacter::OnDarknessHit()
+{
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+
+	DarknessTimer = 0;
+	DarknessValue = 1.f;
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]
+		{
+			if (DarknessTimer <= 0)
+			{
+				DarknessTimer = UDarknessDamageType::RevealingTime;
+			}
+		}, UDarknessDamageType::FullBlockTime, false
 	);
 }
 
@@ -682,3 +556,173 @@ void AArenaCharacter::Look(const FInputActionValue& Value)
 }
 
 */
+
+/*----------------------------------------------------------------------
+		Handlers
+----------------------------------------------------------------------*/
+
+void AArenaCharacter::HandleBlackHoleAffect(const float DeltaTime)
+{
+	if (BlackHoles.IsEmpty() || BlackHoles.Num() == 0 || CurrentGameState != EGameStates::Play)
+	{
+		return;
+	}
+
+	if (!IsValid(TargetBlackHole))
+	{
+		UE_LOG(LogArnCharacter, Error, TEXT("The target blackhole is not valid! Something is wrong!"));
+		UpdateBlackHoleArray();
+		return;
+	}
+
+	// Movement Action
+	float TargetDistance = FVector::Distance(TargetBlackHole->GetActorLocation(), GetActorLocation());
+	if (TargetDistance < TargetBlackHole->MaxRange)
+	{
+		float ReverseDistance = TargetBlackHole->MaxRange - TargetDistance;
+
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetBlackHole->GetActorLocation(), DeltaTime, TargetBlackHole->PullSpeed);
+		SetActorLocation(NewLocation);
+	}
+}
+
+void AArenaCharacter::HandleDarkness(const float DeltaTime)
+{
+	if (DarknessTimer > 0)
+	{
+		DarknessTimer = FMath::Clamp(DarknessTimer, 0.f, DarknessTimer - DeltaTime);
+		DarknessValue = DarknessTimer / UDarknessDamageType::RevealingTime;
+	}
+}
+
+void AArenaCharacter::HandleDeflect(const float DeltaTime)
+{
+	// If there is a usage limit, process deflect timer
+	if (DeflectCounter > 0)
+	{
+		// Increase the timer when it is not full
+		if (DeflectTimer < DeflectCooldownDuration)
+		{
+			DeflectTimer += DeltaTime;
+		}
+		else
+		{
+			// Make sure it is equal to the max duration if not increased
+			DeflectTimer = DeflectCooldownDuration;
+		}
+	}
+}
+
+void AArenaCharacter::HandleDash(const float DeltaTime)
+{
+	// REMOVED: If there is a usage limit, process dash timer
+	// Increase the timer when it is not full
+	if (DashTimer < DashCooldownDuration)
+	{
+		DashTimer += DeltaTime;
+	}
+	else
+	{
+		// Make sure it is equal to the max duration if not increased
+		DashTimer = DashCooldownDuration;
+	}
+
+	if (IsDashing)
+	{
+		// Start movement
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, DashTargetLocation, DeltaTime, DashSpeed);
+		SetActorLocation(NewLocation);
+
+		// Check if the actor has reached the target location
+		float DistanceToTarget = FVector::DistSquared(CurrentLocation, DashTargetLocation);
+		if (DistanceToTarget < FMath::Square(DashReachThreshold))
+		{
+			//UE_LOG(LogArnCharacter, Log, TEXT("REACHED TO THE TARGET !!"));
+			FinishDash();
+		}
+
+		// Release dash if it exceeds 1 second - Avoids bug
+		DashDebugTimer += DeltaTime;
+		if (DashDebugTimer > 1.f)
+		{
+			DashDebugTimer = 0;
+			FinishDash();
+		}
+	}
+}
+
+void AArenaCharacter::HandleFlash(const float DeltaTime)
+{
+	// REMOVED: If there is a usage limit, process Flash timer
+	// Increase the timer when it is not full
+	if (FlashTimer < FlashCooldownDuration)
+	{
+		FlashTimer += DeltaTime;
+	}
+	else
+	{
+		// Make sure it is equal to the max duration if not increased
+		FlashTimer = FlashCooldownDuration;
+	}
+}
+
+void AArenaCharacter::HandleStamina(const float DeltaTime)
+{
+	if (!PreventStaminaToFill)
+	{
+		CurrentStamina += BaseStaminaIncrease * DeltaTime;
+	}
+
+	// Check if moving?
+	if (IsStaminaActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
+	{
+		CurrentStamina -= WalkingStaminaDecrease * DeltaTime;
+
+		if (IsStaminaActive && bSprinting)
+		{
+			CurrentStamina -= SprintStaminaDecrease * DeltaTime;
+		}
+	}
+
+	// Make sure the value stays between boundries
+	if (CurrentStamina < 0)
+	{
+		CurrentStamina = 0;
+	}
+	else if (CurrentStamina > MaxStamina)
+	{
+		CurrentStamina = MaxStamina;
+	}
+
+	// When we are able to sprint, if the stamina drop below the Off limit, turn off sprinting
+	if (bCanSprint && CurrentStamina < SprintOffStaminaLevel)
+	{
+		bCanSprint = false;
+		StopSprint();
+	}
+	else if (!bCanSprint && CurrentStamina > SprintOnStaminaLevel)
+	{
+		bCanSprint = true;
+	}
+}
+
+void AArenaCharacter::HandleDebugLines() const
+{
+	// Draw blue line for 
+	if (IsValid(GameMode) && GameMode->GetArenaGameState() == EGameStates::Ready)
+	{
+		if (IsValid(GameMode->GetBlueGlobe()))
+		{
+			FVector TargetLoc = GameMode->GetBlueGlobe()->GetActorLocation();
+
+			DrawDebugLine(
+				GetWorld(),
+				GetActorLocation(),
+				TargetLoc,
+				FColor::Cyan
+			);
+		}
+	}
+}
