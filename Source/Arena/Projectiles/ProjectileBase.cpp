@@ -38,8 +38,14 @@ void AProjectileBase::BeginPlay()
 	{
 		MovementComponent->Deactivate();
 	}
+	else if (ProjectileType == EProjectileType::Homing)
+	{
+		if (AArenaCharacter* Character = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+		{
+			MovementComponent->HomingTargetComponent = Character->GetRootComponent();
+		}
+	}
 }
-
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {

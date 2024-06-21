@@ -33,6 +33,7 @@ enum class ETurretType : uint8
 	TurtleTemp		UMETA(DisplayName = "Turtle Temp Turret"),
 	Darkness		UMETA(DisplayName = "Darkness Turret"),
 	Exhaustion		UMETA(DisplayName = "Exhaustion Turret"),
+	Homing			UMETA(DisplayName = "Homing Turret"),
 };
 
 UENUM(BlueprintType)
@@ -96,6 +97,7 @@ enum class EProjectileType : uint8
 	TurtleTemp	UMETA(DisplayName = "Turtle Temp Projectile"),
 	Darkness	UMETA(DisplayName = "Darkness Projectile"),
 	Exhaustion	UMETA(DisplayName = "Exhaustion Projectile"),
+	Homing		UMETA(DisplayName = "Homing Projectile"),
 };
 
 /*----------------------------
