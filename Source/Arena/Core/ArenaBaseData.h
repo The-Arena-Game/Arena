@@ -174,6 +174,11 @@ class ARENA_API UArenaBaseData : public UPrimaryDataAsset
 		Damage Types
 --------------------------*/
 
+/**
+ * Turtle Permanent Damage Type
+ *
+ * Decreases the speed of the player permanently
+ */
 UCLASS()
 class UTurtlePermDamageType : public UDamageType
 {
@@ -181,10 +186,15 @@ class UTurtlePermDamageType : public UDamageType
 
 public:
 
-	/** From 0.0f to 1.0f - Currently set to 5% */
+	/** Must be from 0.0f to 1.0f - Currently set to 5% */
 	static constexpr float DecreasePercentage = 0.05f;
 };
 
+/**
+ * Turtle Temporary Damage Type
+ *
+ * Decreases the speed of the player for a certain time period
+ */
 UCLASS()
 class UTurtleTempDamageType : public UDamageType
 {
@@ -192,21 +202,44 @@ class UTurtleTempDamageType : public UDamageType
 
 public:
 
-	/** From 0.0f to 1.0f - Currently set to 30% */
+	/** Must be from 0.0f to 1.0f - Currently set to 30% */
 	static constexpr float DecreasePercentage = 0.3f;
 
-	/** From 1.0f to 10.0f */
+	/** Time for the speed to recover */
 	static constexpr float Time = 5.0f;
 };
 
+/**
+ * Darkness Damage Type
+ *
+ * Blocks the view of the player for a certain time period
+ */
 UCLASS()
 class UDarknessDamageType : public UDamageType
 {
 	GENERATED_BODY()
+
+public:
+
+	/** Time for 100% blocking */
+	static constexpr float FullBlockTime = 2.0f;
+
+	/** Time for full reveal */
+	static constexpr float RevealingTime = 10.0f;
 };
 
+/**
+ * Exhaustion Damage Type
+ *
+ * Empty the stamina of the player and prevents it to fill again for a certain time period
+ */
 UCLASS()
 class UExhaustionDamageType : public UDamageType
 {
 	GENERATED_BODY()
+
+public:
+
+	/** Time for preventing stamina to start filling again */
+	static constexpr float Time = 10.0f;
 };

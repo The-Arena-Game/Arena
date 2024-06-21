@@ -16,6 +16,7 @@
 #include "InputActionValue.h"
 #include "Arena/Projectiles/BlackHoleProjectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/UnitConversion.h"
 
 DEFINE_LOG_CATEGORY(LogArnCharacter);
 
@@ -183,7 +184,10 @@ void AArenaCharacter::Tick(float DeltaTime)
 	////////////////////////////////	Stamina
 
 
-	CurrentStamina += BaseStaminaIncrease * DeltaTime;
+	if (!PreventStaminaToFill)
+	{
+		CurrentStamina += BaseStaminaIncrease * DeltaTime;
+	}
 
 	// Check if moving?
 	if (IsStaminaActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
@@ -450,6 +454,24 @@ void AArenaCharacter::OnTurtleTempHit()
 			SprintSpeed += ReducedSprintSpeed;
 			GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 		}, UTurtleTempDamageType::Time, false);
+}
+
+void AArenaCharacter::OnExhaustionHit()
+{
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+
+	CurrentStamina = 0.f;
+	PreventStaminaToFill = true;
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]
+		{
+			PreventStaminaToFill = false;
+		}, UExhaustionDamageType::Time, false
+	);
 }
 
 /*----------------------------------------------------------------------

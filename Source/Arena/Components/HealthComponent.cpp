@@ -49,7 +49,7 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		}
 		else if (DamageType->IsA(UExhaustionDamageType::StaticClass()))
 		{
-			// TODO
+			Player->OnExhaustionHit();
 		}
 		else
 		{
