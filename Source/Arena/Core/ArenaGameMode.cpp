@@ -6,7 +6,6 @@
 #include "Arena/Components/HealthComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GlobeBase.h"
-#include "ToolBuilderUtil.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
