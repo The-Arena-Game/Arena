@@ -162,7 +162,7 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AArenaCharacter::Move(const FInputActionValue& Value)
 {
-	if (IsDashing)
+	if (CurrentGameState == EGameStates::Menu || IsDashing)
 	{
 		return;
 	}

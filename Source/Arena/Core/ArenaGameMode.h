@@ -165,8 +165,6 @@ private:
 
 	// Retuns a valid location for blue globe to spawn
 	FVector GetBlueGlobeSpawnLocation(FVector CenterLocation);
-
-	void SetArenaGameState(EGameStates NewState);
 };
 
 

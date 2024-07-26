@@ -30,9 +30,6 @@ void AArenaGameMode::BeginPlay()
 	// Get all the Yellow Globes that is currently in the level
 	UGameplayStatics::GetAllActorsOfClass(this, AGlobeBase::StaticClass(), YellowGlobes);
 	GlobeCounter = YellowGlobes.Num();
-	SetArenaGameState(EGameStates::Ready);
-
-	RestartArenaGame();	// Execute a fresh start
 }
 
 void AArenaGameMode::Cheat_CollectAllYellows()
@@ -52,7 +49,7 @@ void AArenaGameMode::Cheat_CollectAllYellows()
 
 	CardManagementComp->GenerateCardData(LevelNumber);
 
-	SetArenaGameState(EGameStates::Win);
+	SetGameState(EGameStates::Win);
 	FinishGame();
 	OpenCardSelectionUI();
 	PlayerController->bShowMouseCursor = true;
@@ -82,7 +79,10 @@ void AArenaGameMode::Cheat_CollectBlue()
 
 void AArenaGameMode::RestartArenaGame()
 {
-	FinishGame(); // Execute end game actions
+	if (ArenaGameState != EGameStates::Menu)
+	{
+		FinishGame(); // Execute end game actions if this isn't called from menu
+	}
 	CloseCardSelectionUI(); // Close it in case of in a card selection state
 
 	// Get the player start location
@@ -108,7 +108,6 @@ void AArenaGameMode::RestartArenaGame()
 				PlayerController->Possess(Player);
 			}
 		}
-
 	}
 	// Else, relocate the player
 	else
@@ -140,8 +139,9 @@ void AArenaGameMode::RestartArenaGame()
 
 	// Spawn a new blue globe
 	BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
+	LevelNumber = 1;
 
-	SetArenaGameState(EGameStates::Ready);
+	SetGameState(EGameStates::Ready);
 	OnRestart.Broadcast();
 }
 
@@ -157,7 +157,7 @@ void AArenaGameMode::HandlePlayerDeath()
 	// If player is still alive, don't execute game over state
 	if (Player->GetHealthComponent()->IsDead())
 	{
-		SetArenaGameState(EGameStates::Lost);
+		SetGameState(EGameStates::Lost);
 
 		// Execute FinishGame BP Event
 		FinishGame();
@@ -193,7 +193,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 		CardManagementComp->GenerateCardData(LevelNumber);
 
 		// If so, all of the yellow globes are collected, win state
-		SetArenaGameState(EGameStates::Win);
+		SetGameState(EGameStates::Win);
 		FinishGame();
 		OpenCardSelectionUI();
 		PlayerController->bShowMouseCursor = true;
@@ -208,7 +208,7 @@ void AArenaGameMode::SetReadyState()
 		BlueGlobe = SpawnBlueGlobe(Player->GetActorLocation(), Player->GetActorRotation());
 	}
 
-	SetArenaGameState(EGameStates::Ready);
+	SetGameState(EGameStates::Ready);
 	LevelNumber++;
 }
 
@@ -242,7 +242,7 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 
 	GlobeCounter = YellowGlobes.Num();	// Reset the counter
 
-	SetArenaGameState(EGameStates::Play);
+	SetGameState(EGameStates::Play);
 	StartGame();
 }
 
@@ -314,10 +314,4 @@ FVector AArenaGameMode::GetBlueGlobeSpawnLocation(FVector CenterLocation)
 	while (bHit);
 
 	return SpawnLocation;
-}
-
-void AArenaGameMode::SetArenaGameState(EGameStates NewState)
-{
-	ArenaGameState = NewState;
-	OnGameStateChange.Broadcast(NewState);
 }
