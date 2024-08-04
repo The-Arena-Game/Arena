@@ -34,6 +34,7 @@ enum class ETurretType : uint8
 	Darkness		UMETA(DisplayName = "Darkness Turret"),
 	Exhaustion		UMETA(DisplayName = "Exhaustion Turret"),
 	Homing			UMETA(DisplayName = "Homing Turret"),
+	YoYo			UMETA(DisplayName = "Yo-Yo! Turret"),
 };
 
 UENUM(BlueprintType)
@@ -98,6 +99,7 @@ enum class EProjectileType : uint8
 	Darkness	UMETA(DisplayName = "Darkness Projectile"),
 	Exhaustion	UMETA(DisplayName = "Exhaustion Projectile"),
 	Homing		UMETA(DisplayName = "Homing Projectile"),
+	YoYo	    UMETA(DisplayName = "Yo-Yo! Projectile"),
 };
 
 /*----------------------------
