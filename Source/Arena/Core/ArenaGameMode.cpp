@@ -142,6 +142,7 @@ void AArenaGameMode::RestartArenaGame()
 	LevelNumber = 1;
 
 	SetGameState(EGameStates::Ready);
+	CardManagementComp->OnRestart();
 	OnRestart.Broadcast();
 }
 

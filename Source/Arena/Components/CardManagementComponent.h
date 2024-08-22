@@ -7,6 +7,8 @@
 #include "Components/ActorComponent.h"
 #include "CardManagementComponent.generated.h"
 
+class AArenaCharacter;
+
 DECLARE_LOG_CATEGORY_EXTERN(LogArnCardManagement, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTurretSelected, const ETurretType&, Type);
@@ -14,12 +16,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffSelected, const FArenaBuff&, 
 
 /* This is a CardManagementComponent specific struct to manage pools */
 USTRUCT()
-struct FRarityPools
+struct FRarityPool
 {
 	GENERATED_BODY()
 
-	FRarityPools() = default;
-	FRarityPools(const ERarity& InRarity, const TArray<ETurretType>& InTurretPool, const TArray<FArenaBuff>& InBuffPool)
+	FRarityPool() = default;
+	FRarityPool(const ERarity& InRarity, const TArray<ETurretType>& InTurretPool, const TArray<FArenaBuff>& InBuffPool)
 	{
 		Rarity = InRarity;
 		TurretPool = InTurretPool;
@@ -55,8 +57,11 @@ public:
 	UFUNCTION()
 	void GenerateCardData(const uint8& Level);
 
+	UFUNCTION()
+	void OnRestart();
+
 	UPROPERTY()
-	TMap<ERarity, FRarityPools> Pools;
+	TMap<ERarity, FRarityPool> Pools;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Turret Pools")
 	TArray<ETurretType> CommonTurretPool;
@@ -88,6 +93,19 @@ protected:
 
 private:
 
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<FCardData> CardsData;
+
+	UPROPERTY()
+	UArenaBaseData* BaseData;
+
+	UPROPERTY()
+	AArenaCharacter* Character;
+
+	/*--------------------------
+		Unlock Levels
+	--------------------------*/
+
 	bool RareUnlocked = false;
 	bool EpicUnlocked = false;
 	bool LegendaryUnlocked = false;
@@ -101,8 +119,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Unlocks", meta = (AllowPrivateAccess = "true"))
 	int LegendaryUnlockLevel = 15;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<FCardData> CardsData;
+	/*--------------------------
+		Rarity Configs
+	--------------------------*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float CommonBaseValue = 75.f;
@@ -124,6 +143,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Configuration", meta = (AllowPrivateAccess = "true"))
 	float LegendaryGrowthRate = 0.4f;
 
+	/*--------------------------
+		Functions
+	--------------------------*/
+
 	UFUNCTION()
 	static float GetWeight(const uint8& Level, const float& BaseValue, const float& GrowthRate)
 	{
@@ -134,8 +157,11 @@ private:
 	ERarity GetRarity(const uint8& Level) const;
 
 	UFUNCTION()
+	void CheckLevelUnlocks(const uint8& Level);
+
+	UFUNCTION()
 	void BuffSelected(const FArenaBuff& InBuff);
 
 	UFUNCTION()
-	void CheckLevelUnlocks(const uint8& Level);
+	void CheckFlashBuff(const FArenaBuff& InBuff);
 };

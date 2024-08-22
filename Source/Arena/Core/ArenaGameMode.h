@@ -79,6 +79,12 @@ public:
 		return CardManagementComp;
 	}
 
+	UFUNCTION(Blueprintcallable, Category = "Arena")
+	FORCEINLINE UArenaBaseData* GetBaseData() const
+	{
+		return BaseData;
+	}
+
 	UFUNCTION(BlueprintCallable, Category = "Arena State")
 	void Cheat_CollectAllYellows();
 
@@ -112,6 +118,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	UCardManagementComponent* CardManagementComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UArenaBaseData* BaseData;
 
 	UPROPERTY()
 	APlayerController* PlayerController;

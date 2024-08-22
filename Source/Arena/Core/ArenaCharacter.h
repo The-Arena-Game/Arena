@@ -133,6 +133,26 @@ public:
 	UFUNCTION()
 	void OnDarknessHit();
 
+	/*----------------------------------------------------------------------
+		Buff Functions
+	----------------------------------------------------------------------*/
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void ActivateFlash()
+	{
+		bIsFlashActive = true;
+
+		FlashTimer = FlashCooldownDuration;
+		FlashCounter = FlashUsageLimit;
+	}
+
+	/** Decreases flash cooldown duration by given percentage */
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void DecreaseFlashCooldownDuration(const float DecreasePercentage)
+	{
+		FlashCooldownDuration -= FlashCooldownDuration * (DecreasePercentage / 100);
+	}
+
 protected:
 
 	/** Called for movement input */
@@ -350,6 +370,9 @@ private:
 	----------------------------------------------------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	bool bIsFlashActive = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float FlashDistance = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
@@ -364,6 +387,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystem* FlashTargetParticle;
 
+	float InitialFlashCoolDownDuration = 0.f;
 	float FlashTimer = 0.f;
 	int FlashCounter = 0;
 
@@ -404,4 +428,7 @@ private:
 	----------------------------------------------------------------------*/
 
 	FVector GetDashLocation(float TargetDistance, bool& SameLocation);
+
+	UFUNCTION()
+	void OnRestart();
 };

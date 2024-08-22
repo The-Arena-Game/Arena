@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CardManagementComponent.h"
+#include "Arena/Core/ArenaGameMode.h"
+#include "Arena/Core/ArenaCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogArnCardManagement);
 
@@ -8,12 +11,30 @@ void UCardManagementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Start 
+	OnRestart();
+
+	OnBuffSelected.AddDynamic(this, &UCardManagementComponent::BuffSelected);
+}
+
+void UCardManagementComponent::OnRestart()
+{
+	if (const AArenaGameMode* GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		BaseData = GameMode->GetBaseData();
+	}
+
+	if (AArenaCharacter* ArenaCharacter = Cast<AArenaCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+	{
+		Character = ArenaCharacter;
+	}
+
+	Pools.Empty();
+
 	Pools.Add(ERarity::Common, { ERarity::Common, CommonTurretPool, CommonBuffPool });
 	Pools.Add(ERarity::Rare, { ERarity::Rare, RareTurretPool, RareBuffPool });
 	Pools.Add(ERarity::Epic, { ERarity::Epic, EpicTurretPool, EpicBuffPool });
 	Pools.Add(ERarity::Legendary, { ERarity::Legendary, LegendaryTurretPool, LegendaryBuffPool });
-
-	OnBuffSelected.AddDynamic(this, &UCardManagementComponent::BuffSelected);
 }
 
 ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
@@ -61,41 +82,13 @@ ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
 	return SelectedRarity;
 }
 
-void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
-{
-	// Find the buff and decrease the counter
-	if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
-	{
-		for (FArenaBuff& Buff : RarityPools->BuffPool)
-		{
-			if (InBuff == Buff)
-			{
-				Buff.UsageCount--;
-			}
-		}
-	}
-
-	if (InBuff.Type == EBuffType::TestBuff_10)
-	{
-		if (FRarityPools* RarityPools = Pools.Find(InBuff.Rarity))
-		{
-			for (FArenaBuff& Buff : RarityPools->BuffPool)
-			{
-				if (Buff.Type == EBuffType::TestBuff_11)
-				{
-					Buff.Unlocked = true;
-				}
-			}
-		}
-	}
-}
-
 void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 {
+	// This is an example scope here for level based unlocks. But we use Rarity for the buffs, so I don't think we need the level-based unlock but good to keep this here.
 	if (Level == 5)
 	{
 		// Check common buffs
-		if (FRarityPools* RarityPools = Pools.Find(ERarity::Common))
+		if (FRarityPool* RarityPools = Pools.Find(ERarity::Common))
 		{
 			for (FArenaBuff& Buff : RarityPools->BuffPool)
 			{
@@ -109,7 +102,7 @@ void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 		}
 	}
 
-	// Rarity Unlocks
+	// Rarity Unlocks - Unlocks the rarities based on level.
 	if (Level == RareUnlockLevel)
 	{
 		RareUnlocked = true;
@@ -142,7 +135,7 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 		NewCards[i].Rarity = NewRarity;
 		// UE_LOG(LogArnCardManagement, Warning, TEXT("Selected Rarity: %s"), *UEnum::GetValueAsString(NewRarity));
 
-		const FRarityPools* SelectedPools = Pools.Find(NewRarity);
+		const FRarityPool* SelectedPools = Pools.Find(NewRarity);
 		if (SelectedPools == nullptr)
 		{
 			//UE_LOG(LogArnCardManagement, Error, TEXT("Pools not found! Rarity: %s"), *UEnum::GetValueAsString(NewRarity));
@@ -221,3 +214,82 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 	//UE_LOG(LogArnCardManagement, Warning, TEXT("Finito. Number of cards: %i"), NewCards.Num());
 	CardsData = NewCards;
 }
+
+void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
+{
+	// Find the buff and decrease the counter
+	if (FRarityPool* RarityPool = Pools.Find(InBuff.Rarity))
+	{
+		for (FArenaBuff& Buff : RarityPool->BuffPool)
+		{
+			if (InBuff == Buff)
+			{
+				Buff.UsageCount--;
+			}
+		}
+	}
+
+	CheckFlashBuff(InBuff);
+
+	if (InBuff.Type == EBuffType::TestBuff_10)
+	{
+		if (FRarityPool* RarityPool = Pools.Find(InBuff.Rarity))
+		{
+			for (FArenaBuff& Buff : RarityPool->BuffPool)
+			{
+				if (Buff.Type == EBuffType::TestBuff_11)
+				{
+					Buff.Unlocked = true;
+				}
+			}
+		}
+	}
+}
+
+void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::UnlockFlash:	// Unlock all the flash buffs
+
+		// Check all the pools
+		for (TTuple<ERarity, FRarityPool>& Pool : Pools)
+		{
+			// All the buffs in a pool
+			for (FArenaBuff& Buff : Pool.Value.BuffPool)
+			{
+				if (Buff.Type == EBuffType::DecFlashCD_Common || Buff.Type == EBuffType::DecFlashCD_Rare || Buff.Type == EBuffType::DecFlashCD_Epic)
+				{
+					Buff.Unlocked = true;
+					Character->ActivateFlash();
+					UE_LOG(LogArnCardManagement, Log, TEXT("All Flash buffs unlocked!"));
+				}
+			}
+		}
+		break;
+
+		// TODO: Replace the harcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
+	case EBuffType::DecFlashCD_Common:
+		Character->DecreaseFlashCooldownDuration(5.f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Common Used!"));
+		break;
+	case EBuffType::DecFlashCD_Rare:
+		Character->DecreaseFlashCooldownDuration(7.5f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Rare Used!"));
+		break;
+	case EBuffType::DecFlashCD_Epic:
+		Character->DecreaseFlashCooldownDuration(10.f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+

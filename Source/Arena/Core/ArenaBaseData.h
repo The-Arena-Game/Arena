@@ -40,24 +40,28 @@ enum class ETurretType : uint8
 UENUM(BlueprintType)
 enum class EBuffType : uint8
 {
-	None			UMETA(DisplayName = "None"),
-	TestBuff_0		UMETA(DisplayName = "Test Buff Name 0"),
-	TestBuff_1		UMETA(DisplayName = "Test Buff Name 1"),
-	TestBuff_2		UMETA(DisplayName = "Test Buff Name 2"),
-	TestBuff_3		UMETA(DisplayName = "Test Buff Name 3"),
-	TestBuff_4		UMETA(DisplayName = "Test Buff Name 4"),
-	TestBuff_5		UMETA(DisplayName = "Test Buff Name 5"),
-	TestBuff_6		UMETA(DisplayName = "Test Buff Name 6"),
-	TestBuff_7		UMETA(DisplayName = "Test Buff Name 7"),
-	TestBuff_8		UMETA(DisplayName = "Test Buff Name 8"),
-	TestBuff_9		UMETA(DisplayName = "Test Buff Name 9"),
-	TestBuff_10		UMETA(DisplayName = "Test Buff Name 10"),
-	TestBuff_11		UMETA(DisplayName = "Test Buff Name 11"),
-	TestBuff_12		UMETA(DisplayName = "Test Buff Name 12"),
-	TestBuff_13		UMETA(DisplayName = "Test Buff Name 13"),
-	TestBuff_14		UMETA(DisplayName = "Test Buff Name 14"),
-	TestBuff_15		UMETA(DisplayName = "Test Buff Name 15"),
-	TestBuff_16		UMETA(DisplayName = "Test Buff Name 16"),
+	None				UMETA(DisplayName = "None"),
+	TestBuff_0			UMETA(DisplayName = "Test Buff Name 0"),
+	TestBuff_1			UMETA(DisplayName = "Test Buff Name 1"),
+	TestBuff_2			UMETA(DisplayName = "Test Buff Name 2"),
+	TestBuff_3			UMETA(DisplayName = "Test Buff Name 3"),
+	TestBuff_4			UMETA(DisplayName = "Test Buff Name 4"),
+	TestBuff_5			UMETA(DisplayName = "Test Buff Name 5"),
+	TestBuff_6			UMETA(DisplayName = "Test Buff Name 6"),
+	TestBuff_7			UMETA(DisplayName = "Test Buff Name 7"),
+	TestBuff_8			UMETA(DisplayName = "Test Buff Name 8"),
+	TestBuff_9			UMETA(DisplayName = "Test Buff Name 9"),
+	TestBuff_10			UMETA(DisplayName = "Test Buff Name 10"),
+	TestBuff_11			UMETA(DisplayName = "Test Buff Name 11"),
+	TestBuff_12			UMETA(DisplayName = "Test Buff Name 12"),
+	TestBuff_13			UMETA(DisplayName = "Test Buff Name 13"),
+	TestBuff_14			UMETA(DisplayName = "Test Buff Name 14"),
+	TestBuff_15			UMETA(DisplayName = "Test Buff Name 15"),
+	TestBuff_16			UMETA(DisplayName = "Test Buff Name 16"),
+	UnlockFlash			UMETA(DisplayName = "Unlock Flash"),
+	DecFlashCD_Common	UMETA(DisplayName = "Decrease Flash CD Common"),
+	DecFlashCD_Rare		UMETA(DisplayName = "Decrease Flash CD Rare"),
+	DecFlashCD_Epic		UMETA(DisplayName = "Decrease Flash CD Epic"),
 };
 
 UENUM(BlueprintType)
@@ -171,6 +175,19 @@ UCLASS()
 class ARENA_API UArenaBaseData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
+
+public:
+
+	/*--------------------------
+		Buff Variables
+	--------------------------*/
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecFlashCD_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecFlashCD_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecFlashCD_Epic = 10.0f;
 
 };
 

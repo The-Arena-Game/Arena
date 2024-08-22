@@ -81,6 +81,7 @@ void AArenaCharacter::BeginPlay()
 
 	GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this));
 	GameMode->OnGameStateChange.AddDynamic(this, &AArenaCharacter::OnGameStateChange);
+	GameMode->OnRestart.AddDynamic(this, &AArenaCharacter::OnRestart);
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -94,13 +95,10 @@ void AArenaCharacter::BeginPlay()
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
-	CurrentStamina = MaxStamina;
-	DeflectTimer = DeflectCooldownDuration;
-	DeflectCounter = DeflectUsageLimit;
-	DashTimer = DashCooldownDuration;
-	DashCounter = DashUsageLimit;
-	FlashTimer = FlashCooldownDuration;
-	FlashCounter = FlashUsageLimit;
+	InitialFlashCoolDownDuration = FlashCooldownDuration;
+
+	// Start with initial values
+	OnRestart();
 }
 
 void AArenaCharacter::Tick(float DeltaTime)
@@ -227,7 +225,7 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		DeflectCounter = DeflectUsageLimit;
 		DashTimer = DashCooldownDuration;
 		DashCounter = DashUsageLimit;
-		FlashTimer = FlashCooldownDuration;
+		FlashTimer = bIsFlashActive ? FlashCooldownDuration : 0;
 		FlashCounter = FlashUsageLimit;
 	}
 
@@ -493,8 +491,8 @@ void AArenaCharacter::FinishDash()
 
 void AArenaCharacter::StartFlash()
 {
-	// If the the timer is not full OR is dashing, don't execute action
-	if (FlashTimer < FlashCooldownDuration || IsDashing)
+	// If the the timer is not full OR is dashing OR flash is not active, don't execute action
+	if (FlashTimer < FlashCooldownDuration || IsDashing || !bIsFlashActive)
 	{
 		return;
 	}
@@ -655,6 +653,11 @@ void AArenaCharacter::HandleDash(const float DeltaTime)
 
 void AArenaCharacter::HandleFlash(const float DeltaTime)
 {
+	if (!bIsFlashActive)
+	{
+		return;
+	}
+
 	// REMOVED: If there is a usage limit, process Flash timer
 	// Increase the timer when it is not full
 	if (FlashTimer < FlashCooldownDuration)
@@ -725,4 +728,17 @@ void AArenaCharacter::HandleDebugLines() const
 			);
 		}
 	}
+}
+
+void AArenaCharacter::OnRestart()
+{
+	CurrentStamina = MaxStamina;
+	DeflectTimer = DeflectCooldownDuration;
+	DeflectCounter = DeflectUsageLimit;
+	DashTimer = DashCooldownDuration;
+	DashCounter = DashUsageLimit;
+	bIsFlashActive = false;
+	FlashCooldownDuration = InitialFlashCoolDownDuration;
+	FlashTimer = 0;
+	FlashCounter = FlashUsageLimit;
 }
