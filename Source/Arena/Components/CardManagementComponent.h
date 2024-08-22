@@ -164,4 +164,7 @@ private:
 
 	UFUNCTION()
 	void CheckFlashBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckDashBuff(const FArenaBuff& InBuff);
 };

@@ -62,6 +62,10 @@ enum class EBuffType : uint8
 	DecFlashCD_Common	UMETA(DisplayName = "Decrease Flash CD Common"),
 	DecFlashCD_Rare		UMETA(DisplayName = "Decrease Flash CD Rare"),
 	DecFlashCD_Epic		UMETA(DisplayName = "Decrease Flash CD Epic"),
+	UnlockDash			UMETA(DisplayName = "Unlock Dash"),
+	DecDashCD_Common	UMETA(DisplayName = "Decrease Dash CD Common"),
+	DecDashCD_Rare		UMETA(DisplayName = "Decrease Dash CD Rare"),
+	DecDashCD_Epic		UMETA(DisplayName = "Decrease Dash CD Epic"),
 };
 
 UENUM(BlueprintType)
@@ -188,6 +192,13 @@ public:
 	float DecFlashCD_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecFlashCD_Epic = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecDashCD_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecDashCD_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float DecDashCD_Epic = 10.0f;
 
 };
 

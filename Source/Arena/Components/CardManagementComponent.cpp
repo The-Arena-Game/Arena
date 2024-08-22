@@ -230,6 +230,7 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	}
 
 	CheckFlashBuff(InBuff);
+	CheckDashBuff(InBuff);
 
 	if (InBuff.Type == EBuffType::TestBuff_10)
 	{
@@ -268,13 +269,13 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 				{
 					Buff.Unlocked = true;
 					Character->ActivateFlash();
-					UE_LOG(LogArnCardManagement, Log, TEXT("All Flash buffs unlocked!"));
+					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff Unlocked!"), *UEnum::GetValueAsString(Buff.Type));
 				}
 			}
 		}
 		break;
 
-		// TODO: Replace the harcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
+		// TODO: Replace the hardcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecFlashCD_Common:
 		Character->DecreaseFlashCooldownDuration(5.f);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Common Used!"));
@@ -286,6 +287,53 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 	case EBuffType::DecFlashCD_Epic:
 		Character->DecreaseFlashCooldownDuration(10.f);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::UnlockDash:	// Unlock all the Dash buffs
+
+		// Check all the pools
+		for (TTuple<ERarity, FRarityPool>& Pool : Pools)
+		{
+			// All the buffs in a pool
+			for (FArenaBuff& Buff : Pool.Value.BuffPool)
+			{
+				if (Buff.Type == EBuffType::DecDashCD_Common || Buff.Type == EBuffType::DecDashCD_Rare || Buff.Type == EBuffType::DecDashCD_Epic)
+				{
+					Buff.Unlocked = true;
+					Character->ActivateDash();
+					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff Unlocked!"), *UEnum::GetValueAsString(Buff.Type));
+				}
+			}
+		}
+		break;
+
+		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
+	case EBuffType::DecDashCD_Common:
+		Character->DecreaseDashCooldownDuration(5.f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Common Used!"));
+		break;
+	case EBuffType::DecDashCD_Rare:
+		Character->DecreaseDashCooldownDuration(7.5f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Rare Used!"));
+		break;
+	case EBuffType::DecDashCD_Epic:
+		Character->DecreaseDashCooldownDuration(10.f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Epic Used!"));
 		break;
 
 	default:

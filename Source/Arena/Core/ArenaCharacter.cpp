@@ -96,6 +96,7 @@ void AArenaCharacter::BeginPlay()
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
 	InitialFlashCoolDownDuration = FlashCooldownDuration;
+	InitialDashCoolDownDuration = DashCooldownDuration;
 
 	// Start with initial values
 	OnRestart();
@@ -221,10 +222,13 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 	if (NewState == EGameStates::Win || NewState == EGameStates::Ready)
 	{
 		CurrentStamina = MaxStamina;
+
 		DeflectTimer = DeflectCooldownDuration;
 		DeflectCounter = DeflectUsageLimit;
-		DashTimer = DashCooldownDuration;
+
+		DashTimer = bIsDashActive ? DashCooldownDuration : 0;
 		DashCounter = DashUsageLimit;
+
 		FlashTimer = bIsFlashActive ? FlashCooldownDuration : 0;
 		FlashCounter = FlashUsageLimit;
 	}
@@ -457,8 +461,8 @@ void AArenaCharacter::DisableDeflect()
 
 void AArenaCharacter::StartDash()
 {
-	// If the the timer is not full OR is dashing, don't execute action
-	if (DashTimer < DashCooldownDuration || IsDashing)
+	// If the the timer is not full OR is dashing OR dash is not active, don't execute action
+	if (DashTimer < DashCooldownDuration || IsDashing || !bIsDashActive)
 	{
 		return;
 	}
@@ -614,6 +618,11 @@ void AArenaCharacter::HandleDeflect(const float DeltaTime)
 
 void AArenaCharacter::HandleDash(const float DeltaTime)
 {
+	if (!bIsDashActive)
+	{
+		return;
+	}
+
 	// REMOVED: If there is a usage limit, process dash timer
 	// Increase the timer when it is not full
 	if (DashTimer < DashCooldownDuration)
@@ -733,10 +742,15 @@ void AArenaCharacter::HandleDebugLines() const
 void AArenaCharacter::OnRestart()
 {
 	CurrentStamina = MaxStamina;
+
 	DeflectTimer = DeflectCooldownDuration;
 	DeflectCounter = DeflectUsageLimit;
-	DashTimer = DashCooldownDuration;
+
+	bIsDashActive = false;
+	DashCooldownDuration = InitialDashCoolDownDuration;
+	DashTimer = 0;
 	DashCounter = DashUsageLimit;
+
 	bIsFlashActive = false;
 	FlashCooldownDuration = InitialFlashCoolDownDuration;
 	FlashTimer = 0;

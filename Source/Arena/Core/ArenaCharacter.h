@@ -153,6 +153,22 @@ public:
 		FlashCooldownDuration -= FlashCooldownDuration * (DecreasePercentage / 100);
 	}
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void ActivateDash()
+	{
+		bIsDashActive = true;
+
+		DashTimer = DashCooldownDuration;
+		DashCounter = DashUsageLimit;
+	}
+
+	/** Decreases Dash cooldown duration by given percentage */
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
+	{
+		DashCooldownDuration -= DashCooldownDuration * (DecreasePercentage / 100);
+	}
+
 protected:
 
 	/** Called for movement input */
@@ -339,6 +355,9 @@ private:
 		Dash
 	----------------------------------------------------------------------*/
 
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
+	bool bIsDashActive = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float DashDistance = 200.f;
 
@@ -351,6 +370,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float DashCooldownDuration = 5.f;
 
+	float InitialDashCoolDownDuration = 0.f;
 	float DashTimer = 0.f;
 	// Used for calculating time if the character gets stucked.
 	float DashDebugTimer = 0.f;
@@ -369,7 +389,7 @@ private:
 		Flash
 	----------------------------------------------------------------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	bool bIsFlashActive = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
