@@ -137,7 +137,7 @@ public:
 		Buff Functions
 	----------------------------------------------------------------------*/
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void ActivateFlash()
 	{
 		bIsFlashActive = true;
@@ -147,13 +147,13 @@ public:
 	}
 
 	/** Decreases flash cooldown duration by given percentage */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void DecreaseFlashCooldownDuration(const float DecreasePercentage)
 	{
 		FlashCooldownDuration -= FlashCooldownDuration * (DecreasePercentage / 100);
 	}
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void ActivateDash()
 	{
 		bIsDashActive = true;
@@ -163,10 +163,24 @@ public:
 	}
 
 	/** Decreases Dash cooldown duration by given percentage */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
 	{
 		DashCooldownDuration -= DashCooldownDuration * (DecreasePercentage / 100);
+	}
+
+	/** Decreases Deflect cooldown duration by given percentage */
+	UFUNCTION()
+	FORCEINLINE void DecreaseDeflectCooldownDuration(const float DecreasePercentage)
+	{
+		DeflectCooldownDuration -= DeflectCooldownDuration * (DecreasePercentage / 100);
+	}
+
+	/** Decreases Deflect cooldown duration by given percentage */
+	UFUNCTION()
+	FORCEINLINE void IncreaseDeflectCharge(const int8 IncreaseAmount)
+	{
+		DeflectUsageLimit += IncreaseAmount;
 	}
 
 protected:
@@ -344,6 +358,12 @@ private:
 	/** Deflect Duration */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "30.0"))
 	float DeflectCooldownDuration = 10.f;
+
+	// The initial amount we start
+	int InitialDeflectCount = 0;
+
+	// The initial cooldown duration we start with
+	float InitialDeflectCoolDownDuration = 0.f;
 
 	/** Deflect bar time */
 	float DeflectTimer = 0.f;

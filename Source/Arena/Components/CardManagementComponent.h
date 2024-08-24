@@ -167,4 +167,7 @@ private:
 
 	UFUNCTION()
 	void CheckDashBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckDeflectBuff(const FArenaBuff& InBuff);
 };

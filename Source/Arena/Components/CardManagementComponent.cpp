@@ -231,6 +231,7 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 
 	CheckFlashBuff(InBuff);
 	CheckDashBuff(InBuff);
+	CheckDeflectBuff(InBuff);
 
 	if (InBuff.Type == EBuffType::TestBuff_10)
 	{
@@ -278,15 +279,15 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 		// TODO: Replace the hardcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecFlashCD_Common:
 		Character->DecreaseFlashCooldownDuration(5.f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecFlashCD_Rare:
 		Character->DecreaseFlashCooldownDuration(7.5f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecFlashCD_Epic:
 		Character->DecreaseFlashCooldownDuration(10.f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Epic Used!"));
 		break;
 
 	default:
@@ -325,15 +326,52 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecDashCD_Common:
 		Character->DecreaseDashCooldownDuration(5.f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecDashCD_Rare:
 		Character->DecreaseDashCooldownDuration(7.5f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecDashCD_Epic:
 		Character->DecreaseDashCooldownDuration(10.f);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
+	case EBuffType::DeflectCharge_Rare:
+		Character->IncreaseDeflectCharge(1);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
+		break;
+	case EBuffType::DeflectCharge_Epic:
+		Character->IncreaseDeflectCharge(2);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
+		break;
+	case EBuffType::DecDeflectCD_Common:
+		Character->DecreaseDashCooldownDuration(5.0f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Common Used!"));
+		break;
+	case EBuffType::DecDeflectCD_Rare:
+		Character->DecreaseDashCooldownDuration(7.5f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Rare Used!"));
+		break;
+	case EBuffType::DecDeflectCD_Epic:
+		Character->DecreaseDashCooldownDuration(10.f);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Epic Used!"));
 		break;
 
 	default:

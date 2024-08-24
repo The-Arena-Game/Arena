@@ -97,6 +97,8 @@ void AArenaCharacter::BeginPlay()
 
 	InitialFlashCoolDownDuration = FlashCooldownDuration;
 	InitialDashCoolDownDuration = DashCooldownDuration;
+	InitialDeflectCoolDownDuration = DeflectCooldownDuration;
+	InitialDeflectCount = DeflectUsageLimit;
 
 	// Start with initial values
 	OnRestart();
@@ -743,8 +745,10 @@ void AArenaCharacter::OnRestart()
 {
 	CurrentStamina = MaxStamina;
 
-	DeflectTimer = DeflectCooldownDuration;
-	DeflectCounter = DeflectUsageLimit;
+	DeflectCooldownDuration = InitialDeflectCoolDownDuration;
+	DeflectTimer = InitialDeflectCoolDownDuration;
+	DeflectUsageLimit = InitialDeflectCount;
+	DeflectCounter = InitialDeflectCount;
 
 	bIsDashActive = false;
 	DashCooldownDuration = InitialDashCoolDownDuration;
