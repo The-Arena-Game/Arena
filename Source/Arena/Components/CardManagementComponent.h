@@ -53,6 +53,9 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnBuffSelected OnBuffSelected;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arena - Base")
+	UArenaBaseData* BaseData;
+
 	/** Generates 3 Card Data with the algorithm based on Level Number */
 	UFUNCTION()
 	void GenerateCardData(const uint8& Level);
@@ -95,9 +98,6 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FCardData> CardsData;
-
-	UPROPERTY()
-	UArenaBaseData* BaseData;
 
 	UPROPERTY()
 	AArenaCharacter* Character;

@@ -217,6 +217,17 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 
 void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 {
+	if (!IsValid(BaseData))
+	{
+		UE_LOG(LogArnCardManagement, Warning, TEXT("BaseData is null!!"));
+	}
+
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
 	// Find the buff and decrease the counter
 	if (FRarityPool* RarityPool = Pools.Find(InBuff.Rarity))
 	{
@@ -250,12 +261,6 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::UnlockFlash:	// Unlock all the flash buffs
@@ -278,15 +283,15 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 
 		// TODO: Replace the hardcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecFlashCD_Common:
-		Character->DecreaseFlashCooldownDuration(5.f);
+		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Common);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecFlashCD_Rare:
-		Character->DecreaseFlashCooldownDuration(7.5f);
+		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Rare);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecFlashCD_Epic:
-		Character->DecreaseFlashCooldownDuration(10.f);
+		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Epic Used!"));
 		break;
 
@@ -325,15 +330,15 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 
 		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecDashCD_Common:
-		Character->DecreaseDashCooldownDuration(5.f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Common);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecDashCD_Rare:
-		Character->DecreaseDashCooldownDuration(7.5f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Rare);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecDashCD_Epic:
-		Character->DecreaseDashCooldownDuration(10.f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Epic Used!"));
 		break;
 
@@ -354,23 +359,23 @@ void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 	{
 		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DeflectCharge_Rare:
-		Character->IncreaseDeflectCharge(1);
+		Character->IncreaseDeflectCharge(BaseData->DeflectCharge_Rare);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
 		break;
 	case EBuffType::DeflectCharge_Epic:
-		Character->IncreaseDeflectCharge(2);
+		Character->IncreaseDeflectCharge(BaseData->DeflectCharge_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Common:
-		Character->DecreaseDashCooldownDuration(5.0f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Common);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Common Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Rare:
-		Character->DecreaseDashCooldownDuration(7.5f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Rare);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Epic:
-		Character->DecreaseDashCooldownDuration(10.f);
+		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Epic Used!"));
 		break;
 
