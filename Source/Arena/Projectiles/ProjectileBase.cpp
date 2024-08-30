@@ -66,7 +66,6 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 
 		if (HitParticle == nullptr)
 		{
-			UE_LOG(LogArnProjectile, Error, TEXT("The HitParticle is not set on the ProjectileBase!"));
 			Destroy();
 			return;
 		}
@@ -90,7 +89,6 @@ void AProjectileBase::Explode()
 {
 	if (HitParticle == nullptr)
 	{
-		UE_LOG(LogArnProjectile, Error, TEXT("The HitParticle is not set on the ProjectileBase!"));
 		Destroy();
 		return;
 	}

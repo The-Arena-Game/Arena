@@ -95,10 +95,17 @@ void AArenaCharacter::BeginPlay()
 	// Disable acceleration by setting it too high
 	GetCharacterMovement()->MaxAcceleration = 10000000000000000000000000000000000.f;
 
+	// Save the initial amount to reset on restart
 	InitialFlashCoolDownDuration = FlashCooldownDuration;
 	InitialDashCoolDownDuration = DashCooldownDuration;
+
 	InitialDeflectCoolDownDuration = DeflectCooldownDuration;
 	InitialDeflectCount = DeflectUsageLimit;
+
+	InitialMaxStamina = MaxStamina;
+	InitialBaseStaminaIncrease = BaseStaminaIncrease;
+
+	InitialSprintSpeed = SprintSpeed;
 
 	// Start with initial values
 	OnRestart();
@@ -574,7 +581,6 @@ void AArenaCharacter::HandleBlackHoleAffect(const float DeltaTime)
 
 	if (!IsValid(TargetBlackHole))
 	{
-		UE_LOG(LogArnCharacter, Error, TEXT("The target blackhole is not valid! Something is wrong!"));
 		UpdateBlackHoleArray();
 		return;
 	}
@@ -743,6 +749,10 @@ void AArenaCharacter::HandleDebugLines() const
 
 void AArenaCharacter::OnRestart()
 {
+	SprintSpeed = InitialSprintSpeed;
+
+	BaseStaminaIncrease = InitialBaseStaminaIncrease;
+	MaxStamina = InitialMaxStamina;
 	CurrentStamina = MaxStamina;
 
 	DeflectCooldownDuration = InitialDeflectCoolDownDuration;

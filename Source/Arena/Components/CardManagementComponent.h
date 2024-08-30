@@ -170,4 +170,13 @@ private:
 
 	UFUNCTION()
 	void CheckDeflectBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckMaxStaminaBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckStaminaRegenBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
+	void CheckSprintSpeedBuff(const FArenaBuff& InBuff);
 };

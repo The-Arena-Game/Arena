@@ -176,11 +176,32 @@ public:
 		DeflectCooldownDuration -= DeflectCooldownDuration * (DecreasePercentage / 100);
 	}
 
-	/** Decreases Deflect cooldown duration by given percentage */
+	/** Decreases Deflect Charge by given Amount */
 	UFUNCTION()
 	FORCEINLINE void IncreaseDeflectCharge(const int8 IncreaseAmount)
 	{
 		DeflectUsageLimit += IncreaseAmount;
+	}
+
+	/** Increase Max Stamina by given percentage */
+	UFUNCTION()
+	FORCEINLINE void IncreaseMaxStamina(const float IncreasePercentage)
+	{
+		MaxStamina += MaxStamina * (IncreasePercentage / 100);
+	}
+
+	/** Increase Stamina Base Regeneration by given percentage */
+	UFUNCTION()
+	FORCEINLINE void IncreaseStaminaRegen(const float IncreasePercentage)
+	{
+		BaseStaminaIncrease += BaseStaminaIncrease * (IncreasePercentage / 100);
+	}
+
+	/** Increase Sprint Speed by given percentage */
+	UFUNCTION()
+	FORCEINLINE void IncreaseSprintSpeed(const float IncreasePercentage)
+	{
+		SprintSpeed += SprintSpeed * (IncreasePercentage / 100);
 	}
 
 protected:
@@ -332,6 +353,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
 	float JumpStaminaCost = 20.f;
 
+	float InitialMaxStamina = 0.f;
+	float InitialBaseStaminaIncrease = 0.f;
+
 	/*----------------------------------------------------------------------
 		Basics
 	----------------------------------------------------------------------*/
@@ -343,6 +367,8 @@ private:
 	/** Sprint Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
+
+	float InitialSprintSpeed = 0.f;
 
 	/*----------------------------------------------------------------------
 		Deflect

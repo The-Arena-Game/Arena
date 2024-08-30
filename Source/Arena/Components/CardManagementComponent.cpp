@@ -243,6 +243,9 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	CheckFlashBuff(InBuff);
 	CheckDashBuff(InBuff);
 	CheckDeflectBuff(InBuff);
+	CheckMaxStaminaBuff(InBuff);
+	CheckStaminaRegenBuff(InBuff);
+	CheckSprintSpeedBuff(InBuff);
 
 	if (InBuff.Type == EBuffType::TestBuff_10)
 	{
@@ -281,7 +284,6 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 		}
 		break;
 
-		// TODO: Replace the hardcoded values with BaseData->DecFlashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecFlashCD_Common:
 		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Common);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Common Used!"));
@@ -328,7 +330,6 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 		}
 		break;
 
-		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DecDashCD_Common:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Common);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Common Used!"));
@@ -357,7 +358,6 @@ void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 
 	switch (InBuff.Type)
 	{
-		// TODO: Replace the hardcoded values with BaseData->DecDashCD_Common - But set the DA on the Game Mode first!
 	case EBuffType::DeflectCharge_Rare:
 		Character->IncreaseDeflectCharge(BaseData->DeflectCharge_Rare);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
@@ -377,6 +377,90 @@ void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 	case EBuffType::DecDeflectCD_Epic:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckMaxStaminaBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::MaxStamina_Common:
+		Character->IncreaseMaxStamina(BaseData->MaxStamina_Common);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Common Used!"));
+		break;
+	case EBuffType::MaxStamina_Rare:
+		Character->IncreaseMaxStamina(BaseData->MaxStamina_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Rare Used!"));
+		break;
+	case EBuffType::MaxStamina_Epic:
+		Character->IncreaseMaxStamina(BaseData->MaxStamina_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::StaminaRegen_Common:
+		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Common);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Common Used!"));
+		break;
+	case EBuffType::StaminaRegen_Rare:
+		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Rare Used!"));
+		break;
+	case EBuffType::StaminaRegen_Epic:
+		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckSprintSpeedBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::SprintSpeed_Common:
+		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Common);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Common Used!"));
+		break;
+	case EBuffType::SprintSpeed_Rare:
+		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Rare Used!"));
+		break;
+	case EBuffType::SprintSpeed_Epic:
+		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Epic Used!"));
 		break;
 
 	default:

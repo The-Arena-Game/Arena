@@ -71,6 +71,15 @@ enum class EBuffType : uint8
 	DecDeflectCD_Common	UMETA(DisplayName = "Decrease Deflect CD Common"),
 	DecDeflectCD_Rare	UMETA(DisplayName = "Decrease Deflect CD Rare"),
 	DecDeflectCD_Epic	UMETA(DisplayName = "Decrease Deflect CD Epic"),
+	MaxStamina_Common	UMETA(DisplayName = "Max Stamina Common"),
+	MaxStamina_Rare		UMETA(DisplayName = "Max Stamina Rare"),
+	MaxStamina_Epic		UMETA(DisplayName = "Max Stamina Epic"),
+	StaminaRegen_Common	UMETA(DisplayName = "Stamina Regen Common"),
+	StaminaRegen_Rare	UMETA(DisplayName = "Stamina Regen Rare"),
+	StaminaRegen_Epic	UMETA(DisplayName = "Stamina Regen Epic"),
+	SprintSpeed_Common	UMETA(DisplayName = "Sprint Speed Common"),
+	SprintSpeed_Rare	UMETA(DisplayName = "Sprint Speed Rare"),
+	SprintSpeed_Epic	UMETA(DisplayName = "Sprint Speed Epic"),
 };
 
 UENUM(BlueprintType)
@@ -191,6 +200,8 @@ public:
 		Buff Variables
 	--------------------------*/
 
+	// Flash
+
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecFlashCD_Common = 5.0f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
@@ -198,12 +209,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecFlashCD_Epic = 10.0f;
 
+
+	// Dash
+
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecDashCD_Common = 5.0f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecDashCD_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecDashCD_Epic = 10.0f;
+
+
+	// Deflect
 
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	int8 DeflectCharge_Rare = 1;
@@ -216,6 +233,36 @@ public:
 	float DecDeflectCD_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float DecDeflectCD_Epic = 10.0f;
+
+
+	// Max Stamina
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float MaxStamina_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float MaxStamina_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float MaxStamina_Epic = 10.0f;
+
+
+	// Stamina Regen
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float StaminaRegen_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float StaminaRegen_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float StaminaRegen_Epic = 10.0f;
+
+
+	// Sprint Sped
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float SprintSpeed_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float SprintSpeed_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float SprintSpeed_Epic = 10.0f;
 
 };
 
