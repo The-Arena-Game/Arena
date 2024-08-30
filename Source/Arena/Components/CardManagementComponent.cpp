@@ -246,20 +246,6 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	CheckMaxStaminaBuff(InBuff);
 	CheckStaminaRegenBuff(InBuff);
 	CheckSprintSpeedBuff(InBuff);
-
-	if (InBuff.Type == EBuffType::TestBuff_10)
-	{
-		if (FRarityPool* RarityPool = Pools.Find(InBuff.Rarity))
-		{
-			for (FArenaBuff& Buff : RarityPool->BuffPool)
-			{
-				if (Buff.Type == EBuffType::TestBuff_11)
-				{
-					Buff.Unlocked = true;
-				}
-			}
-		}
-	}
 }
 
 void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
