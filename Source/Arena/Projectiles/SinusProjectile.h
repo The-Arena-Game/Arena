@@ -36,7 +36,7 @@ private:
 	float SpeedY = 5.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena Sinus", meta = (AllowPrivateAccess = "true"))
-	bool Reverse = false;
+	bool bReverse = false;
 
 	float Timer = 0.f;
 

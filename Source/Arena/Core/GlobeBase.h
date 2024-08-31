@@ -27,7 +27,7 @@ public:
 
 	FORCEINLINE bool IsBlue()
 	{
-		return bIsBlue;
+		return bBlue;
 	}
 
 protected:
@@ -43,7 +43,7 @@ private:
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(EditAnyWhere, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	bool bIsBlue = false;
+	bool bBlue = false;
 
 	bool IsPlayerTouched();
 

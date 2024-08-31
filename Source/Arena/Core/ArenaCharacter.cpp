@@ -169,7 +169,7 @@ void AArenaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AArenaCharacter::Move(const FInputActionValue& Value)
 {
-	if (CurrentGameState == EGameStates::Menu || Dash.IsDashing)
+	if (CurrentGameState == EGameStates::Menu || Dash.bDashing)
 	{
 		return;
 	}
@@ -225,7 +225,7 @@ void AArenaCharacter::Jump()
 
 void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 {
-	Stamina.bIsActive = (NewState == EGameStates::Play) ? true : false;
+	Stamina.bActive = (NewState == EGameStates::Play) ? true : false;
 
 	if (NewState == EGameStates::Win || NewState == EGameStates::Ready)
 	{
@@ -234,10 +234,10 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		Deflect.Timer = Deflect.CooldownDuration;
 		Deflect.Counter = Deflect.UsageLimit;
 
-		Dash.Timer = Dash.bIsActive ? Dash.CooldownDuration : 0;
+		Dash.Timer = Dash.bActive ? Dash.CooldownDuration : 0;
 		Dash.Counter = Dash.UsageLimit;
 
-		Flash.Timer = Flash.bIsActive ? Flash.CooldownDuration : 0;
+		Flash.Timer = Flash.bActive ? Flash.CooldownDuration : 0;
 		Flash.Counter = Flash.UsageLimit;
 	}
 
@@ -448,7 +448,7 @@ void AArenaCharacter::EnableDeflect()
 	Deflect.Counter--;
 
 	// Make the healt component invulnerable
-	HealthComp->SetValnerable(false);
+	HealthComp->SetVulnerable(false);
 
 	// Enable the mesh
 	DeflectMesh->SetHiddenInGame(false);
@@ -461,7 +461,7 @@ void AArenaCharacter::EnableDeflect()
 void AArenaCharacter::DisableDeflect()
 {
 	// Make the healt component open to fire again
-	HealthComp->SetValnerable(true);
+	HealthComp->SetVulnerable(true);
 
 	// Disablethe mesh
 	DeflectMesh->SetHiddenInGame(true);
@@ -470,7 +470,7 @@ void AArenaCharacter::DisableDeflect()
 void AArenaCharacter::StartDash()
 {
 	// If the the timer is not full OR is dashing OR dash is not active, don't execute action
-	if (Dash.Timer < Dash.CooldownDuration || Dash.IsDashing || !Dash.bIsActive)
+	if (Dash.Timer < Dash.CooldownDuration || Dash.bDashing || !Dash.bActive)
 	{
 		return;
 	}
@@ -481,30 +481,30 @@ void AArenaCharacter::StartDash()
 		return;
 	}
 
-	bool SameLocation = false;
-	Dash.TargetLocation = GetDashLocation(Dash.Distance, SameLocation);
+	bool bSameLocation = false;
+	Dash.TargetLocation = GetDashLocation(Dash.Distance, bSameLocation);
 	// DrawDebugSphere(GetWorld(), Dash.TargetLocation, 60.f, 12, FColor::Green, false, 3.f);
 
 	// If the location is not changed, don't execute dash
-	if (SameLocation)
+	if (bSameLocation)
 	{
 		return;
 	}
 
 	Dash.Timer = 0;	// Reset timer
 	// Dash.Counter--; REMOVED
-	Dash.IsDashing = true;
+	Dash.bDashing = true;
 }
 
 void AArenaCharacter::FinishDash()
 {
-	Dash.IsDashing = false;
+	Dash.bDashing = false;
 }
 
 void AArenaCharacter::StartFlash()
 {
 	// If the the timer is not full OR is dashing OR flash is not active, don't execute action
-	if (Flash.Timer < Flash.CooldownDuration || Dash.IsDashing || !Flash.bIsActive)
+	if (Flash.Timer < Flash.CooldownDuration || Dash.bDashing || !Flash.bActive)
 	{
 		return;
 	}
@@ -516,16 +516,16 @@ void AArenaCharacter::StartFlash()
 	}
 
 	// Get locations
-	bool SameLocation = false;
+	bool bSameLocation = false;
 	FVector InitialLocation = GetActorLocation();
-	FVector TargetLocation = GetDashLocation(Flash.Distance, SameLocation);
+	FVector TargetLocation = GetDashLocation(Flash.Distance, bSameLocation);
 
 	// Unreal has built-in teleport function but ours more functional for our purpose.
 	// FVector TargetLocation = GetActorLocation() + GetActorForwardVector() * (Flash.Distance - 50.f);
 	// SetActorLocation(TargetLocation, true);
 
 	// If the location is not changed, don't execute Flash
-	if (SameLocation)
+	if (bSameLocation)
 	{
 		return;
 	}
@@ -625,7 +625,7 @@ void AArenaCharacter::HandleDeflect(const float DeltaTime)
 
 void AArenaCharacter::HandleDash(const float DeltaTime)
 {
-	if (!Dash.bIsActive)
+	if (!Dash.bActive)
 	{
 		return;
 	}
@@ -642,7 +642,7 @@ void AArenaCharacter::HandleDash(const float DeltaTime)
 		Dash.Timer = Dash.CooldownDuration;
 	}
 
-	if (Dash.IsDashing)
+	if (Dash.bDashing)
 	{
 		// Start movement
 		FVector CurrentLocation = GetActorLocation();
@@ -669,7 +669,7 @@ void AArenaCharacter::HandleDash(const float DeltaTime)
 
 void AArenaCharacter::HandleFlash(const float DeltaTime)
 {
-	if (!Flash.bIsActive)
+	if (!Flash.bActive)
 	{
 		return;
 	}
@@ -695,11 +695,11 @@ void AArenaCharacter::HandleStamina(const float DeltaTime)
 	}
 
 	// Check if moving?
-	if (Stamina.bIsActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
+	if (Stamina.bActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
 	{
 		Stamina.Current -= Stamina.WalkingDecrease * DeltaTime;
 
-		if (Stamina.bIsActive && bSprinting)
+		if (Stamina.bActive && bSprinting)
 		{
 			Stamina.Current -= Stamina.SprintDecrease * DeltaTime;
 		}
@@ -759,12 +759,12 @@ void AArenaCharacter::OnRestart()
 	Deflect.UsageLimit = Deflect.DeflectCount;
 	Deflect.Counter = Deflect.DeflectCount;
 
-	Dash.bIsActive = false;
+	Dash.bActive = false;
 	Dash.CooldownDuration = Dash.InitialCooldownDuration;
 	Dash.Timer = 0;
 	Dash.Counter = Dash.UsageLimit;
 
-	Flash.bIsActive = false;
+	Flash.bActive = false;
 	Flash.CooldownDuration = Flash.InitialCooldownDuration;
 	Flash.Timer = 0;
 	Flash.Counter = Flash.UsageLimit;

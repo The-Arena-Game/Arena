@@ -37,5 +37,5 @@ private:
 	FTimerHandle LocationCheckTimerHandle;
 
 	UPROPERTY()
-	bool CheckLocation = false;
+	bool bCheckLocation = false;
 };

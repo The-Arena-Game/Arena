@@ -37,7 +37,7 @@ void AGlobeBase::Tick(float DeltaTime)
 	{
 		if (AArenaGameMode* GameMode = Cast<AArenaGameMode>(UGameplayStatics::GetGameMode(this)))
 		{
-			bIsBlue ? GameMode->BlueTouch(this) : GameMode->YellowTouch(this);
+			bBlue ? GameMode->BlueTouch(this) : GameMode->YellowTouch(this);
 		}
 	}
 }

@@ -27,7 +27,7 @@ void UProjectileSpawner::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!IsSystemActive)
+	if (!bSystemActive)
 	{
 		return;
 	}
@@ -71,12 +71,12 @@ void UProjectileSpawner::OnNewGameModeState(EGameStates NewState)
 		CurrentFireInterval = GetNewFireInterval();
 
 		// If the Pattern system is active, FireTimer should start as 0
-		if (IsPatternSystemActive)
+		if (bPatternSystemActive)
 		{
 			return;
 		}
 		// If not, check offset is active, if so, start timer with offset
-		else if (IsFireOffsetActive)
+		else if (bFireOffsetActive)
 		{
 			FireTimer = CurrentFireInterval - FireOffset;
 		}
@@ -90,7 +90,7 @@ void UProjectileSpawner::OnNewGameModeState(EGameStates NewState)
 
 float UProjectileSpawner::GetNewFireInterval()
 {
-	if (IsPatternSystemActive)
+	if (bPatternSystemActive)
 	{
 		if (FireDelays.Num() == 0)
 		{

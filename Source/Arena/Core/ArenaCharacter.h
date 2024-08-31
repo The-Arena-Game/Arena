@@ -32,7 +32,7 @@ struct FStamina
 	float Max = 300.f;
 
 	UPROPERTY()
-	bool bIsActive = true;
+	bool bActive = true;
 
 	/** Stamina increase per second in stand by position */
 	UPROPERTY(EditAnywhere, meta = (ToolTip = "Per second"))
@@ -71,7 +71,7 @@ struct FDash
 	GENERATED_BODY()
 
 	UPROPERTY()
-	bool bIsActive = false;
+	bool bActive = false;
 
 	UPROPERTY(EditAnywhere)
 	float Distance = 400.f;
@@ -99,7 +99,7 @@ struct FDash
 	int Counter = 0;
 
 	UPROPERTY()
-	bool IsDashing = false;
+	bool bDashing = false;
 
 	UPROPERTY()
 	FVector TargetLocation = FVector::Zero();
@@ -124,7 +124,7 @@ struct FFlash
 	GENERATED_BODY()
 
 	UPROPERTY()
-	bool bIsActive = false;
+	bool bActive = false;
 
 	UPROPERTY(EditAnywhere)
 	float Distance = 600.f;
@@ -298,7 +298,7 @@ public:
 	UFUNCTION()
 	FORCEINLINE void ActivateFlash()
 	{
-		Flash.bIsActive = true;
+		Flash.bActive = true;
 
 		Flash.Timer = Flash.CooldownDuration;
 		Flash.Counter = Flash.UsageLimit;
@@ -314,7 +314,7 @@ public:
 	UFUNCTION()
 	FORCEINLINE void ActivateDash()
 	{
-		Dash.bIsActive = true;
+		Dash.bActive = true;
 
 		Dash.Timer = Dash.CooldownDuration;
 		Dash.Counter = Dash.UsageLimit;

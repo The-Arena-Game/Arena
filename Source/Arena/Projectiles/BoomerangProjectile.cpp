@@ -29,7 +29,7 @@ void ABoomerangProjectile::BeginPlay()
 	//
 	//GetWorld()->GetTimerManager().SetTimer(LocationCheckTimerHandle, [this]()
 	//	{
-	//		CheckLocation = true;
+	//		bCheckLocation = true;
 	//	}, 2.f, false);
 }
 
@@ -38,7 +38,7 @@ void ABoomerangProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// This code destroys the projectile once it turns back to the starting point.
-	//if (CheckLocation)
+	//if (bCheckLocation)
 	//{
 	//	if (FVector::Distance(GetActorLocation(), StartingPoint) < 10.f)
 	//	{

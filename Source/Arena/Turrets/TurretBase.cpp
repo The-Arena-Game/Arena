@@ -65,9 +65,9 @@ void ATurretBase::Tick(float DeltaTime)
 	}
 }
 
-void ATurretBase::OnSpawnCollisionChange(bool NewState)
+void ATurretBase::OnSpawnCollisionChange(bool bNewState)
 {
-	if (NewState)
+	if (bNewState)
 	{
 		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		ForbiddenAreaBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

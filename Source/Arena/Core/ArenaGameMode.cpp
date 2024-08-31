@@ -173,7 +173,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 	}
 
 	// If this was the first yellow, then enable all yellows
-	if (!AllYellowsEnabled)
+	if (!bAllYellowsEnabled)
 	{
 		for (AActor* YellowGlobe : YellowGlobes)
 		{
@@ -181,7 +181,7 @@ void AArenaGameMode::YellowTouch(AGlobeBase* Globe)
 			YellowGlobe->SetActorEnableCollision(true);
 		}
 
-		AllYellowsEnabled = true;
+		bAllYellowsEnabled = true;
 	}
 
 	// Disable it this one
@@ -239,7 +239,7 @@ void AArenaGameMode::BlueTouch(AGlobeBase* Globe)
 	Globe->Destroy();
 
 	// Mark as not all yellows enabled
-	AllYellowsEnabled = false;
+	bAllYellowsEnabled = false;
 
 	GlobeCounter = YellowGlobes.Num();	// Reset the counter
 

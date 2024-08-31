@@ -128,7 +128,7 @@ private:
 	AGlobeBase* BlueGlobe;
 
 	uint8 LevelNumber = 1;
-	bool AllYellowsEnabled = false;
+	bool bAllYellowsEnabled = false;
 
 	/*----------------------------------------------------------------------------
 		Effects

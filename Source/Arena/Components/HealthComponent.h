@@ -29,9 +29,9 @@ public:
 	}
 
 	/* Set the Vulnerability Status */
-	FORCEINLINE void SetValnerable(bool IsVulnerable)
+	FORCEINLINE void SetVulnerable(bool bInVulnerable)
 	{
-		bIsVulnerable = IsVulnerable;
+		bVulnerable = bInVulnerable;
 	}
 
 	/* Set the Vulnerability Status */
@@ -49,7 +49,7 @@ private:
 	UPROPERTY()
 	AArenaCharacter* Player;
 
-	bool bIsVulnerable = true;
+	bool bVulnerable = true;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "10.0"))
 	int MaxHeartCount = 3;

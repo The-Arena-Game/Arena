@@ -39,7 +39,7 @@ private:
 
 	ETypeVSteps Step = ETypeVSteps::StepZero;
 
-	bool IsMovingRight = true;
+	bool bMovingRight = true;
 
 	FVector TargetLocation = FVector::Zero();
 

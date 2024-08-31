@@ -59,7 +59,7 @@ void UProjectileSpawnerAngry::HandleDistanceCheck()
 
 void UProjectileSpawnerAngry::HandleDebugLines()
 {
-	if (!DisplayDebugLines)
+	if (!bDisplayDebugLines)
 	{
 		return;
 	}
@@ -114,7 +114,7 @@ void UProjectileSpawnerAngry::HandleDistanceChecks()
 	if (!ErrorMessage.IsEmpty())
 	{
 		UE_LOG(LogArnProjectileSpawner, Error, TEXT("%s"), *ErrorMessage);
-		IsSystemActive = false;
+		bSystemActive = false;
 	}
 }
 

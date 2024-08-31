@@ -41,7 +41,7 @@ void AZigZagProjectile::HandleMovement(float DeltaSeconds)
 	float DistanceToTarget = FVector::DistSquared(CurrentLocation, TargetLocation);
 	if (DistanceToTarget < FMath::Square(1.0f))
 	{
-		if (IsMovingRight)
+		if (bMovingRight)
 		{
 			TargetLocation = GetActorLocation() + (GetActorForwardVector() * DistanceX) - (GetActorRightVector() * DistanceY);
 		}
@@ -50,6 +50,6 @@ void AZigZagProjectile::HandleMovement(float DeltaSeconds)
 			TargetLocation = GetActorLocation() + (GetActorForwardVector() * DistanceX) + (GetActorRightVector() * DistanceY);
 		}
 
-		IsMovingRight = !IsMovingRight;
+		bMovingRight = !bMovingRight;
 	}
 }

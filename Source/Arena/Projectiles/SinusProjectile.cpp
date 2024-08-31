@@ -22,7 +22,7 @@ void ASinusProjectile::BeginPlay()
 	// Set the wave offset to center the wave
 	Timer += DistanceY / 2;
 
-	if (Reverse)
+	if (bReverse)
 	{
 		DistanceX = -DistanceX;
 	}

@@ -32,7 +32,7 @@ private:
 	AArenaCharacter* Player;
 
 	UPROPERTY(EditAnywhere, Category = "Arena - Angry Type", meta = (AllowPrivateAccess = "true"))
-	bool DisplayDebugLines;
+	bool bDisplayDebugLines;
 
 	UFUNCTION()
 	void HandleDistanceCheck();

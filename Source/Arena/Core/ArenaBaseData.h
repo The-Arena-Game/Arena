@@ -131,7 +131,7 @@ struct FArenaBuff
 	FString Description = TEXT("No description defined!");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Unlocked = true;
+	bool bUnlocked = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint8 UsageCount = 255;
@@ -144,7 +144,7 @@ struct FArenaBuff
 
 	bool IsActive() const
 	{
-		return Unlocked && UsageCount > 0;
+		return bUnlocked && UsageCount > 0;
 	}
 };
 

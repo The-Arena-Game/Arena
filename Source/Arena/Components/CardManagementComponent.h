@@ -106,9 +106,9 @@ private:
 		Unlock Levels
 	--------------------------*/
 
-	bool RareUnlocked = false;
-	bool EpicUnlocked = false;
-	bool LegendaryUnlocked = false;
+	bool bRareUnlocked = false;
+	bool bEpicUnlocked = false;
+	bool bLegendaryUnlocked = false;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena - Rarity Unlocks", meta = (AllowPrivateAccess = "true"))
 	int RareUnlockLevel = 5;

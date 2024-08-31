@@ -40,7 +40,7 @@ protected:
 	float FireTimer = 0.f;
 
 	UPROPERTY()
-	bool IsSystemActive = true;
+	bool bSystemActive = true;
 
 	// Called everytime the game state changes. We use it to execute initial fire on Play
 	UFUNCTION()
@@ -53,7 +53,7 @@ protected:
 	///////////////////////////////
 
 	UPROPERTY(EditAnywhere, Category = "Arena - Stable Random", meta = (AllowBlueprintAccess = "true"))
-	bool IsFireOffsetActive = false;
+	bool bFireOffsetActive = false;
 
 	UPROPERTY(EditAnywhere, Category = "Arena - Stable Random", meta = (AllowBlueprintAccess = "true", UIMin = "0.1", UIMax = "5.0"))
 	float FireOffset = 0.1f;
@@ -71,7 +71,7 @@ protected:
 	///////////////////////////////
 
 	UPROPERTY(EditAnywhere, Category = "Arena - Pattern System", meta = (AllowBlueprintAccess = "true"))
-	bool IsPatternSystemActive = false;
+	bool bPatternSystemActive = false;
 
 	// Counter for elements of the FireDelays array
 	int DelayIndex = -1; // Start by -1 to make it start with 0 in the GetPatternIndex

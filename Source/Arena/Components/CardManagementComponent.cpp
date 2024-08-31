@@ -77,7 +77,7 @@ ERarity UCardManagementComponent::GetRarity(const uint8& Level) const
 			SelectedRarity = ERarity::Legendary;
 		}
 	}
-	while ((!RareUnlocked && SelectedRarity == ERarity::Rare) || (!EpicUnlocked && SelectedRarity == ERarity::Epic) || (!LegendaryUnlocked && SelectedRarity == ERarity::Legendary));
+	while ((!bRareUnlocked && SelectedRarity == ERarity::Rare) || (!bEpicUnlocked && SelectedRarity == ERarity::Epic) || (!bLegendaryUnlocked && SelectedRarity == ERarity::Legendary));
 
 	return SelectedRarity;
 }
@@ -96,7 +96,7 @@ void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 				if (Buff.Type == EBuffType::TestBuff_10)
 				{
 					UE_LOG(LogArnCardManagement, Log, TEXT("Buff 10 unlocked"));
-					Buff.Unlocked = true;
+					Buff.bUnlocked = true;
 				}
 			}
 		}
@@ -105,15 +105,15 @@ void UCardManagementComponent::CheckLevelUnlocks(const uint8& Level)
 	// Rarity Unlocks - Unlocks the rarities based on level.
 	if (Level == RareUnlockLevel)
 	{
-		RareUnlocked = true;
+		bRareUnlocked = true;
 	}
 	else if (Level == EpicUnlockLevel)
 	{
-		EpicUnlocked = true;
+		bEpicUnlocked = true;
 	}
 	else if (Level == LegendaryUnlockLevel)
 	{
-		LegendaryUnlocked = true;
+		bLegendaryUnlocked = true;
 	}
 }
 
@@ -152,10 +152,10 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 
 		// Get turrets
 		ETurretType NewTurret = ETurretType::None;
-		bool ElementFound;
+		bool bElementFound;
 		do
 		{
-			ElementFound = false;
+			bElementFound = false;
 			//UE_LOG(LogArnCardManagement, Log, TEXT("Getting new Turret"));
 			const int Index = FMath::RandRange(0, SelectedPools->TurretPool.Num() - 1);
 			NewTurret = SelectedPools->TurretPool[Index];
@@ -165,26 +165,26 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 				if (Card.TurretType == NewTurret)
 				{
 					//UE_LOG(LogArnCardManagement, Error, TEXT("ALREADY EXIST!! %s"), *UEnum::GetValueAsString(NewTurret));
-					ElementFound = true;
+					bElementFound = true;
 					break;
 				}
 			}
 
 			// If not found in others, get this one
-			if (!ElementFound)
+			if (!bElementFound)
 			{
 				// UE_LOG(LogArnCardManagement, Warning, TEXT("Added new turret: %s"), *UEnum::GetValueAsString(NewTurret));
 				NewCards[i].TurretType = NewTurret;
 			}
 		}
-		while (ElementFound);	// If the selected turret is already in others, then pick another!
+		while (bElementFound);	// If the selected turret is already in others, then pick another!
 
 		//UE_LOG(LogArnCardManagement, Log, TEXT("Getting new Buff"));
 		// Get Buffs
 		FArenaBuff NewBuff = FArenaBuff();
 		do
 		{
-			ElementFound = false;
+			bElementFound = false;
 			const int Index = FMath::RandRange(0, SelectedPools->BuffPool.Num() - 1);
 			NewBuff = SelectedPools->BuffPool[Index];
 
@@ -192,23 +192,23 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 			{
 				if (Card.Buff == NewBuff)
 				{
-					ElementFound = true;
+					bElementFound = true;
 					//UE_LOG(LogArnCardManagement, Error, TEXT("ALREADY EXIST!! %s"), *UEnum::GetValueAsString(NewBuff.Type));
 					break;
 				}
 			}
 
-			FString UnlockStr = NewBuff.Unlocked ? TEXT("True") : TEXT("False");
-			//UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - Unlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
+			FString UnlockStr = NewBuff.bUnlocked ? TEXT("True") : TEXT("False");
+			//UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - bUnlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
 
 			// If not found in others, get this one
-			if (!ElementFound)
+			if (!bElementFound)
 			{
 				//UE_LOG(LogArnCardManagement, Warning, TEXT("Added new buff: %s"), *UEnum::GetValueAsString(NewBuff.Type));
 				NewCards[i].Buff = NewBuff;
 			}
 		}
-		while (ElementFound || !NewBuff.IsActive());	// If the selected turret is already in others OR it is not active, then pick another!
+		while (bElementFound || !NewBuff.IsActive());	// If the selected turret is already in others OR it is not active, then pick another!
 	}
 
 	//UE_LOG(LogArnCardManagement, Warning, TEXT("Finito. Number of cards: %i"), NewCards.Num());
@@ -262,9 +262,9 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 			{
 				if (Buff.Type == EBuffType::DecFlashCD_Common || Buff.Type == EBuffType::DecFlashCD_Rare || Buff.Type == EBuffType::DecFlashCD_Epic)
 				{
-					Buff.Unlocked = true;
+					Buff.bUnlocked = true;
 					Character->ActivateFlash();
-					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff Unlocked!"), *UEnum::GetValueAsString(Buff.Type));
+					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff bUnlocked!"), *UEnum::GetValueAsString(Buff.Type));
 				}
 			}
 		}
@@ -308,9 +308,9 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 			{
 				if (Buff.Type == EBuffType::DecDashCD_Common || Buff.Type == EBuffType::DecDashCD_Rare || Buff.Type == EBuffType::DecDashCD_Epic)
 				{
-					Buff.Unlocked = true;
+					Buff.bUnlocked = true;
 					Character->ActivateDash();
-					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff Unlocked!"), *UEnum::GetValueAsString(Buff.Type));
+					UE_LOG(LogArnCardManagement, Log, TEXT("%s Buff bUnlocked!"), *UEnum::GetValueAsString(Buff.Type));
 				}
 			}
 		}
