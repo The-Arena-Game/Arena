@@ -66,6 +66,10 @@ enum class EBuffType : uint8
 	SprintSpeed_Common	UMETA(DisplayName = "Sprint Speed Common"),
 	SprintSpeed_Rare	UMETA(DisplayName = "Sprint Speed Rare"),
 	SprintSpeed_Epic	UMETA(DisplayName = "Sprint Speed Epic"),
+	Healing_Common		UMETA(DisplayName = "Healing Common"),
+	Healing_Rare		UMETA(DisplayName = "Healing Rare"),
+	MaxHealth_Rare		UMETA(DisplayName = "Max Health Rare"),
+	MaxHealth_Epic		UMETA(DisplayName = "Max Health Epic"),
 };
 
 UENUM(BlueprintType)
@@ -249,7 +253,6 @@ public:
 	float SprintSpeed_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float SprintSpeed_Epic = 10.0f;
-
 };
 
 /*--------------------------

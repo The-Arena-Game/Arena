@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CardManagementComponent.h"
+
+#include "HealthComponent.h"
 #include "Arena/Core/ArenaGameMode.h"
 #include "Arena/Core/ArenaCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -246,6 +248,7 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	CheckMaxStaminaBuff(InBuff);
 	CheckStaminaRegenBuff(InBuff);
 	CheckSprintSpeedBuff(InBuff);
+	CheckHealthBuff(InBuff);
 }
 
 void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
@@ -447,6 +450,38 @@ void UCardManagementComponent::CheckSprintSpeedBuff(const FArenaBuff& InBuff)
 	case EBuffType::SprintSpeed_Epic:
 		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckHealthBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::Healing_Common:
+		Character->GetHealthComponent()->IncreaseHeartCount(1);	// half heart: 1 heart count
+		UE_LOG(LogArnCardManagement, Log, TEXT("Healing Common Used!"));
+		break;
+	case EBuffType::Healing_Rare:
+		Character->GetHealthComponent()->IncreaseHeartCount(2);	// full heart: 2 heart count
+		UE_LOG(LogArnCardManagement, Log, TEXT("Healing Rare Used!"));
+		break;
+	case EBuffType::MaxHealth_Rare:
+		Character->GetHealthComponent()->IncreaseMaxHealth(2, false);	// 1 empty container: 2 hearts
+		UE_LOG(LogArnCardManagement, Log, TEXT("Max Health Rare Used!"));
+		break;
+	case EBuffType::MaxHealth_Epic:
+		Character->GetHealthComponent()->IncreaseMaxHealth(2, true);		// 1 full container: 2 hearts
+		UE_LOG(LogArnCardManagement, Log, TEXT("MaxHealth Epic Used!"));
 		break;
 
 	default:

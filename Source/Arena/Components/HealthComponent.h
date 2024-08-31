@@ -9,7 +9,7 @@
 class AArenaCharacter;
 DECLARE_LOG_CATEGORY_EXTERN(LogArnHealthComponent, Log, All);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChange, int, HealthCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChange, int, HealthCount, int, MaxHeartCount);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
@@ -28,17 +28,52 @@ public:
 		return HeartCount <= 0 ? true : false;
 	}
 
-	/* Set the Vulnerability Status */
+	/** Set the Vulnerability Status */
+	UFUNCTION()
 	FORCEINLINE void SetVulnerable(bool bInVulnerable)
 	{
 		bVulnerable = bInVulnerable;
 	}
 
-	/* Set the Vulnerability Status */
-	FORCEINLINE void ResetHeatlh()
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int GetHeartCount() const
 	{
+		return HeartCount;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int GetMaxHeartCount() const
+	{
+		return MaxHeartCount;
+	}
+
+	/** Reset the health */
+	UFUNCTION()
+	FORCEINLINE void ResetHealth()
+	{
+		MaxHeartCount = InitialMaxHeart;
 		HeartCount = MaxHeartCount;
-		OnHealthChange.Broadcast(HeartCount);
+		OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void IncreaseHeartCount(const int IncrementAmount)
+	{
+		HeartCount = FMath::Clamp(HeartCount + IncrementAmount, HeartCount, MaxHeartCount);
+		OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
+	}
+
+	/**
+	 *
+	 * @param IncrementAmount Increment amount for a health container
+	 * @param bFullHeart Indicates if the given heart container is full or empty. If true, increases the current heart count by IncrementAmount.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void IncreaseMaxHealth(const int IncrementAmount, const bool bFullHeart)
+	{
+		MaxHeartCount += IncrementAmount;
+		HeartCount += bFullHeart ? IncrementAmount : 0;
+		OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
 	}
 
 protected:
@@ -49,6 +84,7 @@ private:
 	UPROPERTY()
 	AArenaCharacter* Player;
 
+	UPROPERTY()
 	bool bVulnerable = true;
 
 	UPROPERTY(EditAnywhere, Category = "Arena Combat", meta = (AllowPrivateAccess = "true", UIMin = "1.0", UIMax = "10.0"))
@@ -56,6 +92,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Arena Combat", meta = (AllowPrivateAccess = "true"))
 	int HeartCount;
+
+	UPROPERTY()
+	int InitialMaxHeart = 0;
 
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);

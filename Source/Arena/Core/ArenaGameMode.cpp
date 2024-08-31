@@ -106,6 +106,7 @@ void AArenaGameMode::RestartArenaGame()
 			if (PlayerController)
 			{
 				PlayerController->Possess(Player);
+				Player->GetHealthComponent()->ResetHealth();
 			}
 		}
 	}
@@ -115,7 +116,7 @@ void AArenaGameMode::RestartArenaGame()
 		if (IsValid(Player) && IsValid(Player->GetHealthComponent()))
 		{
 			Player->SetActorLocation(StartLocation);
-			Player->GetHealthComponent()->ResetHeatlh();
+			Player->GetHealthComponent()->ResetHealth();
 		}
 	}
 

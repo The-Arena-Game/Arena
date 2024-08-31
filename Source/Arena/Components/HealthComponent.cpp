@@ -20,8 +20,9 @@ void UHealthComponent::BeginPlay()
 		Player->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
 	}
 
+	InitialMaxHeart = MaxHeartCount;
 	HeartCount = MaxHeartCount;
-	OnHealthChange.Broadcast(HeartCount);
+	OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
 }
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
@@ -54,7 +55,7 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		else
 		{
 			HeartCount--;
-			OnHealthChange.Broadcast(HeartCount);
+			OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
 		}
 	}
 
