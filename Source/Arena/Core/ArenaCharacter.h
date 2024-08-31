@@ -20,6 +20,164 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogArnCharacter, Log, All);
 
+USTRUCT()
+struct FStamina
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float Current = 100.f;
+
+	UPROPERTY(EditAnywhere)
+	float Max = 300.f;
+
+	UPROPERTY()
+	bool bIsActive = true;
+
+	/** Stamina increase per second in stand by position */
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Per second"))
+	float BaseIncrease = 200.f;
+
+	/** Stamina decrease per second when walking */
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Should be positive value! Per second"))
+	float WalkingDecrease = 0.f;
+
+	/** Stamina decrease per second when running */
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Should be positive value! Per second"))
+	float SprintDecrease = 800.f;
+
+	/** Turn ON sprinting on stamina value of */
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Sprinting will be turned on after this stamina level"))
+	float SprintOnLevel = 250.f;
+
+	/** Turn OFF sprinting on stamina value of */
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Sprinting will be turned off after this stamina level"))
+	float SprintOffLevel = 10.f;
+
+	/** Turn OFF sprinting on stamina value of */
+	UPROPERTY(EditAnywhere)
+	float JumpCost = 99999999.9f;
+
+	UPROPERTY()
+	float InitialMax = 0.f;
+
+	UPROPERTY()
+	float InitialBaseIncrease = 0.f;
+};
+
+USTRUCT()
+struct FDash
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bIsActive = false;
+
+	UPROPERTY(EditAnywhere)
+	float Distance = 400.f;
+
+	UPROPERTY(EditAnywhere)
+	float Speed = 2000.f;
+
+	UPROPERTY(EditAnywhere)
+	int UsageLimit = 3;
+
+	UPROPERTY(EditAnywhere)
+	float CooldownDuration = 2.f;
+
+	UPROPERTY()
+	float InitialCooldownDuration = 0.f;
+
+	UPROPERTY()
+	float Timer = 0.f;
+
+	// Used for calculating time if the character gets stucked.
+	UPROPERTY()
+	float DebugTimer = 0.f;
+
+	UPROPERTY()
+	int Counter = 0;
+
+	UPROPERTY()
+	bool IsDashing = false;
+
+	UPROPERTY()
+	FVector TargetLocation = FVector::Zero();
+
+	// The distance that is acceptable as reached
+	UPROPERTY()
+	float ReachThreshold = 20.f;
+
+	UPROPERTY()
+	float ObstacleOffset = 50.f;
+
+	UPROPERTY()
+	float CharacterFeetDistanceFromCenter = 85.f;
+
+	UPROPERTY()
+	float CollisionLineOffset = 50.f;
+};
+
+USTRUCT()
+struct FFlash
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bIsActive = false;
+
+	UPROPERTY(EditAnywhere)
+	float Distance = 600.f;
+
+	UPROPERTY(EditAnywhere)
+	int UsageLimit = 3;
+
+	UPROPERTY(EditAnywhere)
+	float CooldownDuration = 5.f;
+
+	UPROPERTY()
+	float InitialCooldownDuration = 0.f;
+
+	UPROPERTY()
+	float Timer = 0.f;
+
+	UPROPERTY()
+	int Counter = 0;
+};
+
+USTRUCT()
+struct FDeflect
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "How many times Deflect can be used in a level?"))
+	int UsageLimit = 2;
+
+	/** Deflect Duration */
+	UPROPERTY(EditAnywhere, meta = (Units = "Seconds", UIMin = 0.1f, UIMax = 10.0f))
+	float Duration = 0.75f;
+
+	/** Deflect Duration */
+	UPROPERTY(EditAnywhere, meta = (UIMin = 0.1f, UIMax = 30.0f))
+	float CooldownDuration = 15.0f;
+
+	// The initial amount we start
+	UPROPERTY()
+	int DeflectCount = 0;
+
+	// The initial cooldown duration we start with
+	UPROPERTY()
+	float InitialCooldownDuration = 0.f;
+
+	/** Deflect bar time */
+	UPROPERTY()
+	float Timer = 0.f;
+
+	/** Count how many times deflect used in a level */
+	UPROPERTY()
+	int Counter = 0;
+};
+
 UCLASS(config = Game)
 class AArenaCharacter : public ACharacter
 {
@@ -52,49 +210,49 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetDeflectProgressPercentage() const
 	{
-		return DeflectTimer / DeflectCooldownDuration;
+		return Deflect.Timer / Deflect.CooldownDuration;
 	}
 
 	/** Returns Stamina Progress as percentage **/
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetStaminaProgressPercentage() const
 	{
-		return CurrentStamina / MaxStamina;
+		return Stamina.Current / Stamina.Max;
 	}
 
 	/** Returns remaining deflect usage **/
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE int GetDeflectCounter() const
 	{
-		return DeflectCounter;
+		return Deflect.Counter;
 	}
 
 	/** Returns Dash Progress as percentage **/
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetDashProgressPercentage() const
 	{
-		return DashTimer / DashCooldownDuration;
+		return Dash.Timer / Dash.CooldownDuration;
 	}
 
 	/** Returns remaining Dash usage **/
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE int GetDashCounter() const
 	{
-		return DashCounter;
+		return Dash.Counter;
 	}
 
 	/** Returns Flash Progress as percentage **/
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetFlashProgressPercentage() const
 	{
-		return FlashTimer / FlashCooldownDuration;
+		return Flash.Timer / Flash.CooldownDuration;
 	}
 
 	/** Returns remaining Flash usage **/
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE int GetFlashCounter() const
+	FORCEINLINE int GetFashCounter() const
 	{
-		return FlashCounter;
+		return Flash.Counter;
 	}
 
 	/** Returns Darkness Value (0.f to 1.f) **/
@@ -111,7 +269,7 @@ public:
 	//void UnregisterBlackHole(ABlackHoleProjectile* BlackHole)
 	//{
 	//	BlackHoles.Remove(BlackHole);
-	//	BlackHoleArrayChanged = true;
+	//	bBlackHoleArrayChanged = true;
 	//}
 
 	/** Checks Health from the Component. If the Health is 0 or lower, starts destruction **/
@@ -140,61 +298,61 @@ public:
 	UFUNCTION()
 	FORCEINLINE void ActivateFlash()
 	{
-		bIsFlashActive = true;
+		Flash.bIsActive = true;
 
-		FlashTimer = FlashCooldownDuration;
-		FlashCounter = FlashUsageLimit;
+		Flash.Timer = Flash.CooldownDuration;
+		Flash.Counter = Flash.UsageLimit;
 	}
 
 	/** Decreases flash cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseFlashCooldownDuration(const float DecreasePercentage)
 	{
-		FlashCooldownDuration -= FlashCooldownDuration * (DecreasePercentage / 100);
+		Flash.CooldownDuration -= Flash.CooldownDuration * (DecreasePercentage / 100);
 	}
 
 	UFUNCTION()
 	FORCEINLINE void ActivateDash()
 	{
-		bIsDashActive = true;
+		Dash.bIsActive = true;
 
-		DashTimer = DashCooldownDuration;
-		DashCounter = DashUsageLimit;
+		Dash.Timer = Dash.CooldownDuration;
+		Dash.Counter = Dash.UsageLimit;
 	}
 
 	/** Decreases Dash cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
 	{
-		DashCooldownDuration -= DashCooldownDuration * (DecreasePercentage / 100);
+		Dash.CooldownDuration -= Dash.CooldownDuration * (DecreasePercentage / 100);
 	}
 
 	/** Decreases Deflect cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseDeflectCooldownDuration(const float DecreasePercentage)
 	{
-		DeflectCooldownDuration -= DeflectCooldownDuration * (DecreasePercentage / 100);
+		Deflect.CooldownDuration -= Deflect.CooldownDuration * (DecreasePercentage / 100);
 	}
 
 	/** Decreases Deflect Charge by given Amount */
 	UFUNCTION()
 	FORCEINLINE void IncreaseDeflectCharge(const int8 IncreaseAmount)
 	{
-		DeflectUsageLimit += IncreaseAmount;
+		Deflect.UsageLimit += IncreaseAmount;
 	}
 
 	/** Increase Max Stamina by given percentage */
 	UFUNCTION()
 	FORCEINLINE void IncreaseMaxStamina(const float IncreasePercentage)
 	{
-		MaxStamina += MaxStamina * (IncreasePercentage / 100);
+		Stamina.Max += Stamina.Max * (IncreasePercentage / 100);
 	}
 
 	/** Increase Stamina Base Regeneration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void IncreaseStaminaRegen(const float IncreasePercentage)
 	{
-		BaseStaminaIncrease += BaseStaminaIncrease * (IncreasePercentage / 100);
+		Stamina.BaseIncrease += Stamina.BaseIncrease * (IncreasePercentage / 100);
 	}
 
 	/** Increase Sprint Speed by given percentage */
@@ -248,7 +406,7 @@ private:
 	UPROPERTY()
 	EGameStates CurrentGameState;
 
-	bool PreventStaminaToFill = false;
+	bool bPreventStaminaToFill = false;
 
 	float DarknessValue = 0.f;
 	float DarknessTimer = 0.f;
@@ -317,46 +475,6 @@ private:
 	//UInputAction* LookAction;
 
 	/*----------------------------------------------------------------------
-		Stamina
-	----------------------------------------------------------------------*/
-
-	float CurrentStamina = 100.f;
-	bool bSprinting = false;
-	bool bCanSprint = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
-	float MaxStamina = 100.f;
-
-	bool IsStaminaActive = true;
-
-	/** Stamina increase per second in stand by position */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Per second"))
-	float BaseStaminaIncrease = 10.f;
-
-	/** Stamina decrease per second when walking */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Should be positive value! Per second"))
-	float WalkingStaminaDecrease = 5.f;
-
-	/** Stamina decrease per second when running */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Should be positive value! Per second"))
-	float SprintStaminaDecrease = 20.f;
-
-	/** Turn ON sprinting on stamina value of */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Sprinting will be turned on after this stamina level"))
-	float SprintOnStaminaLevel = 30.f;
-
-	/** Turn OFF sprinting on stamina value of */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "Sprinting will be turned off after this stamina level"))
-	float SprintOffStaminaLevel = 10.f;
-
-	/** Turn OFF sprinting on stamina value of */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float JumpStaminaCost = 20.f;
-
-	float InitialMaxStamina = 0.f;
-	float InitialBaseStaminaIncrease = 0.f;
-
-	/*----------------------------------------------------------------------
 		Basics
 	----------------------------------------------------------------------*/
 
@@ -368,94 +486,36 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
 
+	UPROPERTY()
 	float InitialSprintSpeed = 0.f;
 
-	/*----------------------------------------------------------------------
-		Deflect
-	----------------------------------------------------------------------*/
+	UPROPERTY()
+	bool bSprinting = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", ToolTip = "How many times Deflect can be used in a level?"))
-	int DeflectUsageLimit = 2;
-
-	/** Deflect Duration */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "10.0"))
-	float DeflectDuration = 2.0f;
-
-	/** Deflect Duration */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true", UIMin = "0.1", UIMax = "30.0"))
-	float DeflectCooldownDuration = 10.f;
-
-	// The initial amount we start
-	int InitialDeflectCount = 0;
-
-	// The initial cooldown duration we start with
-	float InitialDeflectCoolDownDuration = 0.f;
-
-	/** Deflect bar time */
-	float DeflectTimer = 0.f;
-
-	/** Count how many times deflect used in a level */
-	int DeflectCounter = 0;
+	UPROPERTY()
+	bool bCanSprint = false;
 
 	/*----------------------------------------------------------------------
-		Dash
+		Stamina, Deflect, Dash, Flash
 	----------------------------------------------------------------------*/
 
-	UPROPERTY(meta = (AllowPrivateAccess = "true"))
-	bool bIsDashActive = false;
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	FStamina Stamina = FStamina();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float DashDistance = 200.f;
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	FDeflect Deflect = FDeflect();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float DashSpeed = 200.f;
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	FDash Dash = FDash();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	int DashUsageLimit = 3;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float DashCooldownDuration = 5.f;
-
-	float InitialDashCoolDownDuration = 0.f;
-	float DashTimer = 0.f;
-	// Used for calculating time if the character gets stucked.
-	float DashDebugTimer = 0.f;
-	int DashCounter = 0;
-
-	bool IsDashing = false;
-	FVector DashTargetLocation = FVector::Zero();
-
-	// The distance that is acceptable as reached
-	float DashReachThreshold = 20.f;
-	float DashObstacleOffset = 50.f;
-	float CharacterFeetDistanceFromCenter = 85.f;
-	float CollisionLineOffset = 50.f;
-
-	/*----------------------------------------------------------------------
-		Flash
-	----------------------------------------------------------------------*/
-
-	UPROPERTY(meta = (AllowPrivateAccess = "true"))
-	bool bIsFlashActive = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float FlashDistance = 200.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	int FlashUsageLimit = 3;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena", meta = (AllowPrivateAccess = "true"))
-	float FlashCooldownDuration = 5.f;
+	UPROPERTY(EditAnywhere, Category = "Arena")
+	FFlash Flash = FFlash();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystem* FlashInitialParticle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
 	UParticleSystem* FlashTargetParticle;
-
-	float InitialFlashCoolDownDuration = 0.f;
-	float FlashTimer = 0.f;
-	int FlashCounter = 0;
 
 	/*----------------------------------------------------------------------
 		Black Hole Affect
@@ -465,7 +525,7 @@ private:
 	TArray<ABlackHoleProjectile*> BlackHoles;
 
 	UPROPERTY()
-	bool BlackHoleArrayChanged = false;
+	bool bBlackHoleArrayChanged = false;
 
 	UPROPERTY()
 	ABlackHoleProjectile* TargetBlackHole;
