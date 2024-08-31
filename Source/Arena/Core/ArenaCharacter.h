@@ -362,6 +362,13 @@ public:
 		SprintSpeed += SprintSpeed * (IncreasePercentage / 100);
 	}
 
+	/** Increase Sprint Speed by given percentage */
+	UFUNCTION()
+	FORCEINLINE void IncreaseWalkSpeed(const float IncreasePercentage)
+	{
+		WalkSpeed += WalkSpeed * (IncreasePercentage / 100);
+	}
+
 protected:
 
 	/** Called for movement input */
@@ -485,6 +492,9 @@ private:
 	/** Sprint Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Arena Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed = 500.f;
+
+	UPROPERTY()
+	float InitialWalkSpeed = 0.f;
 
 	UPROPERTY()
 	float InitialSprintSpeed = 0.f;

@@ -104,6 +104,7 @@ void AArenaCharacter::BeginPlay()
 	Stamina.InitialMax = Stamina.Max;
 	Stamina.InitialBaseIncrease = Stamina.BaseIncrease;
 
+	InitialWalkSpeed = WalkSpeed;
 	InitialSprintSpeed = SprintSpeed;
 
 	// Start with initial values
@@ -748,6 +749,7 @@ void AArenaCharacter::HandleDebugLines() const
 
 void AArenaCharacter::OnRestart()
 {
+	WalkSpeed = InitialWalkSpeed;
 	SprintSpeed = InitialSprintSpeed;
 
 	Stamina.BaseIncrease = Stamina.InitialBaseIncrease;

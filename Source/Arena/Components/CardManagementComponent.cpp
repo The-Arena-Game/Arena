@@ -247,6 +247,7 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 	CheckDeflectBuff(InBuff);
 	CheckMaxStaminaBuff(InBuff);
 	CheckStaminaRegenBuff(InBuff);
+	CheckWalkSpeedBuff(InBuff);
 	CheckSprintSpeedBuff(InBuff);
 	CheckHealthBuff(InBuff);
 }
@@ -422,6 +423,34 @@ void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
 	case EBuffType::StaminaRegen_Epic:
 		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Epic Used!"));
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UCardManagementComponent::CheckWalkSpeedBuff(const FArenaBuff& InBuff)
+{
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
+		return;
+	}
+
+	switch (InBuff.Type)
+	{
+	case EBuffType::WalkSpeed_Common:
+		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Common);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Common Used!"));
+		break;
+	case EBuffType::WalkSpeed_Rare:
+		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Rare Used!"));
+		break;
+	case EBuffType::WalkSpeed_Epic:
+		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Epic Used!"));
 		break;
 
 	default:

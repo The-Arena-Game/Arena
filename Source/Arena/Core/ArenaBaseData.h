@@ -63,6 +63,9 @@ enum class EBuffType : uint8
 	StaminaRegen_Common	UMETA(DisplayName = "Stamina Regen Common"),
 	StaminaRegen_Rare	UMETA(DisplayName = "Stamina Regen Rare"),
 	StaminaRegen_Epic	UMETA(DisplayName = "Stamina Regen Epic"),
+	WalkSpeed_Common	UMETA(DisplayName = "Walk Speed Common"),
+	WalkSpeed_Rare		UMETA(DisplayName = "Walk Speed Rare"),
+	WalkSpeed_Epic		UMETA(DisplayName = "Walk Speed Epic"),
 	SprintSpeed_Common	UMETA(DisplayName = "Sprint Speed Common"),
 	SprintSpeed_Rare	UMETA(DisplayName = "Sprint Speed Rare"),
 	SprintSpeed_Epic	UMETA(DisplayName = "Sprint Speed Epic"),
@@ -253,6 +256,16 @@ public:
 	float SprintSpeed_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
 	float SprintSpeed_Epic = 10.0f;
+
+
+	// Walk Sped
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float WalkSpeed_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float WalkSpeed_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	float WalkSpeed_Epic = 10.0f;
 };
 
 /*--------------------------

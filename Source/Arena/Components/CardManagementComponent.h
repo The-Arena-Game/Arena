@@ -178,6 +178,9 @@ private:
 	void CheckStaminaRegenBuff(const FArenaBuff& InBuff);
 
 	UFUNCTION()
+	void CheckWalkSpeedBuff(const FArenaBuff& InBuff);
+
+	UFUNCTION()
 	void CheckSprintSpeedBuff(const FArenaBuff& InBuff);
 
 	UFUNCTION()
