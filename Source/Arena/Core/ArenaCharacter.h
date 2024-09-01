@@ -367,6 +367,7 @@ public:
 	FORCEINLINE void IncreaseWalkSpeed(const float IncreasePercentage)
 	{
 		WalkSpeed += WalkSpeed * (IncreasePercentage / 100);
+		SprintSpeed += SprintSpeed * (IncreasePercentage / 100);
 	}
 
 protected:
