@@ -169,7 +169,7 @@ private:
 	void CheckDashBuff(const FArenaBuff& InBuff);
 
 	UFUNCTION()
-	void CheckDeflectBuff(const FArenaBuff& InBuff);
+	void CheckDeflectBuffs(const FArenaBuff& InBuff);
 
 	UFUNCTION()
 	void CheckMaxStaminaBuff(const FArenaBuff& InBuff);
@@ -178,10 +178,10 @@ private:
 	void CheckStaminaRegenBuff(const FArenaBuff& InBuff);
 
 	UFUNCTION()
-	void CheckWalkSpeedBuff(const FArenaBuff& InBuff);
+	void CheckWalkBuffs(const FArenaBuff& InBuff);
 
 	UFUNCTION()
-	void CheckSprintSpeedBuff(const FArenaBuff& InBuff);
+	void CheckSprintBuffs(const FArenaBuff& InBuff);
 
 	UFUNCTION()
 	void CheckHealthBuff(FArenaBuff& InBuff);

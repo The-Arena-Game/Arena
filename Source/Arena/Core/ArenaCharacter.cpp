@@ -127,6 +127,12 @@ void AArenaCharacter::Tick(float DeltaTime)
 	HandleStamina(DeltaTime);
 	HandleDebugLines();
 	HandleBlackHoleAffect(DeltaTime);
+
+	// Sprint Deflect Buff Counter
+	if (bSprintDeflectActive && SprintDeflectTimer < GameMode->GetBaseData()->SprintDeflectCooldown && CurrentGameState == EGameStates::Play)
+	{
+		SprintDeflectTimer = FMath::Clamp(SprintDeflectTimer += DeltaTime, 0, GameMode->GetBaseData()->SprintDeflectCooldown);
+	}
 }
 
 /*----------------------------------------------------------------------
@@ -202,6 +208,12 @@ void AArenaCharacter::Sprint()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		bSprinting = true;
+
+		if (bSprintDeflectActive && SprintDeflectTimer >= GameMode->GetBaseData()->SprintDeflectCooldown)
+		{
+			SprintDeflectTimer = 0;
+			ExecuteDeflect();
+		}
 	}
 }
 
@@ -234,6 +246,7 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 
 		Deflect.Timer = Deflect.CooldownDuration;
 		Deflect.Counter = Deflect.UsageLimit;
+		SprintDeflectTimer = 0;
 
 		Dash.Timer = Dash.bActive ? Dash.CooldownDuration : 0;
 		Dash.Counter = Dash.UsageLimit;
@@ -438,14 +451,14 @@ FVector AArenaCharacter::GetDashLocation(float TargetDistance, bool& SameLocatio
 
 void AArenaCharacter::EnableDeflect()
 {
-	// If the deflect timer is not full, don't enable deflect
-	if (Deflect.Timer < Deflect.CooldownDuration)
+	// Don't use deflect if the state is not Play
+	if (GameMode->GetArenaGameState() != EGameStates::Play || Deflect.bActive)
 	{
 		return;
 	}
 
-	// Don't use deflect if the state is not Play
-	if (GameMode->GetArenaGameState() != EGameStates::Play)
+	// If the deflect timer is not full, don't enable deflect
+	if (Deflect.Timer < Deflect.CooldownDuration)
 	{
 		return;
 	}
@@ -453,11 +466,21 @@ void AArenaCharacter::EnableDeflect()
 	Deflect.Timer = 0;	// Reset timer
 	Deflect.Counter--;
 
-	// Make the healt component invulnerable
-	HealthComp->SetVulnerable(false);
+	ExecuteDeflect();
+}
 
-	// Enable the mesh
+
+void AArenaCharacter::ExecuteDeflect()
+{
+	// Don't use deflect if the state is not Play OR it is already active
+	if (GameMode->GetArenaGameState() != EGameStates::Play || Deflect.bActive)
+	{
+		return;
+	}
+
+	HealthComp->SetVulnerable(false);
 	DeflectMesh->SetHiddenInGame(false);
+	Deflect.bActive = true;
 
 	// Start the timer to disable it
 	FTimerHandle TimerHandle; // Create a local dummy handle. We won’t use it.
@@ -466,11 +489,9 @@ void AArenaCharacter::EnableDeflect()
 
 void AArenaCharacter::DisableDeflect()
 {
-	// Make the healt component open to fire again
 	HealthComp->SetVulnerable(true);
-
-	// Disablethe mesh
 	DeflectMesh->SetHiddenInGame(true);
+	Deflect.bActive = false;
 }
 
 void AArenaCharacter::StartDash()
@@ -617,15 +638,7 @@ void AArenaCharacter::HandleDeflect(const float DeltaTime)
 	if (Deflect.Counter > 0)
 	{
 		// Increase the timer when it is not full
-		if (Deflect.Timer < Deflect.CooldownDuration)
-		{
-			Deflect.Timer += DeltaTime;
-		}
-		else
-		{
-			// Make sure it is equal to the max duration if not increased
-			Deflect.Timer = Deflect.CooldownDuration;
-		}
+		Deflect.Timer = FMath::Clamp(Deflect.Timer += DeltaTime, 0, Deflect.CooldownDuration);
 	}
 }
 
@@ -638,15 +651,7 @@ void AArenaCharacter::HandleDash(const float DeltaTime)
 
 	// REMOVED: If there is a usage limit, process dash timer
 	// Increase the timer when it is not full
-	if (Dash.Timer < Dash.CooldownDuration)
-	{
-		Dash.Timer += DeltaTime;
-	}
-	else
-	{
-		// Make sure it is equal to the max duration if not increased
-		Dash.Timer = Dash.CooldownDuration;
-	}
+	Dash.Timer = FMath::Clamp(Dash.Timer += DeltaTime, 0, Dash.CooldownDuration);
 
 	if (Dash.bDashing)
 	{
@@ -682,15 +687,7 @@ void AArenaCharacter::HandleFlash(const float DeltaTime)
 
 	// REMOVED: If there is a usage limit, process Flash timer
 	// Increase the timer when it is not full
-	if (Flash.Timer < Flash.CooldownDuration)
-	{
-		Flash.Timer += DeltaTime;
-	}
-	else
-	{
-		// Make sure it is equal to the max duration if not increased
-		Flash.Timer = Flash.CooldownDuration;
-	}
+	Flash.Timer = FMath::Clamp(Flash.Timer += DeltaTime, 0, Flash.CooldownDuration);
 }
 
 void AArenaCharacter::HandleStamina(const float DeltaTime)
@@ -711,15 +708,8 @@ void AArenaCharacter::HandleStamina(const float DeltaTime)
 		}
 	}
 
-	// Make sure the value stays between boundries
-	if (Stamina.Current < 0)
-	{
-		Stamina.Current = 0;
-	}
-	else if (Stamina.Current > Stamina.Max)
-	{
-		Stamina.Current = Stamina.Max;
-	}
+	// Make sure the value stays in range
+	Stamina.Current = FMath::Clamp(Stamina.Current, 0.f, Stamina.Max);
 
 	// When we are able to sprint, if the stamina drop below the Off limit, turn off sprinting
 	if (bCanSprint && Stamina.Current < Stamina.SprintOffLevel)
@@ -762,9 +752,12 @@ void AArenaCharacter::OnRestart()
 	Stamina.Current = Stamina.Max;
 
 	Deflect.CooldownDuration = Deflect.InitialCooldownDuration;
-	Deflect.Timer = Deflect.InitialCooldownDuration;
+	Deflect.Timer = Deflect.InitialCooldownDuration;	// Deflect starts full
 	Deflect.UsageLimit = Deflect.DeflectCount;
 	Deflect.Counter = Deflect.DeflectCount;
+
+	bSprintDeflectActive = false;
+	SprintDeflectTimer = 0;
 
 	Dash.bActive = false;
 	Dash.CooldownDuration = Dash.InitialCooldownDuration;
@@ -776,3 +769,4 @@ void AArenaCharacter::OnRestart()
 	Flash.Timer = 0;
 	Flash.Counter = Flash.UsageLimit;
 }
+

@@ -69,6 +69,7 @@ enum class EBuffType : uint8
 	SprintSpeed_Common	UMETA(DisplayName = "Sprint Speed Common"),
 	SprintSpeed_Rare	UMETA(DisplayName = "Sprint Speed Rare"),
 	SprintSpeed_Epic	UMETA(DisplayName = "Sprint Speed Epic"),
+	SprintDeflect		UMETA(DisplayName = "Enable Sprint Deflect"),
 	Healing_Common		UMETA(DisplayName = "Healing Common"),
 	Healing_Rare		UMETA(DisplayName = "Healing Rare"),
 	MaxHealth_Rare		UMETA(DisplayName = "Max Health Rare"),
@@ -259,6 +260,9 @@ public:
 	float SprintSpeed_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float SprintSpeed_Epic = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
+	float SprintDeflectCooldown = 30.0f;
 
 
 	// Walk Sped

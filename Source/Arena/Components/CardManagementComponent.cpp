@@ -243,11 +243,11 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 
 				CheckFlashBuff(Buff);
 				CheckDashBuff(Buff);
-				CheckDeflectBuff(Buff);
+				CheckDeflectBuffs(Buff);
 				CheckMaxStaminaBuff(Buff);
 				CheckStaminaRegenBuff(Buff);
-				CheckWalkSpeedBuff(Buff);
-				CheckSprintSpeedBuff(Buff);
+				CheckWalkBuffs(Buff);
+				CheckSprintBuffs(Buff);
 				CheckHealthBuff(Buff);
 			}
 		}
@@ -334,7 +334,7 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 	}
 }
 
-void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
+void UCardManagementComponent::CheckDeflectBuffs(const FArenaBuff& InBuff)
 {
 	switch (InBuff.Type)
 	{
@@ -357,6 +357,10 @@ void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 	case EBuffType::DecDeflectCD_Epic:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Cooldown Epic Used!"));
+		break;
+	case EBuffType::SprintDeflect:
+		Character->ActivateSprintDeflect();
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Sprint Deflect Used!"));
 		break;
 
 	default:
@@ -408,7 +412,7 @@ void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
 	}
 }
 
-void UCardManagementComponent::CheckWalkSpeedBuff(const FArenaBuff& InBuff)
+void UCardManagementComponent::CheckWalkBuffs(const FArenaBuff& InBuff)
 {
 	switch (InBuff.Type)
 	{
@@ -430,7 +434,7 @@ void UCardManagementComponent::CheckWalkSpeedBuff(const FArenaBuff& InBuff)
 	}
 }
 
-void UCardManagementComponent::CheckSprintSpeedBuff(const FArenaBuff& InBuff)
+void UCardManagementComponent::CheckSprintBuffs(const FArenaBuff& InBuff)
 {
 	switch (InBuff.Type)
 	{

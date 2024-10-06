@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ArenaBaseData.h"
+#include "ArenaGameMode.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "ArenaCharacter.generated.h"
@@ -150,6 +151,9 @@ struct FDeflect
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	bool bActive = false;
+
 	UPROPERTY(EditAnywhere, meta = (ToolTip = "How many times Deflect can be used in a level?"))
 	int UsageLimit = 2;
 
@@ -211,6 +215,20 @@ public:
 	FORCEINLINE float GetDeflectProgressPercentage() const
 	{
 		return Deflect.Timer / Deflect.CooldownDuration;
+	}
+
+	/** Returns Sprint Deflect Progress as percentage **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetSprintDeflectProgressPercentage() const
+	{
+		return SprintDeflectTimer / GameMode->GetBaseData()->SprintDeflectCooldown;
+	}
+
+	/** Returns Sprint Deflect Activation Status **/
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsSprintDeflectActive() const
+	{
+		return bSprintDeflectActive;
 	}
 
 	/** Returns Stamina Progress as percentage **/
@@ -318,6 +336,12 @@ public:
 
 		Dash.Timer = Dash.CooldownDuration;
 		Dash.Counter = Dash.UsageLimit;
+	}
+
+	UFUNCTION()
+	FORCEINLINE void ActivateSprintDeflect()
+	{
+		bSprintDeflectActive = true;
 	}
 
 	/** Decreases Dash cooldown duration by given percentage */
@@ -529,6 +553,16 @@ private:
 	UParticleSystem* FlashTargetParticle;
 
 	/*----------------------------------------------------------------------
+		Stamina, Deflect, Dash, Flash
+	----------------------------------------------------------------------*/
+
+	UPROPERTY()
+	bool bSprintDeflectActive = false;
+
+	UPROPERTY()
+	float SprintDeflectTimer = 0;
+
+	/*----------------------------------------------------------------------
 		Black Hole Affect
 	----------------------------------------------------------------------*/
 
@@ -568,4 +602,7 @@ private:
 
 	UFUNCTION()
 	void OnRestart();
+
+	UFUNCTION()
+	void ExecuteDeflect();
 };
