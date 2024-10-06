@@ -587,6 +587,11 @@ void AArenaCharacter::StartFlash()
 	{
 		UE_LOG(LogArnCharacter, Warning, TEXT("The Flash Particles Effects are not set!"));
 	}
+
+	if (bFlashDeflectActive)
+	{
+		ExecuteDeflect();
+	}
 }
 
 // Disabled for Top-Down 
@@ -772,6 +777,8 @@ void AArenaCharacter::OnRestart()
 
 	bSprintDeflectActive = false;
 	SprintDeflectTimer = 0;
+
+	bFlashDeflectActive = false;
 
 	Dash.bActive = false;
 	Dash.CooldownDuration = Dash.InitialCooldownDuration;

@@ -350,6 +350,12 @@ public:
 		bSprintDeflectActive = true;
 	}
 
+	UFUNCTION()
+	FORCEINLINE void ActivateFlashDeflect()
+	{
+		bFlashDeflectActive = true;
+	}
+
 	/** Decreases Dash cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
@@ -572,6 +578,9 @@ private:
 
 	UPROPERTY()
 	float SprintDeflectTimer = 0;
+
+	UPROPERTY()
+	bool bFlashDeflectActive = false;
 
 	/*----------------------------------------------------------------------
 		Black Hole Affect

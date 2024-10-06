@@ -358,9 +358,14 @@ void UCardManagementComponent::CheckDeflectBuffs(const FArenaBuff& InBuff)
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Epic);
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Cooldown Epic Used!"));
 		break;
+
 	case EBuffType::SprintDeflect:
 		Character->ActivateSprintDeflect();
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Sprint Deflect Used!"));
+		break;
+	case EBuffType::FlashDeflect:
+		Character->ActivateFlashDeflect();
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Flash Deflect Used!"));
 		break;
 
 	default:
