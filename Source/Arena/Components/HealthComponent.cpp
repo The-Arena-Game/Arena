@@ -9,6 +9,25 @@ UHealthComponent::UHealthComponent()
 {
 }
 
+void UHealthComponent::OnRoundWin()
+{
+	if (bRegenActive)
+	{
+		UE_LOG(LogArnHealthComponent, Warning, TEXT("OnRoundWin & bRegenActive | RegenRoundAmount: %i -- RegenRoundCounter: %i"), RegenRoundAmount, RegenRoundCounter);
+		if (RegenRoundCounter < RegenRoundAmount)
+		{
+			UE_LOG(LogArnHealthComponent, Warning, TEXT("Increased the counter."));
+			RegenRoundCounter++;
+		}
+		else
+		{
+			UE_LOG(LogArnHealthComponent, Warning, TEXT("Counter hit the amount!"));
+			RegenRoundCounter = 1;	// Reset the counter
+			IncreaseHeartCount(RegenHealthAmount);
+		}
+	}
+}
+
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {

@@ -47,6 +47,12 @@ public:
 		return MaxHeartCount;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE uint8 GetRegenRoundAmount() const
+	{
+		return RegenRoundAmount;
+	}
+
 	/** Reset the health */
 	UFUNCTION()
 	FORCEINLINE void ResetHealth()
@@ -56,7 +62,7 @@ public:
 		OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
 	}
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void IncreaseHeartCount(const int IncrementAmount)
 	{
 		HeartCount = FMath::Clamp(HeartCount + IncrementAmount, HeartCount, MaxHeartCount);
@@ -68,13 +74,38 @@ public:
 	 * @param IncrementAmount Increment amount for a health container
 	 * @param bFullHeart Indicates if the given heart container is full or empty. If true, increases the current heart count by IncrementAmount.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	FORCEINLINE void IncreaseMaxHealth(const int IncrementAmount, const bool bFullHeart)
 	{
 		MaxHeartCount += IncrementAmount;
 		HeartCount += bFullHeart ? IncrementAmount : 0;
 		OnHealthChange.Broadcast(HeartCount, MaxHeartCount);
 	}
+
+	/**
+	 * Activates Health Regeneration
+	 * @param InRegenHealthAmount Amount of health increase in the given round interval. 1 health means half heart.
+	 * @param InRegenRoundAmount The round interval amount to regenerate the given amount of health
+	 */
+	UFUNCTION()
+	FORCEINLINE void ActivateRegen(const uint8 InRegenHealthAmount, const uint8 InRegenRoundAmount)
+	{
+		RegenHealthAmount = InRegenHealthAmount;
+		RegenRoundAmount = InRegenRoundAmount;
+		bRegenActive = true;
+	}
+
+	UFUNCTION()
+	FORCEINLINE void UpgradeRegen()
+	{
+		if (RegenRoundAmount > 1)
+		{
+			RegenRoundAmount--;
+		}
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void OnRoundWin();
 
 protected:
 	void BeginPlay() override;
@@ -83,6 +114,17 @@ private:
 
 	UPROPERTY()
 	AArenaCharacter* Player;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* DamageTakenSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* DeathSound;
+
+	UPROPERTY(EditAnywhere, Category = "Arena Combat")
+	TSubclassOf<UCameraShakeBase> DamageTakenCameraShakeClass;
+
+	// Main Variables
 
 	UPROPERTY()
 	bool bVulnerable = true;
@@ -96,15 +138,23 @@ private:
 	UPROPERTY()
 	int InitialMaxHeart = 0;
 
+	// Regen Buff Variables
+
+	UPROPERTY()
+	bool bRegenActive = false;
+
+	UPROPERTY()
+	uint8 RegenHealthAmount = 1;
+
+	UPROPERTY()
+	uint8 RegenRoundAmount = 4;
+
+	UPROPERTY()
+	uint8 RegenRoundCounter = 1;
+
+
+	// Functions
+
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
-	USoundBase* DamageTakenSound;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Arena Effects", meta = (AllowPrivateAccess = "true"))
-	USoundBase* DeathSound;
-
-	UPROPERTY(EditAnywhere, Category = "Arena Combat")
-	TSubclassOf<UCameraShakeBase> DamageTakenCameraShakeClass;
 };

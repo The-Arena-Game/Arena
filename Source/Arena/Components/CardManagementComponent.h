@@ -184,5 +184,5 @@ private:
 	void CheckSprintSpeedBuff(const FArenaBuff& InBuff);
 
 	UFUNCTION()
-	void CheckHealthBuff(const FArenaBuff& InBuff);
+	void CheckHealthBuff(FArenaBuff& InBuff);
 };

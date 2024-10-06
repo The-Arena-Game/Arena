@@ -73,6 +73,9 @@ enum class EBuffType : uint8
 	Healing_Rare		UMETA(DisplayName = "Healing Rare"),
 	MaxHealth_Rare		UMETA(DisplayName = "Max Health Rare"),
 	MaxHealth_Epic		UMETA(DisplayName = "Max Health Epic"),
+	HealthRegen_Rare	UMETA(DisplayName = "Health Regen Rare"),
+	HealthRegen_Epic	UMETA(DisplayName = "Health Regen Epic"),
+	HealthRegenUpgrade  UMETA(DisplayName = "Health Regen Upgrade"),
 };
 
 UENUM(BlueprintType)
@@ -195,77 +198,89 @@ public:
 
 	// Flash
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecFlashCD_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecFlashCD_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecFlashCD_Epic = 10.0f;
 
 
 	// Dash
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDashCD_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDashCD_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDashCD_Epic = 10.0f;
 
 
 	// Deflect
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	int8 DeflectCharge_Rare = 1;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	int8 DeflectCharge_Epic = 2;
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDeflectCD_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDeflectCD_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDeflectCD_Epic = 10.0f;
 
 
 	// Max Stamina
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float MaxStamina_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float MaxStamina_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float MaxStamina_Epic = 10.0f;
 
 
 	// Stamina Regen
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float StaminaRegen_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float StaminaRegen_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float StaminaRegen_Epic = 10.0f;
 
 
 	// Sprint Sped
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float SprintSpeed_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float SprintSpeed_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float SprintSpeed_Epic = 10.0f;
 
 
 	// Walk Sped
 
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float WalkSpeed_Common = 5.0f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float WalkSpeed_Rare = 7.5f;
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff Variables")
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float WalkSpeed_Epic = 10.0f;
+
+	// Health Regen
+
+	// Amount of Health to Regenerate in the selected round amount. 1 Health means a half heart!
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Health", meta = (UIMin = 1, UIMax = 4, ClampMin = 1, ClampMax = 4, Tooltip = "Amount of Health to Regenerate in the selected round amount. 1 Health means a half heart!"))
+	uint8 HealthRegenAmount = 1;
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Health", meta = (UIMin = 1, UIMax = 4, ClampMin = 1, ClampMax = 4))
+	uint8 HealthRegenRound_Rare = 4;
+
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Health", meta = (UIMin = 1, UIMax = 4, ClampMin = 1, ClampMax = 4))
+	uint8 HealthRegenRound_Epic = 2;
 };
 
 /*--------------------------

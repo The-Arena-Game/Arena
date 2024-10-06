@@ -242,6 +242,11 @@ void AArenaCharacter::OnGameStateChange(EGameStates NewState)
 		Flash.Counter = Flash.UsageLimit;
 	}
 
+	if (NewState == EGameStates::Win)
+	{
+		HealthComp->OnRoundWin();
+	}
+
 	CurrentGameState = NewState;
 }
 

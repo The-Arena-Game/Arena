@@ -200,7 +200,7 @@ void UCardManagementComponent::GenerateCardData(const uint8& Level)
 				}
 			}
 
-			FString UnlockStr = NewBuff.bUnlocked ? TEXT("True") : TEXT("False");
+			// FString UnlockStr = NewBuff.bUnlocked ? TEXT("True") : TEXT("False");
 			//UE_LOG(LogArnCardManagement, Error, TEXT("Selected Buff: %s - bUnlocked?: %s - Usage: %i"), *UEnum::GetValueAsString(NewBuff.Type), *UnlockStr, NewBuff.UsageCount);
 
 			// If not found in others, get this one
@@ -230,7 +230,9 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 		return;
 	}
 
-	// Find the buff and decrease the counter
+
+
+	// Find the buff and decrease the counter, pass it to the others.
 	if (FRarityPool* RarityPool = Pools.Find(InBuff.Rarity))
 	{
 		for (FArenaBuff& Buff : RarityPool->BuffPool)
@@ -238,18 +240,18 @@ void UCardManagementComponent::BuffSelected(const FArenaBuff& InBuff)
 			if (InBuff == Buff)
 			{
 				Buff.UsageCount--;
+
+				CheckFlashBuff(Buff);
+				CheckDashBuff(Buff);
+				CheckDeflectBuff(Buff);
+				CheckMaxStaminaBuff(Buff);
+				CheckStaminaRegenBuff(Buff);
+				CheckWalkSpeedBuff(Buff);
+				CheckSprintSpeedBuff(Buff);
+				CheckHealthBuff(Buff);
 			}
 		}
 	}
-
-	CheckFlashBuff(InBuff);
-	CheckDashBuff(InBuff);
-	CheckDeflectBuff(InBuff);
-	CheckMaxStaminaBuff(InBuff);
-	CheckStaminaRegenBuff(InBuff);
-	CheckWalkSpeedBuff(InBuff);
-	CheckSprintSpeedBuff(InBuff);
-	CheckHealthBuff(InBuff);
 }
 
 void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
@@ -276,15 +278,15 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 
 	case EBuffType::DecFlashCD_Common:
 		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Flash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecFlashCD_Rare:
 		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Flash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecFlashCD_Epic:
 		Character->DecreaseFlashCooldownDuration(BaseData->DecFlashCD_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Flash Cooldown Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Flash Cooldown Epic Used!"));
 		break;
 
 	default:
@@ -294,12 +296,6 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::UnlockDash:	// Unlock all the Dash buffs
@@ -322,15 +318,15 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 
 	case EBuffType::DecDashCD_Common:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Dash Cooldown Common Used!"));
 		break;
 	case EBuffType::DecDashCD_Rare:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Dash Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecDashCD_Epic:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDashCD_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Dash Cooldown Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Dash Cooldown Epic Used!"));
 		break;
 
 	default:
@@ -340,33 +336,27 @@ void UCardManagementComponent::CheckDashBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::DeflectCharge_Rare:
 		Character->IncreaseDeflectCharge(BaseData->DeflectCharge_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Charge Rare Used!"));
 		break;
 	case EBuffType::DeflectCharge_Epic:
 		Character->IncreaseDeflectCharge(BaseData->DeflectCharge_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Charge Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Charge Rare Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Common:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Cooldown Common Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Rare:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Cooldown Rare Used!"));
 		break;
 	case EBuffType::DecDeflectCD_Epic:
 		Character->DecreaseDashCooldownDuration(BaseData->DecDeflectCD_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Deflect Cooldown Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Deflect Cooldown Epic Used!"));
 		break;
 
 	default:
@@ -376,25 +366,19 @@ void UCardManagementComponent::CheckDeflectBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckMaxStaminaBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::MaxStamina_Common:
 		Character->IncreaseMaxStamina(BaseData->MaxStamina_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Max Stamina Common Used!"));
 		break;
 	case EBuffType::MaxStamina_Rare:
 		Character->IncreaseMaxStamina(BaseData->MaxStamina_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Max Stamina Rare Used!"));
 		break;
 	case EBuffType::MaxStamina_Epic:
 		Character->IncreaseMaxStamina(BaseData->MaxStamina_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Max Stamina Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Max Stamina Epic Used!"));
 		break;
 
 	default:
@@ -404,25 +388,19 @@ void UCardManagementComponent::CheckMaxStaminaBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::StaminaRegen_Common:
 		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Common Used!"));
 		break;
 	case EBuffType::StaminaRegen_Rare:
 		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Rare Used!"));
 		break;
 	case EBuffType::StaminaRegen_Epic:
 		Character->IncreaseStaminaRegen(BaseData->StaminaRegen_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Stamina Rege Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Epic Used!"));
 		break;
 
 	default:
@@ -432,25 +410,19 @@ void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckWalkSpeedBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::WalkSpeed_Common:
 		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Walk Speed Common Used!"));
 		break;
 	case EBuffType::WalkSpeed_Rare:
 		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Walk Speed Rare Used!"));
 		break;
 	case EBuffType::WalkSpeed_Epic:
 		Character->IncreaseWalkSpeed(BaseData->WalkSpeed_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Walk Speed Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Walk Speed Epic Used!"));
 		break;
 
 	default:
@@ -460,25 +432,19 @@ void UCardManagementComponent::CheckWalkSpeedBuff(const FArenaBuff& InBuff)
 
 void UCardManagementComponent::CheckSprintSpeedBuff(const FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
-
 	switch (InBuff.Type)
 	{
 	case EBuffType::SprintSpeed_Common:
 		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Common);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Sprint Speed Common Used!"));
 		break;
 	case EBuffType::SprintSpeed_Rare:
 		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Rare);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Sprint Speed Rare Used!"));
 		break;
 	case EBuffType::SprintSpeed_Epic:
 		Character->IncreaseSprintSpeed(BaseData->SprintSpeed_Epic);
-		UE_LOG(LogArnCardManagement, Log, TEXT("Sprint Speed Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Sprint Speed Epic Used!"));
 		break;
 
 	default:
@@ -486,35 +452,75 @@ void UCardManagementComponent::CheckSprintSpeedBuff(const FArenaBuff& InBuff)
 	}
 }
 
-void UCardManagementComponent::CheckHealthBuff(const FArenaBuff& InBuff)
+void UCardManagementComponent::CheckHealthBuff(FArenaBuff& InBuff)
 {
-	if (!IsValid(Character))
-	{
-		UE_LOG(LogArnCardManagement, Error, TEXT("Character is not valid!!"));
-		return;
-	}
+	const uint8 CurrentRoundAmount = Character->GetHealthComponent()->GetRegenRoundAmount();
 
 	switch (InBuff.Type)
 	{
 	case EBuffType::Healing_Common:
 		Character->GetHealthComponent()->IncreaseHeartCount(1);	// half heart: 1 heart count
-		UE_LOG(LogArnCardManagement, Log, TEXT("Healing Common Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Healing Common Used!"));
 		break;
 	case EBuffType::Healing_Rare:
 		Character->GetHealthComponent()->IncreaseHeartCount(2);	// full heart: 2 heart count
-		UE_LOG(LogArnCardManagement, Log, TEXT("Healing Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Healing Rare Used!"));
 		break;
+
 	case EBuffType::MaxHealth_Rare:
 		Character->GetHealthComponent()->IncreaseMaxHealth(2, false);	// 1 empty container: 2 hearts
-		UE_LOG(LogArnCardManagement, Log, TEXT("Max Health Rare Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Max Health Rare Used!"));
 		break;
 	case EBuffType::MaxHealth_Epic:
 		Character->GetHealthComponent()->IncreaseMaxHealth(2, true);		// 1 full container: 2 hearts
-		UE_LOG(LogArnCardManagement, Log, TEXT("MaxHealth Epic Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: MaxHealth Epic Used!"));
+		break;
+
+	case EBuffType::HealthRegen_Rare:
+		Character->GetHealthComponent()->ActivateRegen(BaseData->HealthRegenAmount, BaseData->HealthRegenRound_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Health Regen Rare Used!"));
+		break;
+	case EBuffType::HealthRegen_Epic:
+		Character->GetHealthComponent()->ActivateRegen(BaseData->HealthRegenAmount, BaseData->HealthRegenRound_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Health Regen Epic Used!"));
+		break;
+	case EBuffType::HealthRegenUpgrade:
+		if (CurrentRoundAmount > 1)
+		{
+			Character->GetHealthComponent()->UpgradeRegen();
+			UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Health Regen UPGRADE Used!"));
+
+			// If the current amount WAS 2, then disable the Upgrade Buff from now on!
+			if (CurrentRoundAmount == 2)
+			{
+				InBuff.bUnlocked = false;
+				UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Health Regen UPGRADE disabled!!"));
+			}
+		}
 		break;
 
 	default:
 		break;
+	}
+
+	// If one of the regens is selected, find all other regen buffs and disable them! But Unlock the Upgrade buff
+	if (InBuff.Type == EBuffType::HealthRegen_Rare || InBuff.Type == EBuffType::HealthRegen_Epic)
+	{
+		for (TTuple<ERarity, FRarityPool>& Pool : Pools)
+		{
+			for (FArenaBuff& Buff : Pool.Value.BuffPool)
+			{
+				if (Buff.Type == EBuffType::HealthRegen_Rare || Buff.Type == EBuffType::HealthRegen_Epic)
+				{
+					Buff.bUnlocked = false;
+				}
+
+				if (Buff.Type == EBuffType::HealthRegenUpgrade)
+				{
+					Buff.bUnlocked = true;
+				}
+			}
+		}
 	}
 }
 
