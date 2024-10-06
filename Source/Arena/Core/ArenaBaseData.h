@@ -63,6 +63,9 @@ enum class EBuffType : uint8
 	StaminaRegen_Common	UMETA(DisplayName = "Stamina Regen Common"),
 	StaminaRegen_Rare	UMETA(DisplayName = "Stamina Regen Rare"),
 	StaminaRegen_Epic	UMETA(DisplayName = "Stamina Regen Epic"),
+	StaminaRegenDelay_Common	UMETA(DisplayName = "Stamina Regen Delay Common"),
+	StaminaRegenDelay_Rare		UMETA(DisplayName = "Stamina Regen Delay Rare"),
+	StaminaRegenDelay_Epic		UMETA(DisplayName = "Stamina Regen Delay Epic"),
 	WalkSpeed_Common	UMETA(DisplayName = "Walk Speed Common"),
 	WalkSpeed_Rare		UMETA(DisplayName = "Walk Speed Rare"),
 	WalkSpeed_Epic		UMETA(DisplayName = "Walk Speed Epic"),
@@ -231,6 +234,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
 	float DecDeflectCD_Epic = 10.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Special Movements")
+	float SprintDeflectCooldown = 30.0f;
+
 
 	// Max Stamina
 
@@ -251,6 +257,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
 	float StaminaRegen_Epic = 10.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
+	float StaminaRegenDelay = 3.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
+	float StaminaRegenDelay_Common = 5.0f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
+	float StaminaRegenDelay_Rare = 7.5f;
+	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Stamina")
+	float StaminaRegenDelay_Epic = 10.0f;
+
 
 	// Sprint Sped
 
@@ -260,9 +275,6 @@ public:
 	float SprintSpeed_Rare = 7.5f;
 	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
 	float SprintSpeed_Epic = 10.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Arena - Buff - Basic Movements")
-	float SprintDeflectCooldown = 30.0f;
 
 
 	// Walk Sped

@@ -35,6 +35,9 @@ struct FStamina
 	UPROPERTY()
 	bool bActive = true;
 
+	UPROPERTY(EditAnywhere, meta = (ToolTip = "Seconds"))
+	float RegenDelay = 3.f;
+
 	/** Stamina increase per second in stand by position */
 	UPROPERTY(EditAnywhere, meta = (ToolTip = "Per second"))
 	float BaseIncrease = 200.f;
@@ -58,6 +61,9 @@ struct FStamina
 	/** Turn OFF sprinting on stamina value of */
 	UPROPERTY(EditAnywhere)
 	float JumpCost = 99999999.9f;
+
+	UPROPERTY()
+	float InitialRegenDelay = 0.f;
 
 	UPROPERTY()
 	float InitialMax = 0.f;
@@ -372,6 +378,13 @@ public:
 		Stamina.Max += Stamina.Max * (IncreasePercentage / 100);
 	}
 
+	/** Decrease Stamina Regen Delay by given percentage */
+	UFUNCTION()
+	FORCEINLINE void DecreaseStaminaRegenDelay(const float DecreasePercentage)
+	{
+		Stamina.RegenDelay -= Stamina.RegenDelay * (DecreasePercentage / 100);
+	}
+
 	/** Increase Stamina Base Regeneration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void IncreaseStaminaRegen(const float IncreasePercentage)
@@ -437,8 +450,6 @@ private:
 
 	UPROPERTY()
 	EGameStates CurrentGameState;
-
-	bool bPreventStaminaToFill = false;
 
 	float DarknessValue = 0.f;
 	float DarknessTimer = 0.f;

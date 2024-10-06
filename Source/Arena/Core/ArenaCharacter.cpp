@@ -101,6 +101,7 @@ void AArenaCharacter::BeginPlay()
 	Deflect.InitialCooldownDuration = Deflect.CooldownDuration;
 	Deflect.DeflectCount = Deflect.UsageLimit;
 
+	Stamina.InitialRegenDelay = GameMode->GetBaseData()->StaminaRegenDelay;
 	Stamina.InitialMax = Stamina.Max;
 	Stamina.InitialBaseIncrease = Stamina.BaseIncrease;
 
@@ -209,6 +210,7 @@ void AArenaCharacter::Sprint()
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		bSprinting = true;
 
+		// Sprint Deflect Buff
 		if (bSprintDeflectActive && SprintDeflectTimer >= GameMode->GetBaseData()->SprintDeflectCooldown)
 		{
 			SprintDeflectTimer = 0;
@@ -221,6 +223,17 @@ void AArenaCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	bSprinting = false;
+
+	if (Stamina.bActive)
+	{
+		Stamina.bActive = false;
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]
+			{
+				Stamina.bActive = true;
+			}, Stamina.RegenDelay, false
+		);
+	}
 }
 
 void AArenaCharacter::Jump()
@@ -346,12 +359,12 @@ void AArenaCharacter::OnExhaustionHit()
 	}
 
 	Stamina.Current = 0.f;
-	bPreventStaminaToFill = true;
+	Stamina.bActive = false;
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]
 		{
-			bPreventStaminaToFill = false;
+			Stamina.bActive = true;
 		}, UExhaustionDamageType::Time, false
 	);
 }
@@ -692,17 +705,17 @@ void AArenaCharacter::HandleFlash(const float DeltaTime)
 
 void AArenaCharacter::HandleStamina(const float DeltaTime)
 {
-	if (!bPreventStaminaToFill)
+	if (Stamina.bActive)
 	{
 		Stamina.Current += Stamina.BaseIncrease * DeltaTime;
 	}
 
 	// Check if moving?
-	if (Stamina.bActive && GetCharacterMovement()->Velocity.Size() > 0.0f)
+	if (GetCharacterMovement()->Velocity.Size() > 0.0f)
 	{
 		Stamina.Current -= Stamina.WalkingDecrease * DeltaTime;
 
-		if (Stamina.bActive && bSprinting)
+		if (bSprinting)
 		{
 			Stamina.Current -= Stamina.SprintDecrease * DeltaTime;
 		}
@@ -747,6 +760,7 @@ void AArenaCharacter::OnRestart()
 	WalkSpeed = InitialWalkSpeed;
 	SprintSpeed = InitialSprintSpeed;
 
+	Stamina.RegenDelay = Stamina.InitialRegenDelay;
 	Stamina.BaseIncrease = Stamina.InitialBaseIncrease;
 	Stamina.Max = Stamina.InitialMax;
 	Stamina.Current = Stamina.Max;

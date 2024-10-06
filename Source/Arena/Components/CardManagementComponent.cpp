@@ -407,6 +407,20 @@ void UCardManagementComponent::CheckStaminaRegenBuff(const FArenaBuff& InBuff)
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Epic Used!"));
 		break;
 
+
+	case EBuffType::StaminaRegenDelay_Common:
+		Character->DecreaseStaminaRegenDelay(BaseData->StaminaRegenDelay_Common);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Delay Common Used!"));
+		break;
+	case EBuffType::StaminaRegenDelay_Rare:
+		Character->DecreaseStaminaRegenDelay(BaseData->StaminaRegenDelay_Rare);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Delay Rare Used!"));
+		break;
+	case EBuffType::StaminaRegenDelay_Epic:
+		Character->DecreaseStaminaRegenDelay(BaseData->StaminaRegenDelay_Epic);
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Stamina Rege Delay Epic Used!"));
+		break;
+
 	default:
 		break;
 	}
