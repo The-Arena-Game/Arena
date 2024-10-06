@@ -59,6 +59,7 @@ enum class EBuffType : uint8
 	DecDeflectCD_Epic	UMETA(DisplayName = "Decrease Deflect CD Epic"),
 	SprintDeflect		UMETA(DisplayName = "Enable Sprint Deflect"),
 	FlashDeflect		UMETA(DisplayName = "Enable Flash Deflect"),
+	AutoDeflect			UMETA(DisplayName = "Enable Auto Deflect"),
 	MaxStamina_Common	UMETA(DisplayName = "Max Stamina Common"),
 	MaxStamina_Rare		UMETA(DisplayName = "Max Stamina Rare"),
 	MaxStamina_Epic		UMETA(DisplayName = "Max Stamina Epic"),

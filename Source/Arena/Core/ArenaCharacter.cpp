@@ -775,10 +775,10 @@ void AArenaCharacter::OnRestart()
 	Deflect.UsageLimit = Deflect.DeflectCount;
 	Deflect.Counter = Deflect.DeflectCount;
 
-	bSprintDeflectActive = false;
 	SprintDeflectTimer = 0;
-
+	bSprintDeflectActive = false;
 	bFlashDeflectActive = false;
+	bAutoDeflectActive = false;
 
 	Dash.bActive = false;
 	Dash.CooldownDuration = Dash.InitialCooldownDuration;

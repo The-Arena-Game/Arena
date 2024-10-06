@@ -46,6 +46,8 @@ void UHealthComponent::BeginPlay()
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
 {
+	Player->OnDamageTaken();	// Check Auto Deflect
+
 	if (Damage <= 0.f || !bVulnerable) return;
 
 	if (DamageTakenCameraShakeClass != nullptr)

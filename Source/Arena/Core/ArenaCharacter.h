@@ -356,6 +356,12 @@ public:
 		bFlashDeflectActive = true;
 	}
 
+	UFUNCTION()
+	FORCEINLINE void ActivateAutoDeflect()
+	{
+		bAutoDeflectActive = true;
+	}
+
 	/** Decreases Dash cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
@@ -411,6 +417,16 @@ public:
 	{
 		WalkSpeed += WalkSpeed * (IncreasePercentage / 100);
 		SprintSpeed += SprintSpeed * (IncreasePercentage / 100);
+	}
+
+	/** Enables Deflect on Hit if there is deflect charger left */
+	UFUNCTION()
+	FORCEINLINE void OnDamageTaken()
+	{
+		if (bAutoDeflectActive && Deflect.Counter > 0)
+		{
+			EnableDeflect();
+		}
 	}
 
 protected:
@@ -581,6 +597,9 @@ private:
 
 	UPROPERTY()
 	bool bFlashDeflectActive = false;
+
+	UPROPERTY()
+	bool bAutoDeflectActive = false;
 
 	/*----------------------------------------------------------------------
 		Black Hole Affect

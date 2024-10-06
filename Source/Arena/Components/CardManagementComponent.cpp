@@ -367,6 +367,10 @@ void UCardManagementComponent::CheckDeflectBuffs(const FArenaBuff& InBuff)
 		Character->ActivateFlashDeflect();
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Flash Deflect Used!"));
 		break;
+	case EBuffType::AutoDeflect:
+		Character->ActivateAutoDeflect();
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Auto Deflect Used!"));
+		break;
 
 	default:
 		break;
