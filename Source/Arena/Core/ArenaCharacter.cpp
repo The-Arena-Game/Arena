@@ -482,7 +482,6 @@ void AArenaCharacter::EnableDeflect()
 	ExecuteDeflect();
 }
 
-
 void AArenaCharacter::ExecuteDeflect()
 {
 	// Don't use deflect if the state is not Play OR it is already active
@@ -495,16 +494,20 @@ void AArenaCharacter::ExecuteDeflect()
 	DeflectMesh->SetHiddenInGame(false);
 	Deflect.bActive = true;
 
-	// Start the timer to disable it
-	FTimerHandle TimerHandle; // Create a local dummy handle. We won’t use it.
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AArenaCharacter::DisableDeflect, Deflect.Duration, false);
-}
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]
+		{
+			HealthComp->SetVulnerable(true);
+			DeflectMesh->SetHiddenInGame(true);
+			Deflect.bActive = false;
 
-void AArenaCharacter::DisableDeflect()
-{
-	HealthComp->SetVulnerable(true);
-	DeflectMesh->SetHiddenInGame(true);
-	Deflect.bActive = false;
+			if (bDeflectExplosionActive)
+			{
+				BulletExplosionWave();
+			}
+
+		}, Deflect.Duration, false
+	);
 }
 
 void AArenaCharacter::StartDash()
@@ -592,6 +595,42 @@ void AArenaCharacter::StartFlash()
 	{
 		ExecuteDeflect();
 	}
+
+	if (bFlashExplosionActive)
+	{
+		BulletExplosionWave();
+	}
+}
+
+void AArenaCharacter::BulletExplosionWave()
+{
+	// Define the collision parameters
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), 400.f, 12, FColor::Red, false, 2.f);
+
+	TArray<AActor*> OutActors;
+	UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(),
+		GetActorLocation(),
+		400.f,
+		ObjectTypes,
+		AProjectileBase::StaticClass(),	// Class filter
+		TArray<AActor*>(),
+		OutActors
+	);
+
+	for (AActor* OutActor : OutActors)
+	{
+		if (AProjectileBase* Projectile = Cast<AProjectileBase>(OutActor))
+		{
+			Projectile->Explode();
+		}
+	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(this, BulletExplosionWaveParticle, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionWaveSound, GetActorLocation());
 }
 
 // Disabled for Top-Down 

@@ -289,6 +289,11 @@ void UCardManagementComponent::CheckFlashBuff(const FArenaBuff& InBuff)
 		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Flash Cooldown Epic Used!"));
 		break;
 
+	case EBuffType::FlashExplosion:
+		Character->ActivateFlashExplosion();
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Activate Flash Explosion Used!"));
+		break;
+
 	default:
 		break;
 	}
@@ -361,15 +366,20 @@ void UCardManagementComponent::CheckDeflectBuffs(const FArenaBuff& InBuff)
 
 	case EBuffType::SprintDeflect:
 		Character->ActivateSprintDeflect();
-		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Sprint Deflect Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Activate Sprint Deflect Used!"));
 		break;
 	case EBuffType::FlashDeflect:
 		Character->ActivateFlashDeflect();
-		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Flash Deflect Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Activate Flash Deflect Used!"));
 		break;
 	case EBuffType::AutoDeflect:
 		Character->ActivateAutoDeflect();
-		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Enable Auto Deflect Used!"));
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Activate Auto Deflect Used!"));
+		break;
+
+	case EBuffType::DeflectExplosion:
+		Character->ActivateDeflectExplosion();
+		UE_LOG(LogArnCardManagement, Log, TEXT("Buff: Activate Deflect Explosion Used!"));
 		break;
 
 	default:

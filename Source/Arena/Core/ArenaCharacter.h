@@ -362,6 +362,18 @@ public:
 		bAutoDeflectActive = true;
 	}
 
+	UFUNCTION()
+	FORCEINLINE void ActivateDeflectExplosion()
+	{
+		bDeflectExplosionActive = true;
+	}
+
+	UFUNCTION()
+	FORCEINLINE void ActivateFlashExplosion()
+	{
+		bFlashExplosionActive = true;
+	}
+
 	/** Decreases Dash cooldown duration by given percentage */
 	UFUNCTION()
 	FORCEINLINE void DecreaseDashCooldownDuration(const float DecreasePercentage)
@@ -440,7 +452,6 @@ protected:
 
 	/** Called for deflect input */
 	void EnableDeflect();
-	void DisableDeflect();
 
 	/** Called for Dash input */
 	void StartDash();
@@ -458,7 +469,7 @@ protected:
 	/** To add mapping context */
 	virtual void BeginPlay();
 
-	/** Overrided version of jump, expenses stamina on jump */
+	/** Overwritten version of jump, expenses stamina on jump */
 	virtual void Jump();
 
 private:
@@ -579,11 +590,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Arena")
 	FFlash Flash = FFlash();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Class Effects")
 	UParticleSystem* FlashInitialParticle;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Class Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Class Effects")
 	UParticleSystem* FlashTargetParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Class Effects")
+	UParticleSystem* BulletExplosionWaveParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena - Class Effects - Sound")
+	USoundBase* ExplosionWaveSound;
 
 	/*----------------------------------------------------------------------
 		Stamina, Deflect, Dash, Flash
@@ -600,6 +617,12 @@ private:
 
 	UPROPERTY()
 	bool bAutoDeflectActive = false;
+
+	UPROPERTY()
+	bool bFlashExplosionActive = false;
+
+	UPROPERTY()
+	bool bDeflectExplosionActive = false;
 
 	/*----------------------------------------------------------------------
 		Black Hole Affect
@@ -639,9 +662,16 @@ private:
 
 	FVector GetDashLocation(float TargetDistance, bool& SameLocation);
 
+	/*----------------------------------------------------------------------
+		Others
+	----------------------------------------------------------------------*/
+
 	UFUNCTION()
 	void OnRestart();
 
 	UFUNCTION()
 	void ExecuteDeflect();
+
+	UFUNCTION()
+	void BulletExplosionWave();
 };

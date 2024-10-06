@@ -21,6 +21,9 @@ class AProjectileBase : public AActor
 public:
 	AProjectileBase();
 
+	UFUNCTION(BlueprintCallable, Category = "Arena Function")
+	void Explode();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -34,9 +37,6 @@ protected:
 	UProjectileMovementComponent* MovementComponent;
 
 private:
-
-	UFUNCTION(BlueprintCallable, Category = "Arena Function")
-	void Explode();
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Class Combat")
 	UStaticMeshComponent* ProjectileMesh;
